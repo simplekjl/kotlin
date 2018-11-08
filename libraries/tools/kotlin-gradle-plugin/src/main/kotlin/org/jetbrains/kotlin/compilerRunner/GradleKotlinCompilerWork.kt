@@ -10,6 +10,9 @@ import org.jetbrains.kotlin.cli.common.ExitCode
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.config.Services
 import org.jetbrains.kotlin.daemon.common.*
+import org.jetbrains.kotlin.daemon.common.impls.CompilationResultCategory
+import org.jetbrains.kotlin.daemon.common.impls.ReportCategory
+import org.jetbrains.kotlin.daemon.common.impls.ReportSeverity
 import org.jetbrains.kotlin.gradle.logging.*
 import org.jetbrains.kotlin.gradle.tasks.clearLocalStateDirectories
 import org.jetbrains.kotlin.gradle.tasks.throwGradleExceptionIfError
@@ -17,7 +20,10 @@ import org.jetbrains.kotlin.gradle.utils.stackTraceAsString
 import org.jetbrains.kotlin.incremental.ChangedFiles
 import org.jetbrains.kotlin.incremental.DELETE_MODULE_FILE_PROPERTY
 import org.slf4j.LoggerFactory
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.PrintStream
+import java.io.Serializable
 import java.net.URLClassLoader
 import java.rmi.RemoteException
 import java.util.concurrent.Callable
@@ -41,15 +47,15 @@ internal class ProjectFilesForCompilation(
 }
 
 internal class GradleKotlinCompilerWorkArguments(
-    val projectFiles: ProjectFilesForCompilation,
-    val compilerFullClasspath: List<File>,
-    val compilerClassName: String,
-    val compilerArgs: Array<String>,
-    val isVerbose: Boolean,
-    val incrementalCompilationEnvironment: IncrementalCompilationEnvironment?,
-    val incrementalModuleInfo: IncrementalModuleInfo?,
-    val buildFile: File?,
-    val localStateDirectories: List<File>,
+        val projectFiles: ProjectFilesForCompilation,
+        val compilerFullClasspath: List<File>,
+        val compilerClassName: String,
+        val compilerArgs: Array<String>,
+        val isVerbose: Boolean,
+        val incrementalCompilationEnvironment: IncrementalCompilationEnvironment?,
+        val incrementalModuleInfo: IncrementalModuleInfo?,
+        val buildFile: File?,
+        val localStateDirectories: List<File>,
     val taskPath: String
 ) : Serializable {
     companion object {
@@ -84,8 +90,8 @@ internal class GradleKotlinCompilerWork @Inject constructor(
         TaskLoggers.get(taskPath)?.let { GradleKotlinLogger(it) }
             ?: run {
                 System.err.println("Could not get logger for '$taskPath'. Falling back to sl4j logger")
-                SL4JKotlinLogger(LoggerFactory.getLogger("GradleKotlinCompilerWork"))
-            }
+            SL4JKotlinLogger(LoggerFactory.getLogger("GradleKotlinCompilerWork"))
+    }
 
     private val isIncremental: Boolean
         get() = incrementalCompilationEnvironment != null
@@ -174,7 +180,8 @@ internal class GradleKotlinCompilerWork @Inject constructor(
             return null
         }
 
-        val (daemon, sessionId) = connection
+        val (daemonClient, sessionId) = connection
+        val daemon = daemonClient.toRMI()
         val targetPlatform = when (compilerClassName) {
             KotlinCompilerClass.JVM -> CompileService.TargetPlatform.JVM
             KotlinCompilerClass.JS -> CompileService.TargetPlatform.JS
@@ -209,9 +216,9 @@ internal class GradleKotlinCompilerWork @Inject constructor(
     }
 
     private fun nonIncrementalCompilationWithDaemon(
-        daemon: CompileService,
-        sessionId: Int,
-        targetPlatform: CompileService.TargetPlatform,
+            daemon: CompileService,
+            sessionId: Int,
+            targetPlatform: CompileService.TargetPlatform,
         bufferingMessageCollector: GradleBufferingMessageCollector
     ): CompileService.CallResult<Int> {
         val compilationOptions = CompilationOptions(
@@ -257,7 +264,7 @@ internal class GradleKotlinCompilerWork @Inject constructor(
     }
 
     private fun compileOutOfProcess(): ExitCode =
-        runToolInSeparateProcess(compilerArgs, compilerClassName, compilerFullClasspath, log)
+            runToolInSeparateProcess(compilerArgs, compilerClassName, compilerFullClasspath, log)
 
     private fun compileInProcess(messageCollector: MessageCollector): ExitCode {
         // in-process compiler should always be run in a different thread

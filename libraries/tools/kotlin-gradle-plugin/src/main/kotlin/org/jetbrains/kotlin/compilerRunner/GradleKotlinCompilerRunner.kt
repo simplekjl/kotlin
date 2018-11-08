@@ -27,14 +27,25 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.arguments.K2MetadataCompilerArguments
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
+import org.jetbrains.kotlin.daemon.common.CompilerId
+import org.jetbrains.kotlin.daemon.common.IncrementalModuleEntry
+import org.jetbrains.kotlin.daemon.common.IncrementalModuleInfo
+import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.InspectClassesForMultiModuleIC
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.daemon.client.CompileServiceSession
 import org.jetbrains.kotlin.daemon.common.*
+import org.jetbrains.kotlin.daemon.common.impls.CompilationResultCategory
+import org.jetbrains.kotlin.daemon.common.impls.ReportCategory
+import org.jetbrains.kotlin.daemon.common.impls.ReportSeverity
 import org.jetbrains.kotlin.gradle.logging.TaskLoggers
 import org.jetbrains.kotlin.gradle.logging.kotlinDebug
 import org.jetbrains.kotlin.gradle.tasks.*
 import org.jetbrains.kotlin.gradle.utils.newTmpFile
 import org.jetbrains.kotlin.gradle.utils.relativeToRoot
-import org.jetbrains.kotlin.incremental.*
+import org.jetbrains.kotlin.incremental.classpathAsList
+import org.jetbrains.kotlin.incremental.destinationAsFile
+import org.jetbrains.kotlin.incremental.makeModuleFile
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -132,16 +143,16 @@ internal open class GradleCompilerRunner(protected val task: Task) {
         val incrementalCompilationEnvironment = environment.incrementalCompilationEnvironment
         val modulesInfo = incrementalCompilationEnvironment?.let { buildModulesInfo(project.gradle) }
         val workArgs = GradleKotlinCompilerWorkArguments(
-            projectFiles = ProjectFilesForCompilation(project),
-            compilerFullClasspath = environment.compilerFullClasspath,
-            compilerClassName = compilerClassName,
-            compilerArgs = argsArray,
-            isVerbose = compilerArgs.verbose,
-            incrementalCompilationEnvironment = incrementalCompilationEnvironment,
-            incrementalModuleInfo = modulesInfo,
-            buildFile = buildFile,
-            localStateDirectories = environment.localStateDirectories,
-            taskPath = task.path
+                projectFiles = ProjectFilesForCompilation(project),
+                compilerFullClasspath = environment.compilerFullClasspath,
+                compilerClassName = compilerClassName,
+                compilerArgs = argsArray,
+                isVerbose = compilerArgs.verbose,
+                incrementalCompilationEnvironment = incrementalCompilationEnvironment,
+                incrementalModuleInfo = modulesInfo,
+                buildFile = buildFile,
+                localStateDirectories = environment.localStateDirectories,
+                taskPath = task.path
         )
         TaskLoggers.put(task.path, task.logger)
         runCompilerAsync(workArgs)

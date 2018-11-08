@@ -14,6 +14,7 @@ buildscript {
     repositories.withRedirector(project) {
         bootstrapKotlinRepo?.let(::maven)
         maven("https://plugins.gradle.org/m2")
+        maven("http://dl.bintray.com/kotlin/ktor")
     }
 
     // a workaround for kotlin compiler classpath in kotlin project: sometimes gradle substitutes
@@ -168,6 +169,7 @@ extra["versions.org.springframework"] = "4.2.0.RELEASE"
 extra["versions.jflex"] = "1.7.0"
 extra["versions.markdown"] = "0.1.25"
 extra["versions.trove4j"] = "1.0.20181211"
+extra["versions.ktor-network"] = "1.0.1"
 
 val isTeamcityBuild = project.hasProperty("teamcity") || System.getenv("TEAMCITY_VERSION") != null
 val intellijUltimateEnabled = project.getBooleanProperty("intellijUltimateEnabled") ?: isTeamcityBuild
@@ -214,6 +216,7 @@ extra["compilerModules"] = arrayOf(
         ":compiler:frontend.script",
         ":compiler:cli-common",
         ":compiler:daemon-common",
+        ":compiler:daemon-common-new",
         ":compiler:daemon",
         ":compiler:ir.tree",
         ":compiler:ir.psi2ir",
@@ -317,6 +320,7 @@ allprojects {
         mirrorRepo?.let(::maven)
         bootstrapKotlinRepo?.let(::maven)
         jcenter()
+        maven("http://dl.bintray.com/kotlin/ktor")
     }
 
     configureJvmProject(javaHome!!, jvmTarget!!)

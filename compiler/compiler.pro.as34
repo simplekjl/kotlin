@@ -52,6 +52,7 @@ messages/**)
 -dontwarn org.jetbrains.annotations.Mutable
 -dontwarn com.intellij.util.io.TarUtil
 -dontwarn com.intellij.util.io.Compressor$Tar
+-dontwarn org.slf4j.**
 
 # Nullability annotations used in Guava
 -dontwarn org.checkerframework.checker.nullness.compatqual.NullableDecl

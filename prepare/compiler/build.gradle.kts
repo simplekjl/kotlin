@@ -15,7 +15,7 @@ plugins {
 // You can run Gradle with "-Pkotlin.build.proguard=true" to enable ProGuard run on kotlin-compiler.jar (on TeamCity, ProGuard always runs)
 val shrink =
     findProperty("kotlin.build.proguard")?.toString()?.toBoolean()
-    ?: hasProperty("teamcity")
+        ?: hasProperty("teamcity")
 
 val fatJarContents by configurations.creating
 
@@ -43,6 +43,7 @@ val compilerModules: Array<String> by rootProject.extra
 compilerModules.forEach { evaluationDependsOn(it) }
 
 val compiledModulesSources = compilerModules.map {
+    println(it)
     project(it).mainSourceSet.allSource
 }
 
@@ -72,6 +73,9 @@ dependencies {
     trove4jJar(intellijDep()) { includeIntellijCoreJarDependencies(project) { it.startsWith("trove4j") } }
 
     fatJarContents(project(":core:builtins", configuration = "builtins"))
+    fatJarContents(project(":kotlin-daemon-client-new")) {
+        isTransitive = false
+    }
     fatJarContents(commonDep("javax.inject"))
     fatJarContents(commonDep("org.jline", "jline"))
     fatJarContents(commonDep("org.fusesource.jansi", "jansi"))
@@ -79,6 +83,16 @@ dependencies {
     fatJarContents(commonDep("com.google.code.findbugs", "jsr305"))
     fatJarContents(commonDep("io.javaslang", "javaslang"))
     fatJarContents(commonDep("org.jetbrains.kotlinx", "kotlinx-coroutines-core")) { isTransitive = false }
+    fatJarContents(commonDep("io.ktor", "ktor-network")) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-common")
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk8")
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib-jdk7")
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-jdk8")
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core-common")
+    }
 
     fatJarContents(intellijCoreDep()) { includeJars("intellij-core", "java-compatibility-1.0.1") }
     fatJarContents(intellijDep()) {
