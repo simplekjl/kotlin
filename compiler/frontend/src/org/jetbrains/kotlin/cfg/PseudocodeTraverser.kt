@@ -26,14 +26,15 @@ import org.jetbrains.kotlin.cfg.pseudocode.instructions.special.SubroutineSinkIn
 import org.jetbrains.kotlin.cfg.pseudocodeTraverser.TraversalOrder.FORWARD
 import java.util.*
 
-fun Pseudocode.traverse(
-    traversalOrder: TraversalOrder,
-    analyzeInstruction: (Instruction) -> Unit
-) {
+fun Pseudocode.traverse(traversalOrder: TraversalOrder, analyzeInstruction: (Instruction) -> Unit) {
+    traverse(traversalOrder, true, analyzeInstruction)
+}
+
+fun Pseudocode.traverse(traversalOrder: TraversalOrder, visitInlineBodies: Boolean, analyzeInstruction: (Instruction) -> Unit) {
     val instructions = getInstructions(traversalOrder)
     for (instruction in instructions) {
-        if (instruction is LocalFunctionDeclarationInstruction) {
-            instruction.body.traverse(traversalOrder, analyzeInstruction)
+        if (visitInlineBodies && instruction is LocalFunctionDeclarationInstruction) {
+            instruction.body.traverse(traversalOrder, visitInlineBodies, analyzeInstruction)
         }
         analyzeInstruction(instruction)
     }

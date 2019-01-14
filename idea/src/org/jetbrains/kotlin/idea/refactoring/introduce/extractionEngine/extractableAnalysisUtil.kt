@@ -123,9 +123,6 @@ private fun List<Instruction>.getVarDescriptorsAccessedAfterwards(bindingContext
     return accessedAfterwards
 }
 
-private fun List<Instruction>.getExitPoints(): List<Instruction> =
-    filter { localInstruction -> localInstruction.nextInstructions.any { it !in this } }
-
 private fun ExtractionData.getResultTypeAndExpressions(
     instructions: List<Instruction>,
     bindingContext: BindingContext,
@@ -233,7 +230,9 @@ private fun ExtractionData.analyzeControlFlow(
     targetScope: LexicalScope?,
     parameters: Set<Parameter>
 ): Pair<ControlFlow, ErrorMessage?> {
-    val exitPoints = localInstructions.getExitPoints()
+    val localInstructionsWithoutInlineMarkers = localInstructions.filter { it !is LocalFunctionDeclarationInstruction }
+    val exitPoints = localInstructionsWithoutInlineMarkers
+        .filter { localInstruction -> localInstruction.nextInstructions.any { it !in localInstructionsWithoutInlineMarkers } }
 
     val valuedReturnExits = ArrayList<ReturnValueInstruction>()
     val defaultExits = ArrayList<Instruction>()
@@ -615,7 +614,7 @@ private fun ExtractionData.checkDeclarationsMovingOutOfScope(
 
 private fun ExtractionData.getLocalInstructions(pseudocode: Pseudocode): List<Instruction> {
     val instructions = ArrayList<Instruction>()
-    pseudocode.traverse(TraversalOrder.FORWARD) {
+    pseudocode.traverse(TraversalOrder.FORWARD, visitInlineBodies = false) {
         if (it is KtElementInstruction && it.element.isInsideOf(physicalElements)) {
             instructions.add(it)
         }
