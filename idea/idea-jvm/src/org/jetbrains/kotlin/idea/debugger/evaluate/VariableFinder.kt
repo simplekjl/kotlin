@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.codegen.inline.INLINE_TRANSFORMATION_SUFFIX
 import org.jetbrains.kotlin.codegen.inline.NUMBERED_FUNCTION_PREFIX
 import org.jetbrains.kotlin.codegen.topLevelClassAsmType
 import org.jetbrains.kotlin.idea.debugger.*
+import org.jetbrains.kotlin.idea.debugger.evaluate.CodeFragmentParameterInfo.Parameter
 import org.jetbrains.kotlin.idea.util.application.runReadAction
 import org.jetbrains.kotlin.idea.util.attachment.mergeAttachments
 import org.jetbrains.kotlin.resolve.calls.checkers.COROUTINE_CONTEXT_1_3_FQ_NAME
@@ -202,6 +203,14 @@ class VariableFinder private constructor(private val context: EvaluationContextI
         }
     }
 
+    fun find(parameter: Parameter, asmType: AsmType): Result? {
+        return when (parameter) {
+            is Parameter.Ordinary -> findOrdinary(VariableKind.Ordinary(parameter.name, asmType))
+            is Parameter.ExtensionThis -> findLabeledThis(VariableKind.LabeledThis(parameter.label, asmType))
+            is Parameter.LocalFunction -> findOrdinary(VariableKind.Ordinary(parameter.name, asmType))
+        }
+    }
+
     fun find(name: String, type: AsmType?): Result? {
         return when {
             name.startsWith(AsmUtil.THIS + "@") -> {
@@ -292,7 +301,7 @@ class VariableFinder private constructor(private val context: EvaluationContextI
 
     private fun isLocalFunctionName(name: String, functionName: String): Boolean {
         @Suppress("ConvertToStringTemplate")
-        return name == functionName + "$" || name.startsWith(AsmUtil.LOCAL_FUNCTION_VARIABLE_PREFIX + name + "$")
+        return name == functionName + "$" || name.startsWith(AsmUtil.LOCAL_FUNCTION_VARIABLE_PREFIX + functionName + "$")
     }
 
     private fun findCoroutineContext(): ObjectReference? {

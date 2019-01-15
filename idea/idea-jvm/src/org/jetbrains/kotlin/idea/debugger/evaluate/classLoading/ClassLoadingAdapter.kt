@@ -38,7 +38,7 @@ interface ClassLoadingAdapter {
         )
 
         fun loadClasses(context: EvaluationContextImpl, classes: Collection<ClassToLoad>): ClassLoaderReference? {
-            val mainClass = classes.firstOrNull { it.isMainClass() } ?: return null
+            val mainClass = classes.firstOrNull { it.isMainClass } ?: return null
 
             var info = ClassInfoForEvaluator(containsAdditionalClasses = classes.size > 1)
             if (!info.containsAdditionalClasses) {
@@ -64,7 +64,7 @@ interface ClassLoadingAdapter {
         }
 
         private fun analyzeClass(classToLoad: ClassToLoad, info: ClassInfoForEvaluator): ClassInfoForEvaluator {
-            val classNode = ClassNode().apply { ClassReader(classToLoad.bytes).accept(this, ClassReader.EXPAND_FRAMES) }
+            val classNode = ClassNode().apply { ClassReader(classToLoad.bytes).accept(this, 0) }
             val methodToRun = classNode.methods.single()
 
             val visitedLabels = hashSetOf<Label>()

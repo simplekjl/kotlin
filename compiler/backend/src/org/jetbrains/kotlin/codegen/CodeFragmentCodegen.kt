@@ -12,22 +12,10 @@ import org.jetbrains.kotlin.codegen.context.MethodContext
 import org.jetbrains.kotlin.codegen.extensions.ExpressionCodegenExtension
 import org.jetbrains.kotlin.codegen.state.GenerationState
 import org.jetbrains.kotlin.descriptors.*
-import org.jetbrains.kotlin.descriptors.annotations.Annotations
-import org.jetbrains.kotlin.descriptors.impl.ClassConstructorDescriptorImpl
-import org.jetbrains.kotlin.descriptors.impl.ClassDescriptorImpl
-import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
-import org.jetbrains.kotlin.incremental.components.LookupLocation
-import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
-import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin.Companion.NO_ORIGIN
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.OtherOrigin
-import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
-import org.jetbrains.kotlin.resolve.scopes.MemberScopeImpl
-import org.jetbrains.kotlin.resolve.source.KotlinSourceElement
-import org.jetbrains.kotlin.storage.LockBasedStorageManager
-import org.jetbrains.kotlin.utils.Printer
 import org.jetbrains.org.objectweb.asm.Opcodes.*
 import org.jetbrains.org.objectweb.asm.Type
 import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
@@ -35,9 +23,14 @@ import org.jetbrains.org.objectweb.asm.commons.InstructionAdapter
 class CodeFragmentCodegenInfo(
     val classDescriptor: ClassDescriptor,
     val methodDescriptor: FunctionDescriptor,
+    val parameters: List<IParameter>,
     val referenceInterceptor: ExpressionCodegenExtension.Context.(KtExpression, ResolvedCall<*>?) -> StackValue?
 ) {
     val classType: Type = Type.getObjectType(classDescriptor.name.asString())
+
+    interface IParameter {
+        val descriptor: DeclarationDescriptor
+    }
 }
 
 class CodeFragmentCodegen private constructor(
@@ -87,8 +80,13 @@ class CodeFragmentCodegen private constructor(
     }
 
     private fun genMethod(methodContext: MethodContext) {
-        val returnType = typeMapper.mapType(methodDescriptor.returnType ?: methodDescriptor.builtIns.unitType)
-        val parameterTypes = methodDescriptor.valueParameters.map { typeMapper.mapType(it.type) }
+        val methodSignature = typeMapper.mapSignatureSkipGeneric(methodContext.functionDescriptor)
+        require(info.parameters.size == methodSignature.valueParameters.size)
+
+        val returnType = methodSignature.returnType
+        val parameterTypes = methodSignature.valueParameters.map { it.asmType }
+        val parametersWithTypes = info.parameters.zip(parameterTypes)
+
         val methodDesc = Type.getMethodDescriptor(returnType, *parameterTypes.toTypedArray())
 
         val mv = v.newMethod(
@@ -102,7 +100,7 @@ class CodeFragmentCodegen private constructor(
             mv.visitCode()
 
             val frameMap = FrameMap()
-            parameterTypes.forEach { frameMap.enterTemp(it) }
+            parametersWithTypes.forEach { (parameter, asmType) -> frameMap.enter(parameter.descriptor, asmType) }
 
             val codegen = object : ExpressionCodegen(mv, frameMap, returnType, methodContext, state, this) {
                 override fun visitNonIntrinsicSimpleNameExpression(
@@ -136,7 +134,7 @@ class CodeFragmentCodegen private constructor(
             val iv = InstructionAdapter(mv)
             iv.areturn(returnType)
 
-            parameterTypes.asReversed().forEach { frameMap.leaveTemp(it) }
+            parametersWithTypes.forEach { (parameter, _) -> frameMap.leave(parameter.descriptor) }
         }
 
         mv.visitMaxs(-1, -1)

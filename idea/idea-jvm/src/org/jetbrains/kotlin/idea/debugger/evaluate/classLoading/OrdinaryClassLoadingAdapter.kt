@@ -74,7 +74,7 @@ class OrdinaryClassLoadingAdapter : ClassLoadingAdapter {
         val classLoader = try {
             ClassLoadingUtils.getClassLoader(context, process)
         } catch (e: Exception) {
-            throw EvaluateException("Error creating evaluation class loader: $e", e)
+            throw EvaluateException("Error creating evaluation class loader: " + e, e)
         }
 
         val debugProcessVersionString = process.virtualMachineProxy.version()

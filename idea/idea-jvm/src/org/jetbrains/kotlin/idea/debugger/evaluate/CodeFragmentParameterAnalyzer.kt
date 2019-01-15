@@ -6,9 +6,12 @@
 package org.jetbrains.kotlin.idea.debugger.evaluate
 
 import com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.codegen.AsmUtil.THIS
+import org.jetbrains.kotlin.codegen.CodeFragmentCodegenInfo
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.idea.debugger.evaluate.CodeFragmentParameterInfo.Parameter
 import org.jetbrains.kotlin.idea.util.application.runReadAction
+import org.jetbrains.kotlin.load.java.sam.SingleAbstractMethodUtils
 import org.jetbrains.kotlin.load.kotlin.toSourceElement
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
@@ -23,37 +26,47 @@ class CodeFragmentParameterInfo(
     val mappings: Map<PsiElement, Parameter>,
     val crossingBounds: Set<Parameter>
 ) {
-    data class Parameter(val index: Int, val name: Name, val type: KotlinType)
+    sealed class Parameter(
+        val index: Int,
+        val type: KotlinType,
+        override val descriptor: DeclarationDescriptor,
+        var rawString: String
+    ) : CodeFragmentCodegenInfo.IParameter {
+        class Ordinary(index: Int, type: KotlinType, descriptor: DeclarationDescriptor, val name: String) :
+            Parameter(index, type, descriptor, name)
+
+        @Suppress("ConvertToStringTemplate")
+        class ExtensionThis(index: Int, type: KotlinType, descriptor: DeclarationDescriptor, val label: String) :
+            Parameter(index, type, descriptor, THIS + "@" + label)
+
+        class LocalFunction(
+            index: Int, type: KotlinType, descriptor: DeclarationDescriptor,
+            rawString: String, val name: String, var functionIndex: Int
+        ) : Parameter(index, type, descriptor, rawString)
+    }
 }
 
-class CodeFragmentParameterAnalyzer(private val bindingContext: BindingContext) {
+class CodeFragmentParameterAnalyzer(private val bindingContext: BindingContext, private val codeFragment: KtCodeFragment) {
     private var used = false
 
     private val mappings = hashMapOf<PsiElement, Parameter>()
     private val parameters = LinkedHashMap<DeclarationDescriptor, Parameter>()
     private val crossingBounds = mutableSetOf<Parameter>()
 
-    fun analyze(codeFragment: KtCodeFragment): CodeFragmentParameterInfo {
+    fun analyze(): CodeFragmentParameterInfo {
         checkUsedOnce()
 
         codeFragment.accept(object : KtTreeVisitor<Unit>() {
             override fun visitSimpleNameExpression(expression: KtSimpleNameExpression, data: Unit?): Void? {
-                if (runReadAction { expression.isDotReceiver() }) {
-                    return null
+                if (runReadAction { !expression.isDotReceiver() }) {
+                    process(expression, expression, ::processSimpleNameExpression)
                 }
+                return null
+            }
 
-                val target = bindingContext[BindingContext.REFERENCE_TARGET, expression]
-                if (target is DeclarationDescriptorWithVisibility && target.visibility == Visibilities.LOCAL) {
-                    val declarationPsiElement = target.toSourceElement.getPsi()
-                    if (declarationPsiElement != null) {
-                        runReadAction {
-                            if (!codeFragment.isAncestor(declarationPsiElement, true)) {
-                                analyzeSimpleNameExpression(expression, target, declarationPsiElement)
-                            }
-                        }
-                    }
-                }
-
+            override fun visitThisExpression(expression: KtThisExpression, data: Unit?): Void? {
+                val instanceReference = runReadAction { expression.instanceReference }
+                process(expression, instanceReference, ::processThisExpression)
                 return null
             }
         }, Unit)
@@ -61,18 +74,72 @@ class CodeFragmentParameterAnalyzer(private val bindingContext: BindingContext) 
         return CodeFragmentParameterInfo(parameters.values.toList(), mappings, crossingBounds)
     }
 
-    private fun analyzeSimpleNameExpression(expression: KtSimpleNameExpression, target: DeclarationDescriptor, targetPsi: PsiElement) {
-        val type = when (target) {
-            is ValueDescriptor -> target.type
+    private fun <T> process(
+        element: T,
+        reference: KtReferenceExpression,
+        block: (T, DeclarationDescriptor, PsiElement) -> Unit
+    ) {
+        val target = bindingContext[BindingContext.REFERENCE_TARGET, reference]
+        if (target is DeclarationDescriptorWithVisibility && target.visibility == Visibilities.LOCAL) {
+            val declarationPsiElement = target.toSourceElement.getPsi()?.takeIf { !codeFragment.isAncestorSafe(it) }
+            if (declarationPsiElement != null) {
+                runReadAction {
+                    block(element, target, declarationPsiElement)
+                }
+            }
+        }
+    }
+
+    private fun PsiElement.isAncestorSafe(element: PsiElement) = runReadAction { this.isAncestor(element, true) }
+
+    private fun processSimpleNameExpression(expression: KtSimpleNameExpression, target: DeclarationDescriptor, targetPsi: PsiElement) {
+        val parameter = when (target) {
+            is FunctionDescriptor -> {
+                val type = SingleAbstractMethodUtils.getFunctionTypeForAbstractMethod(target, false)
+                parameters.getOrPut(target) {
+                    Parameter.Ordinary(parameters.size, type, target, target.name.asString())
+                }
+            }
+            is ValueDescriptor -> {
+                parameters.getOrPut(target) {
+                    Parameter.Ordinary(parameters.size, target.type, target, target.name.asString())
+                }
+            }
             else -> return
         }
 
-        val parameter = parameters.getOrPut(target) { Parameter(parameters.size, target.name, type) }
         mappings[expression] = parameter
 
         if (doesCrossInlineBounds(expression, targetPsi)) {
             crossingBounds += parameter
         }
+    }
+
+    private fun processThisExpression(expression: KtThisExpression, target: DeclarationDescriptor, targetPsi: PsiElement) {
+        if (target is FunctionDescriptor) {
+            val receiverParameter = target.extensionReceiverParameter
+            if (receiverParameter != null) {
+                val name = getThisLabelName(expression, target, targetPsi).asString()
+                val parameter = parameters.getOrPut(target) {
+                    Parameter.ExtensionThis(parameters.size, receiverParameter.type, target, name)
+                }
+                mappings[expression] = parameter
+            }
+        }
+    }
+
+    private fun getThisLabelName(expression: KtThisExpression, target: DeclarationDescriptor, targetPsi: PsiElement): Name {
+        expression.getLabelNameAsName()?.let { return it }
+
+        if (targetPsi is KtFunctionLiteral) {
+            val labeledExpression = (targetPsi.parent as? KtLambdaExpression)?.parent as? KtLabeledExpression
+            val labelName = labeledExpression?.getLabelNameAsName()
+            if (labelName != null) {
+                return labelName
+            }
+        }
+
+        return target.name
     }
 
     private fun doesCrossInlineBounds(expression: KtSimpleNameExpression, declaration: PsiElement): Boolean {

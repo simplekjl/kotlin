@@ -15,13 +15,15 @@ import org.jetbrains.kotlin.config.languageVersionSettings
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.*
+import org.jetbrains.kotlin.idea.debugger.evaluate.classLoading.ClassToLoad
 import org.jetbrains.kotlin.idea.project.languageVersionSettings
+import org.jetbrains.kotlin.idea.util.application.runReadAction
 import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingContext
-import org.jetbrains.kotlin.resolve.calls.model.ResolvedCall
+import org.jetbrains.kotlin.resolve.jvm.jvmSignature.JvmMethodSignature
 import org.jetbrains.kotlin.resolve.lazy.ResolveSession
 import org.jetbrains.kotlin.resolve.lazy.data.KtClassLikeInfo
 import org.jetbrains.kotlin.resolve.lazy.declarations.PackageMemberDeclarationProvider
@@ -36,7 +38,17 @@ import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.utils.Printer
 
 object CodeFragmentCompiler {
-    fun compile(codeFragment: KtCodeFragment, bindingContext: BindingContext, moduleDescriptor: ModuleDescriptor): List<OutputFile> {
+    data class Result(
+        val classes: List<ClassToLoad>,
+        val parameterInfo: CodeFragmentParameterInfo,
+        val mainMethodSignature: JvmMethodSignature
+    )
+
+    fun compile(codeFragment: KtCodeFragment, bindingContext: BindingContext, moduleDescriptor: ModuleDescriptor): Result {
+        return runReadAction { doCompile(codeFragment, bindingContext, moduleDescriptor) }
+    }
+
+    private fun doCompile(codeFragment: KtCodeFragment, bindingContext: BindingContext, moduleDescriptor: ModuleDescriptor): Result {
         val project = codeFragment.project
         val resolutionFacade = KotlinCacheService.getInstance(project).getResolutionFacade(listOf(codeFragment))
         val resolveSession = resolutionFacade.getFrontendService(ResolveSession::class.java)
@@ -50,13 +62,13 @@ object CodeFragmentCompiler {
             defaultReturnType
         }
 
-        val parameterInfo = CodeFragmentParameterAnalyzer(bindingContext).analyze(codeFragment)
+        val parameterInfo = CodeFragmentParameterAnalyzer(bindingContext, codeFragment).analyze()
         val (classDescriptor, methodDescriptor) = createDescriptorsForCodeFragment(
             codeFragment, Name.identifier(GENERATED_CLASS_NAME), Name.identifier(GENERATED_FUNCTION_NAME),
             parameterInfo, returnType, moduleDescriptorWrapper.packageFragmentForEvaluator
         )
 
-        val codegenInfo = CodeFragmentCodegenInfo(classDescriptor, methodDescriptor) { expr, _ ->
+        val codegenInfo = CodeFragmentCodegenInfo(classDescriptor, methodDescriptor, parameterInfo.parameters) { expr, _ ->
             referenceInterceptor(parameterInfo, expr)
         }
 
@@ -67,7 +79,7 @@ object CodeFragmentCompiler {
 
         val generationState = GenerationState.Builder(
             project,
-            ClassBuilderFactories.BINARIES,
+            ClassBuilderFactories.TEST,
             moduleDescriptorWrapper,
             bindingContext,
             listOf(codeFragment),
@@ -75,8 +87,12 @@ object CodeFragmentCompiler {
         ).build()
 
         KotlinCodegenFacade.compileCorrectFiles(generationState, CompilationErrorHandler.THROW_EXCEPTION)
-//        val text = generationState.factory.asList().filterClassFiles().map { it.asText() }
-        return generationState.factory.asList().filterClassFiles()
+
+        val mainMethodSignature = generationState.typeMapper.mapSignatureSkipGeneric(methodDescriptor)
+        val classes = generationState.factory.asList().filterClassFiles()
+            .map { ClassToLoad(it.internalClassName, it.relativePath, it.asByteArray()) }
+
+        return Result(classes, parameterInfo, mainMethodSignature)
     }
 
     private fun InCo.referenceInterceptor(
@@ -156,6 +172,9 @@ private class EvaluatorMemberScopeForMethod(private val methodDescriptor: Simple
         p.println(this::class.java.simpleName)
     }
 }
+
+private val OutputFile.internalClassName: String
+    get() = relativePath.removeSuffix(".class").replace('/', '.')
 
 private class EvaluatorModuleDescriptor(
     val codeFragment: KtCodeFragment,
