@@ -46,6 +46,7 @@ import org.jetbrains.eval4j.jdi.JDIEval
 import org.jetbrains.eval4j.jdi.asJdiValue
 import org.jetbrains.eval4j.jdi.asValue
 import org.jetbrains.eval4j.jdi.makeInitialFrame
+import org.jetbrains.kotlin.backend.common.output.OutputFile
 import org.jetbrains.kotlin.builtins.DefaultBuiltIns
 import org.jetbrains.kotlin.builtins.jvm.JavaToKotlinClassMap
 import org.jetbrains.kotlin.caches.resolve.KotlinCacheService
@@ -232,30 +233,43 @@ class KotlinEvaluator(val codeFragment: KtCodeFragment, val sourcePosition: Sour
             sourcePosition: SourcePosition,
             context: EvaluationContextImpl
         ): CompiledDataDescriptor {
-            var bindingContext = codeFragment.checkForErrors().bindingContext
+            var analysisResult = codeFragment.checkForErrors()
 
-            if (codeFragment.wrapToStringIfNeeded(bindingContext)) {
+            if (codeFragment.wrapToStringIfNeeded(analysisResult.bindingContext)) {
                 // Repeat analysis with toString() added
-                bindingContext = codeFragment.checkForErrors().bindingContext
+                analysisResult = codeFragment.checkForErrors()
             }
 
-            val variablesCrossingInlineBounds = ScopeCheckerForEvaluator.checkScopes(bindingContext, codeFragment)
+            val bindingContext = analysisResult.bindingContext
 
-            val extractionResult = getFunctionForExtractedFragment(codeFragment, sourcePosition.file, sourcePosition.line)
-                ?: throw IllegalStateException("Code fragment cannot be extracted to function: ${codeFragment.text}")
-            val (parametersDescriptor, extractedFunction) = try {
-                extractionResult.getParametersForDebugger(codeFragment, context) to extractionResult.declaration as KtNamedFunction
-            } finally {
-                Disposer.dispose(extractionResult)
+            val outputFiles: List<OutputFile>
+            val parameters: List<Parameter>
+
+            if (true) {
+                outputFiles = runReadAction {
+                    CodeFragmentCompiler.compile(codeFragment, analysisResult.bindingContext, analysisResult.moduleDescriptor)
+                }
+                parameters = emptyList()
+            } else {
+
+                val extractionResult = getFunctionForExtractedFragment(codeFragment, sourcePosition.file, sourcePosition.line)
+                    ?: throw IllegalStateException("Code fragment cannot be extracted to function: ${codeFragment.text}")
+                val (parametersDescriptor, extractedFunction) = try {
+                    extractionResult.getParametersForDebugger(codeFragment, context) to extractionResult.declaration as KtNamedFunction
+                } finally {
+                    Disposer.dispose(extractionResult)
+                }
+
+                parameters = parametersDescriptor
+
+                if (LOG.isDebugEnabled) {
+                    LOG.debug("Extracted function:\n" + runReadAction { extractedFunction.text })
+                }
+
+                val classFileFactory = createClassFileFactory(codeFragment, extractedFunction, context, parametersDescriptor)
+
+                outputFiles = classFileFactory.asList().filterClassFiles()
             }
-
-            if (LOG.isDebugEnabled) {
-                LOG.debug("Extracted function:\n" + runReadAction { extractedFunction.text })
-            }
-
-            val classFileFactory = createClassFileFactory(codeFragment, extractedFunction, context, parametersDescriptor)
-
-            val outputFiles = classFileFactory.asList().filterClassFiles()
 
             for (file in outputFiles) {
                 if (LOG.isDebugEnabled) {
@@ -272,8 +286,8 @@ class KotlinEvaluator(val codeFragment: KtCodeFragment, val sourcePosition: Sour
             return CompiledDataDescriptor(
                 additionalFiles,
                 sourcePosition,
-                parametersDescriptor,
-                variablesCrossingInlineBounds
+                parameters,
+                setOf()
             )
         }
 
@@ -586,6 +600,7 @@ class KotlinEvaluator(val codeFragment: KtCodeFragment, val sourcePosition: Sour
                         processingClassOrObject.containingKtFile == fileForDebugger
 
                     override fun shouldGenerateScript(script: KtScript) = false
+                    override fun shouldGenerateCodeFragment(script: KtCodeFragment) = false
                 }
 
                 @Suppress("ConstantConditionIf")

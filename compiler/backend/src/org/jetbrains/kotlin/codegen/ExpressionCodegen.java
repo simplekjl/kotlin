@@ -1756,6 +1756,16 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
         StackValue intrinsicResult = applyIntrinsic(descriptor, IntrinsicPropertyGetter.class, resolvedCall, receiver);
         if (intrinsicResult != null) return intrinsicResult;
 
+        return visitNonIntrinsicSimpleNameExpression(expression, receiver, descriptor, resolvedCall, isSyntheticField);
+    }
+
+    public StackValue visitNonIntrinsicSimpleNameExpression(
+            @NotNull KtSimpleNameExpression expression,
+            @NotNull StackValue receiver,
+            @NotNull DeclarationDescriptor descriptor,
+            @Nullable ResolvedCall<?> resolvedCall,
+            boolean isSyntheticField
+    ) {
         if (descriptor instanceof PropertyDescriptor) {
             PropertyDescriptor propertyDescriptor = (PropertyDescriptor) descriptor;
 

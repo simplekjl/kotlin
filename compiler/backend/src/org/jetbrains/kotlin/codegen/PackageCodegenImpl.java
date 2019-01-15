@@ -96,27 +96,34 @@ public class PackageCodegenImpl implements PackageCodegen {
 
         boolean generatePackagePart = false;
 
-        List<KtClassOrObject> classOrObjects = new ArrayList<>();
-
-        for (KtDeclaration declaration : CodegenUtil.getDeclarationsToGenerate(file, state.getBindingContext())) {
-            if (isFilePartDeclaration(declaration)) {
-                generatePackagePart = true;
+        if (file instanceof KtExpressionCodeFragment) {
+            if (state.getGenerateDeclaredClassFilter().shouldGenerateCodeFragment((KtCodeFragment) file)) {
+                CodeFragmentCodegen.createCodegen((KtExpressionCodeFragment) file, state, packagePartContext).generate();
             }
-            else if (declaration instanceof KtClassOrObject) {
-                KtClassOrObject classOrObject = (KtClassOrObject) declaration;
-                if (state.getGenerateDeclaredClassFilter().shouldGenerateClass(classOrObject)) {
-                    classOrObjects.add(classOrObject);
+        } else {
+            List<KtClassOrObject> classOrObjects = new ArrayList<>();
+
+            for (KtDeclaration declaration : CodegenUtil.getDeclarationsToGenerate(file, state.getBindingContext())) {
+                if (isFilePartDeclaration(declaration)) {
+                    generatePackagePart = true;
+                }
+                else if (declaration instanceof KtClassOrObject) {
+                    KtClassOrObject classOrObject = (KtClassOrObject) declaration;
+                    if (state.getGenerateDeclaredClassFilter().shouldGenerateClass(classOrObject)) {
+                        classOrObjects.add(classOrObject);
+                    }
+                }
+                else if (declaration instanceof KtScript) {
+                    KtScript script = (KtScript) declaration;
+
+                    if (state.getGenerateDeclaredClassFilter().shouldGenerateScript(script)) {
+                        ScriptCodegen.createScriptCodegen(script, state, packagePartContext).generate();
+                    }
                 }
             }
-            else if (declaration instanceof KtScript) {
-                KtScript script = (KtScript) declaration;
 
-                if (state.getGenerateDeclaredClassFilter().shouldGenerateScript(script)) {
-                    ScriptCodegen.createScriptCodegen(script, state, packagePartContext).generate();
-                }
-            }
+            generateClassesAndObjectsInFile(classOrObjects, packagePartContext);
         }
-        generateClassesAndObjectsInFile(classOrObjects, packagePartContext);
 
         if (!generatePackagePart || !state.getGenerateDeclaredClassFilter().shouldGeneratePackagePart(file)) return;
 
