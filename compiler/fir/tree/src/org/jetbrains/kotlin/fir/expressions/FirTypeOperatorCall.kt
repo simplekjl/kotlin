@@ -9,13 +9,11 @@ import org.jetbrains.kotlin.fir.types.FirType
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 
 // is/!is/as/as?
-interface FirExpressionWithType : FirExpression {
-    val argument: FirExpression
+interface FirTypeOperatorCall : FirOperatorCall {
+    val argument: FirExpression get() = arguments.first()
 
     val type: FirType
 
-    val operation: FirOperation
-
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
-        visitor.visitExpressionWithType(this, data)
+        visitor.visitTypeOperatorCall(this, data)
 }
