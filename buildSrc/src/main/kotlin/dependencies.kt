@@ -7,6 +7,8 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.tasks.AbstractCopyTask
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.api.artifacts.ModuleDependency
+import org.gradle.kotlin.dsl.exclude
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.project
 import java.io.File
@@ -64,6 +66,18 @@ fun Project.kotlinStdlib(suffix: String? = null): Any {
         kotlinDep(listOfNotNull("stdlib", suffix).joinToString("-"), bootstrapKotlinVersion)
     else
         dependencies.project(listOfNotNull(":kotlin-stdlib", suffix).joinToString("-"))
+}
+
+fun Project.kotlinStdlibWithoutAnnotations(suffix: String? = null): Any {
+    val dependency: Any = if (useBootstrapStdlib) {
+        kotlinDep(listOfNotNull("stdlib", suffix).joinToString("-"), project.bootstrapKotlinVersion)
+    } else {
+        dependencies.project(listOfNotNull(":kotlin-stdlib", suffix).joinToString("-"))
+    }
+
+    return dependencies.create(dependency).also {
+        (it as ModuleDependency).exclude("org.jetbrains", "annotations")
+    }
 }
 
 @Deprecated("Depend on the default configuration instead", ReplaceWith("project(name)"))

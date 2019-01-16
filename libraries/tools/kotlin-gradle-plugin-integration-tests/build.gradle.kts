@@ -29,7 +29,7 @@ dependencies {
     testRuntime(projectRuntimeJar(":kotlin-gradle-plugin-test-utils-embeddable"))
 
     testCompile(project(path = ":examples:annotation-processor-example"))
-    testCompile(kotlinStdlib("jdk8"))
+    testCompile(kotlinStdlibWithoutAnnotations("jdk8"))
     testCompile(project(":kotlin-reflect"))
     testCompile(project(":kotlin-android-extensions"))
     testCompile(commonDep("org.jetbrains.intellij.deps", "trove4j"))

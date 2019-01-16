@@ -7,7 +7,7 @@ plugins {
 dependencies {
     testRuntime(intellijDep())
 
-    compile(kotlinStdlib())
+    compile(kotlinStdlibWithoutAnnotations())
     compile(project(":compiler:frontend"))
     compile(project(":compiler:frontend.java"))
     compile(project(":compiler:light-classes"))

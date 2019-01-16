@@ -6,7 +6,7 @@ plugins {
 }
 
 dependencies {
-    compile(kotlinStdlib())
+    compile(kotlinStdlibWithoutAnnotations())
     compile(project(":kotlin-script-runtime"))
     compile(projectRuntimeJar(":kotlin-compiler-embeddable"))
     compile(project(":kotlin-script-util"))

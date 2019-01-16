@@ -11,7 +11,7 @@ dependencies {
     compileOnly(project(":compiler:frontend"))
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
 
-    runtime(kotlinStdlib())
+    runtime(kotlinStdlibWithoutAnnotations())
 
     testRuntimeOnly(intellijDep()) {
         includeJars("guava", rootProject = rootProject)
