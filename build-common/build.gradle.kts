@@ -21,7 +21,7 @@ dependencies {
     testCompile(projectTests(":compiler:tests-common"))
     testCompile(commonDep("junit:junit"))
     testCompile(protobufFull())
-    testCompile(kotlinStdlib())
+    testCompile(kotlinStdlibWithoutAnnotations())
     testCompileOnly(intellijDep()) { includeJars("openapi") }
 
     testRuntime(project(":kotlin-reflect"))

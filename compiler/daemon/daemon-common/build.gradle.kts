@@ -11,7 +11,7 @@ dependencies {
     compile(project(":core:descriptors.jvm"))
     compile(project(":compiler:util"))
     compile(project(":compiler:cli-common"))
-    compile(kotlinStdlib())
+    compile(kotlinStdlibWithoutAnnotations())
     compileOnly("org.jetbrains:annotations:13.0")
     compileOnly(project(":js:js.frontend"))
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }

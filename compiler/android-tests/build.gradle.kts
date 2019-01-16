@@ -11,7 +11,7 @@ dependencies {
     compile(project(":compiler:cli"))
     compile(project(":compiler:frontend"))
     compile(project(":compiler:backend"))
-    compile(kotlinStdlib())
+    compile(kotlinStdlibWithoutAnnotations())
     compileOnly("org.jetbrains:annotations:13.0")
     compile(project(":kotlin-reflect"))
     compile(projectTests(":compiler:tests-common"))

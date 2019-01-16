@@ -22,7 +22,7 @@ dependencies {
     }
 
     compileOnly(project(":kotlin-reflect-api"))
-    compile(kotlinStdlib())
+    compile(kotlinStdlibWithoutAnnotations())
     compile(project(":core:descriptors")) { isTransitive = false }
     compile(project(":compiler:psi")) { isTransitive = false }
     compile(project(":core:descriptors.jvm")) { isTransitive = false }

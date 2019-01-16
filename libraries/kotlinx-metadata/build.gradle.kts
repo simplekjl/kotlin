@@ -14,7 +14,7 @@ sourceSets {
 }
 
 dependencies {
-    compile(kotlinStdlib())
+    compile(kotlinStdlibWithoutAnnotations())
     compileOnly(project(":core:metadata"))
     compileOnly(protobufLite())
 }

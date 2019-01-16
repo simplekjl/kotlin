@@ -7,7 +7,7 @@ plugins {
 jvmTarget = "1.6"
 
 dependencies {
-    compile(kotlinStdlib())
+    compile(kotlinStdlibWithoutAnnotations())
     compileOnly("org.jetbrains:annotations:13.0")
     compile(project(":core:deserialization"))
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }

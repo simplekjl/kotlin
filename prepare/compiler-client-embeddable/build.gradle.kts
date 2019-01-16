@@ -24,7 +24,7 @@ dependencies {
     testCompile(project(":kotlin-test:kotlin-test-jvm"))
     testCompile(project(":kotlin-test:kotlin-test-junit"))
     testRuntimeCompilerJar(project(":kotlin-compiler"))
-    testStdlibJar(kotlinStdlib())
+    testStdlibJar(kotlinStdlibWithoutAnnotations())
     testScriptRuntimeJar(project(":kotlin-script-runtime"))
 }
 

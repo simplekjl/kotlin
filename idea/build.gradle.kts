@@ -12,7 +12,7 @@ repositories {
 dependencies {
     testRuntime(intellijDep())
 
-    compile(kotlinStdlib("jdk8"))
+    compile(kotlinStdlibWithoutAnnotations("jdk8"))
     compileOnly(project(":kotlin-reflect-api"))
     compile(project(":core:descriptors"))
     compile(project(":core:descriptors.jvm"))

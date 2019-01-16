@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    compile(kotlinStdlib())
+    compile(kotlinStdlibWithoutAnnotations())
     compile(project(":compiler:backend"))
     compile(files(toolsJar()))
     compileOnly(intellijDep()) { includeJars("asm-all", rootProject = rootProject) }

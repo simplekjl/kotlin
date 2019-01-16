@@ -8,7 +8,7 @@ plugins {
 jvmTarget = "1.6"
 
 dependencies {
-    compile(kotlinStdlib())
+    compile(kotlinStdlibWithoutAnnotations())
     compileOnly(commonDep("com.google.android", "android"))
 }
 
