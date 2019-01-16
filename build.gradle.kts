@@ -35,6 +35,7 @@ plugins {
     `build-scan` version "1.15"
     idea
     id("jps-compatible")
+    id("org.jetbrains.gradle.plugin.idea-ext")
 }
 
 pill {
@@ -801,6 +802,42 @@ allprojects {
         if (cacheRedirectorEnabled()) {
             logger.info("Redirecting repositories for $displayName")
             repositories.redirect()
+        }
+    }
+}
+
+allprojects {
+    apply(mapOf("plugin" to "idea"))
+}
+
+val isJpsBuildEnabled = findProperty("jpsBuild")?.toString() == "true"
+if (isJpsBuildEnabled) {
+    afterEvaluate {
+        allprojects {
+            idea {
+                module {
+                    inheritOutputDirs = true
+                }
+            }
+        }
+
+        rootProject.idea {
+            project {
+                val settings = (this@project as ExtensionAware).extensions["settings"] as org.jetbrains.gradle.ext.ProjectSettings
+                val compiler = (settings as ExtensionAware).extensions["compiler"] as org.jetbrains.gradle.ext.IdeaCompilerConfiguration
+                compiler.apply {
+                    processHeapSize = 2000
+                    addNotNullAssertions = true
+                    parallelCompilation = true
+//                rebuildModuleOnDependencyChange = false
+                }
+
+                val delegateActions = (settings as ExtensionAware).extensions["delegateActions"] as org.jetbrains.gradle.ext.ActionDelegationConfig
+                delegateActions.apply {
+                    delegateBuildRunToGradle = false
+                    testRunner = org.jetbrains.gradle.ext.ActionDelegationConfig.TestRunner.PLATFORM
+                }
+            }
         }
     }
 }
