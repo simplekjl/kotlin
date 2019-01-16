@@ -21,7 +21,7 @@ dependencies {
 
     testCompile(commonDep("junit:junit"))
     testCompile(project(":kotlin-test:kotlin-test-junit"))
-    testCompile(kotlinStdlib())
+    testCompile(kotlinStdlibWithoutAnnotations())
     testCompileOnly("org.jetbrains:annotations:13.0")
     testCompile(projectTests(":kotlin-build-common"))
     testCompile(projectTests(":compiler:tests-common"))

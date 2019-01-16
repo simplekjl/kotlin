@@ -33,8 +33,8 @@ dependencies {
     testCompile(projectTests(":kotlin-build-common"))
     testCompile(projectTests(":generators:test-generator"))
 
-    testRuntime(kotlinStdlib())
-    testJsRuntime(kotlinStdlib("js"))
+    testRuntime(kotlinStdlibWithoutAnnotations())
+    testJsRuntime(kotlinStdlibWithoutAnnotations("js"))
     testJsRuntime(project(":kotlin-test:kotlin-test-js")) // to be sure that kotlin-test-js built before tests runned
     testRuntime(project(":kotlin-reflect"))
     testRuntime(project(":kotlin-preloader")) // it's required for ant tests

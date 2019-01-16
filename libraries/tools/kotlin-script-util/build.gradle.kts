@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    compile(kotlinStdlib())
+    compile(kotlinStdlibWithoutAnnotations())
     compile(project(":kotlin-script-runtime"))
     compile(project(":kotlin-scripting-jvm"))
     compile(commonDep("org.jetbrains.intellij.deps", "trove4j"))

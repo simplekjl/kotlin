@@ -10,7 +10,7 @@ dependencies {
     compile(intellijDep()) { includeJars("util") }
     testCompile(project(":core:util.runtime"))
     testCompile(projectTests(":compiler:tests-common"))
-    testCompile(kotlinStdlib())
+    testCompile(kotlinStdlibWithoutAnnotations())
     testCompile(commonDep("junit:junit"))
 }
 
