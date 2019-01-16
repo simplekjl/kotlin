@@ -18,7 +18,7 @@ repositories {
 dependencies {
     compileOnly project(':kotlin-gradle-plugin-api')
 
-    compileOnly project(':kotlin-stdlib')
+    compileOnly kotlinStdlib()
     compileOnly project(path: ':kotlin-compiler-embeddable', configuration: 'runtimeJar')
 
     compileOnly 'org.jetbrains.kotlin:gradle-api:1.6'
