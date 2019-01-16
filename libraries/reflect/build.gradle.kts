@@ -49,7 +49,7 @@ val mainJar by configurations.creating
 dependencies {
     compile(kotlinStdlibWithoutAnnotations())
 
-    proguardDeps(kotlinStdlibWithoutAnnotations())
+    proguardDeps(kotlinStdlib())
     proguardAdditionalInJars(project(":kotlin-annotations-jvm"))
     proguardDeps(files(firstFromJavaHomeThatExists("jre/lib/rt.jar", "../Classes/classes.jar", jdkHome = File(property("JDK_16") as String))))
 
