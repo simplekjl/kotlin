@@ -1,12 +1,14 @@
 @file:Suppress("unused") // usages in build scripts are not tracked properly
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.tasks.AbstractCopyTask
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.kotlin.dsl.exclude
 import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.project
 import java.io.File
@@ -57,7 +59,10 @@ fun Project.ideaUltimatePreloadedDeps(vararg artifactBaseNames: String, subdir: 
 
 fun Project.kotlinDep(artifactBaseName: String, version: String): String = "org.jetbrains.kotlin:kotlin-$artifactBaseName:$version"
 
-val Project.useBootstrapStdlib: Boolean get() = findProperty("useBootstrapStdlib")?.let { it.toString() != "false" } ?: false
+val Project.useBootstrapStdlib: Boolean get() =
+    findProperty("useBootstrapStdlib")?.let { it.toString() != "false" }
+        ?: findProperty("jpsBuild")?.let { it.toString() == "true" }
+        ?: false
 
 fun Project.kotlinStdlib(suffix: String? = null): Any {
     return if (useBootstrapStdlib)
@@ -65,6 +70,11 @@ fun Project.kotlinStdlib(suffix: String? = null): Any {
     else
         dependencies.project(listOfNotNull(":kotlin-stdlib", suffix).joinToString("-"))
 }
+
+fun Project.kotlinStdlibWithoutAnnotations(suffix: String? = null): Any =
+    dependencies.create(kotlinStdlib(suffix)).also {
+        (it as ModuleDependency).exclude("org.jetbrains", "annotations")
+    }
 
 @Deprecated("Depend on the default configuration instead", ReplaceWith("project(name)"))
 fun DependencyHandler.projectDist(name: String): ProjectDependency = project(name)
