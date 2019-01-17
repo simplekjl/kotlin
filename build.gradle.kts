@@ -5,6 +5,8 @@ import org.gradle.api.file.FileCollection
 import org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import proguard.gradle.ProGuardTask
+import org.gradle.kotlin.dsl.*
+import org.jetbrains.gradle.ext.ActionDelegationConfig.TestRunner.*
 
 buildscript {
     extra["defaultSnapshotVersion"] = "1.3-SNAPSHOT"
@@ -823,19 +825,17 @@ if (isJpsBuildEnabled) {
 
         rootProject.idea {
             project {
-                val settings = (this@project as ExtensionAware).extensions["settings"] as org.jetbrains.gradle.ext.ProjectSettings
-                val compiler = (settings as ExtensionAware).extensions["compiler"] as org.jetbrains.gradle.ext.IdeaCompilerConfiguration
-                compiler.apply {
-                    processHeapSize = 2000
-                    addNotNullAssertions = true
-                    parallelCompilation = true
-//                rebuildModuleOnDependencyChange = false
-                }
+                settings {
+                    compiler {
+                        processHeapSize = 2000
+                        addNotNullAssertions = true
+                        parallelCompilation = true
+                    }
 
-                val delegateActions = (settings as ExtensionAware).extensions["delegateActions"] as org.jetbrains.gradle.ext.ActionDelegationConfig
-                delegateActions.apply {
-                    delegateBuildRunToGradle = false
-                    testRunner = org.jetbrains.gradle.ext.ActionDelegationConfig.TestRunner.PLATFORM
+                    delegateActions {
+                        delegateBuildRunToGradle = false
+                        testRunner = PLATFORM
+                    }
                 }
             }
         }
