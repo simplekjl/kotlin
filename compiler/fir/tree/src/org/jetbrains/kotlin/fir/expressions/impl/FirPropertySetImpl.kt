@@ -6,8 +6,6 @@
 package org.jetbrains.kotlin.fir.expressions.impl
 
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.fir.FirAbstractElement
-import org.jetbrains.kotlin.fir.FirMemberReference
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirOperation
@@ -17,7 +15,6 @@ class FirPropertySetImpl(
     session: FirSession,
     psi: PsiElement?,
     override val value: FirExpression,
-    override val operation: FirOperation
-) : FirAbstractElement(session, psi), FirPropertySet {
-    override lateinit var calleeReference: FirMemberReference
-}
+    override val operation: FirOperation,
+    safe: Boolean = false
+) : FirAbstractMemberAccess(session, psi, safe), FirPropertySet
