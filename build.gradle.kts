@@ -808,12 +808,29 @@ allprojects {
     }
 }
 
-allprojects {
-    apply(mapOf("plugin" to "idea"))
+val ideaVersion = findProperty("versions.intellijSdk").toString()
+val ideaSdkPath: String
+    get() = "${rootProject.projectDir}/buildSrc/prepare-deps/intellij-sdk/build/repo/kotlin.build.custom.deps/$ideaVersion/intellij"
+
+fun org.jetbrains.gradle.ext.JUnit.configureForKotlin() {
+    vmParameters = listOf(
+        "-ea",
+        "-XX:+HeapDumpOnOutOfMemoryError",
+        "-Xmx1024m",
+        "-XX:+UseCodeCacheFlushing",
+        "-XX:ReservedCodeCacheSize=128m",
+        "-Djna.nosys=true",
+        "-Didea.home.path=$ideaSdkPath"
+    ).joinToString(" ")
+    workingDirectory = rootDir.toString()
 }
 
 val isJpsBuildEnabled = findProperty("jpsBuild")?.toString() == "true"
-if (isJpsBuildEnabled) {
+if (isJpsBuildEnabled && System.getProperty("idea.active") != null) {
+    allprojects {
+        apply(mapOf("plugin" to "idea"))
+    }
+
     afterEvaluate {
         allprojects {
             idea {
@@ -835,6 +852,69 @@ if (isJpsBuildEnabled) {
                     delegateActions {
                         delegateBuildRunToGradle = false
                         testRunner = PLATFORM
+                    }
+
+                    runConfigurations {
+                        application("[JPS] IDEA") {
+                            moduleName = "org.jetbrains.kotlin.idea-runner.main"
+                            workingDirectory = ideaSdkPath
+                            mainClass = "com.intellij.idea.Main"
+                            jvmArgs = listOf(
+                                "-Xmx1250m",
+                                "-XX:ReservedCodeCacheSize=240m",
+                                "-XX:+HeapDumpOnOutOfMemoryError",
+                                "-ea",
+                                "-Didea.is.internal=true",
+                                "-Didea.debug.mode=true",
+                                "-Didea.system.path=$ideaSandboxDir",
+                                "-Didea.config.path=$ideaSandboxDir/config",
+                                "-Dapple.laf.useScreenMenuBar=true",
+                                "-Dapple.awt.graphics.UseQuartz=true",
+                                "-Dsun.io.useCanonCaches=false",
+                                "-Dplugin.path=$ideaPluginDir"
+                            ).joinToString(" ")
+                        }
+
+                        application("[JPS] Generate All Tests") {
+                            moduleName = "org.jetbrains.kotlin.generate-all-tests.test"
+                            workingDirectory = rootDir.toString()
+                            mainClass = "org.jetbrains.kotlin.pill.generateAllTests.Main"
+                        }
+
+                        defaults<org.jetbrains.gradle.ext.JUnit> {
+                            configureForKotlin()
+                        }
+
+                        // todo: replace `pattern` with `package`, when `com.intellij.execution.junit.JUnitRunConfigurationImporter#process` will be fixed
+                        junit("[JPS] All IDEA Plugin Tests") {
+                            moduleName = "org.jetbrains.kotlin.idea.test"
+                            pattern = "org.jetbrains.kotlin.*"
+                            configureForKotlin()
+                        }
+
+                        junit("[JPS] Compiler Tests") {
+                            moduleName = "org.jetbrains.kotlin.compiler.test"
+                            pattern = "org.jetbrains.kotlin.*"
+                            configureForKotlin()
+                        }
+
+                        junit("[JPS] JVM Backend Tests") {
+                            moduleName = "org.jetbrains.kotlin.idea.test"
+                            pattern = "org.jetbrains.kotlin.codegen.*"
+                            configureForKotlin()
+                        }
+
+                        junit("[JPS] JS Backend Tests") {
+                            moduleName = "org.jetbrains.kotlin.js.tests.test"
+                            pattern = "org.jetbrains.kotlin.js.test.*"
+                            configureForKotlin()
+                        }
+
+                        junit("[JPS] Java 8 Tests") {
+                            moduleName = "org.jetbrains.kotlin.tests-java8.test"
+                            pattern = "org.jetbrains.kotlin.*"
+                            configureForKotlin()
+                        }
                     }
                 }
             }
