@@ -6,6 +6,7 @@ package org.jetbrains.kotlin.fir.visitors
 
 import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.declarations.*
+import org.jetbrains.kotlin.fir.declarations.impl.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.*
 import org.jetbrains.kotlin.fir.types.*
@@ -39,8 +40,16 @@ abstract class FirVisitor<out R, in D> {
         return visitDeclarationWithBody(function, data)
     }
 
+    open fun visitAnonymousFunction(anonymousFunction: FirAnonymousFunction, data: D): R {
+        return visitFunction(anonymousFunction, data)
+    }
+
     open fun visitConstructor(constructor: FirConstructor, data: D): R {
         return visitFunction(constructor, data)
+    }
+
+    open fun visitModifiableFunction(modifiableFunction: FirModifiableFunction, data: D): R {
+        return visitFunction(modifiableFunction, data)
     }
 
     open fun visitNamedFunction(namedFunction: FirNamedFunction, data: D): R {
