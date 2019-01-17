@@ -6,17 +6,17 @@
 package org.jetbrains.kotlin.fir.expressions.impl
 
 import com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.fir.FirAbstractElement
 import org.jetbrains.kotlin.fir.FirMemberReference
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.expressions.FirExpression
-import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 
-class FirFunctionCallImpl(
+abstract class FirAbstractMemberAccess(
     session: FirSession,
     psi: PsiElement?,
-    override var safe: Boolean = false
-) : FirAbstractCall(session, psi), FirFunctionCall, FirModifiableMemberAccess {
-    override lateinit var calleeReference: FirMemberReference
+    final override var safe: Boolean = false
+) : FirAbstractElement(session, psi), FirModifiableMemberAccess {
+    final override lateinit var calleeReference: FirMemberReference
 
-    override var explicitReceiver: FirExpression? = null
+    final override var explicitReceiver: FirExpression? = null
 }

@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.fir.visitors
 import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.fir.expressions.impl.*
 import org.jetbrains.kotlin.fir.types.*
 
 
@@ -188,6 +189,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     open fun visitMemberAccess(memberAccess: FirMemberAccess) {
         visitExpression(memberAccess, null)
+    }
+
+    open fun visitModifiableMemberAccess(modifiableMemberAccess: FirModifiableMemberAccess) {
+        visitMemberAccess(modifiableMemberAccess, null)
     }
 
     open fun visitPropertyGet(propertyGet: FirPropertyGet) {
@@ -424,6 +429,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     final override fun visitMemberReference(memberReference: FirMemberReference, data: Nothing?) {
         visitMemberReference(memberReference)
+    }
+
+    final override fun visitModifiableMemberAccess(modifiableMemberAccess: FirModifiableMemberAccess, data: Nothing?) {
+        visitModifiableMemberAccess(modifiableMemberAccess)
     }
 
     final override fun visitNamedDeclaration(namedDeclaration: FirNamedDeclaration, data: Nothing?) {

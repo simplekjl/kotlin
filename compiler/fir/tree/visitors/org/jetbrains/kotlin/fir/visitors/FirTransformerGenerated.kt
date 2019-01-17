@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.fir.visitors
 import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.fir.expressions.impl.*
 import org.jetbrains.kotlin.fir.types.*
 
 
@@ -188,6 +189,10 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
 
     open fun transformMemberAccess(memberAccess: FirMemberAccess, data: D): CompositeTransformResult<FirStatement> {
         return transformExpression(memberAccess, data)
+    }
+
+    open fun transformModifiableMemberAccess(modifiableMemberAccess: FirModifiableMemberAccess, data: D): CompositeTransformResult<FirStatement> {
+        return transformMemberAccess(modifiableMemberAccess, data)
     }
 
     open fun transformPropertyGet(propertyGet: FirPropertyGet, data: D): CompositeTransformResult<FirStatement> {
@@ -424,6 +429,10 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
 
     final override fun visitMemberReference(memberReference: FirMemberReference, data: D): CompositeTransformResult<FirElement> {
         return transformMemberReference(memberReference, data)
+    }
+
+    final override fun visitModifiableMemberAccess(modifiableMemberAccess: FirModifiableMemberAccess, data: D): CompositeTransformResult<FirElement> {
+        return transformModifiableMemberAccess(modifiableMemberAccess, data)
     }
 
     final override fun visitNamedDeclaration(namedDeclaration: FirNamedDeclaration, data: D): CompositeTransformResult<FirElement> {
