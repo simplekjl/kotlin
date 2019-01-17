@@ -18,5 +18,8 @@ FILE: locals.kt
         }
 
         val code = STUB.foo#()
-        return@@@withLocals sum#(code#, Local#(Int(1)).diff#(), STUB)
+        return@@@withLocals sum#(code#, Local#(Int(1)).diff#(), function <anonymous>(x: Int, y: Int): <implicit> {
+            return plus#(x#, y#)
+        }
+        )
     }
