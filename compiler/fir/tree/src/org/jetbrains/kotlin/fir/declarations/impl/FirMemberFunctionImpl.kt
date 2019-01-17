@@ -38,7 +38,7 @@ class FirMemberFunctionImpl(
 ) : FirAbstractCallableMember(
     session, psi, name, visibility, modality,
     isExpect, isActual, isOverride, receiverType, returnType
-), FirNamedFunction {
+), FirNamedFunction, FirModifiableFunction {
     init {
         status.isOperator = isOperator
         status.isInfix = isInfix

@@ -290,6 +290,22 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
         propertyAccessor.body?.accept(this)
     }
 
+    override fun visitAnonymousFunction(anonymousFunction: FirAnonymousFunction) {
+        anonymousFunction.annotations.renderAnnotations()
+        print("function ")
+        val receiverType = anonymousFunction.receiverType
+        if (receiverType != null) {
+            print(" ")
+            receiverType.accept(this)
+            print(".")
+        }
+        print("<anonymous>")
+        anonymousFunction.valueParameters.renderParameters()
+        print(": ")
+        anonymousFunction.returnType.accept(this)
+        anonymousFunction.body?.accept(this)
+    }
+
     override fun visitFunction(function: FirFunction) {
         function.valueParameters.renderParameters()
         visitDeclarationWithBody(function)

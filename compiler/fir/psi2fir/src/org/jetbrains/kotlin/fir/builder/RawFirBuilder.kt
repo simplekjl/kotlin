@@ -489,37 +489,40 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
         }
 
         override fun visitNamedFunction(function: KtNamedFunction, data: Unit): FirElement {
-            if (function.name == null) {
-                // TODO: return anonymous function here
-                // TODO: what if name is not null but we're in expression position?
-                return FirExpressionStub(session, function)
-            }
             val typeReference = function.typeReference
-            val firFunction = FirMemberFunctionImpl(
-                session,
-                function,
-                function.nameAsSafeName,
-                function.visibility,
-                function.modality,
-                function.hasExpectModifier(),
-                function.hasActualModifier(),
-                function.hasModifier(KtTokens.OVERRIDE_KEYWORD),
-                function.hasModifier(KtTokens.OPERATOR_KEYWORD),
-                function.hasModifier(KtTokens.INFIX_KEYWORD),
-                function.hasModifier(KtTokens.INLINE_KEYWORD),
-                function.hasModifier(KtTokens.TAILREC_KEYWORD),
-                function.hasModifier(KtTokens.EXTERNAL_KEYWORD),
-                function.hasModifier(KtTokens.SUSPEND_KEYWORD),
-                function.receiverTypeReference.convertSafe(),
-                if (function.hasBlockBody()) {
-                    typeReference.toFirOrUnitType()
-                } else {
-                    typeReference.toFirOrImplicitType()
-                }
-            )
+            val returnType = if (function.hasBlockBody()) {
+                typeReference.toFirOrUnitType()
+            } else {
+                typeReference.toFirOrImplicitType()
+            }
+            val receiverType = function.receiverTypeReference.convertSafe<FirType>()
+            val firFunction = if (function.name == null) {
+                FirAnonymousFunctionImpl(session, function, returnType, receiverType)
+            } else {
+                FirMemberFunctionImpl(
+                    session,
+                    function,
+                    function.nameAsSafeName,
+                    function.visibility,
+                    function.modality,
+                    function.hasExpectModifier(),
+                    function.hasActualModifier(),
+                    function.hasModifier(KtTokens.OVERRIDE_KEYWORD),
+                    function.hasModifier(KtTokens.OPERATOR_KEYWORD),
+                    function.hasModifier(KtTokens.INFIX_KEYWORD),
+                    function.hasModifier(KtTokens.INLINE_KEYWORD),
+                    function.hasModifier(KtTokens.TAILREC_KEYWORD),
+                    function.hasModifier(KtTokens.EXTERNAL_KEYWORD),
+                    function.hasModifier(KtTokens.SUSPEND_KEYWORD),
+                    receiverType,
+                    returnType
+                )
+            }
             firFunctions += firFunction
             function.extractAnnotationsTo(firFunction)
-            function.extractTypeParametersTo(firFunction)
+            if (firFunction is FirMemberFunctionImpl) {
+                function.extractTypeParametersTo(firFunction)
+            }
             for (valueParameter in function.valueParameters) {
                 firFunction.valueParameters += valueParameter.convert<FirValueParameter>()
             }

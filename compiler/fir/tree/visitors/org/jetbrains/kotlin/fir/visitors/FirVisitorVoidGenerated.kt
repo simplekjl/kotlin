@@ -6,6 +6,7 @@ package org.jetbrains.kotlin.fir.visitors
 
 import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.declarations.*
+import org.jetbrains.kotlin.fir.declarations.impl.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.*
 import org.jetbrains.kotlin.fir.types.*
@@ -39,8 +40,16 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitDeclarationWithBody(function, null)
     }
 
+    open fun visitAnonymousFunction(anonymousFunction: FirAnonymousFunction) {
+        visitFunction(anonymousFunction, null)
+    }
+
     open fun visitConstructor(constructor: FirConstructor) {
         visitFunction(constructor, null)
+    }
+
+    open fun visitModifiableFunction(modifiableFunction: FirModifiableFunction) {
+        visitFunction(modifiableFunction, null)
     }
 
     open fun visitNamedFunction(namedFunction: FirNamedFunction) {
@@ -295,6 +304,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitAnnotationCall(annotationCall)
     }
 
+    final override fun visitAnonymousFunction(anonymousFunction: FirAnonymousFunction, data: Nothing?) {
+        visitAnonymousFunction(anonymousFunction)
+    }
+
     final override fun visitAnonymousInitializer(anonymousInitializer: FirAnonymousInitializer, data: Nothing?) {
         visitAnonymousInitializer(anonymousInitializer)
     }
@@ -429,6 +442,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     final override fun visitMemberReference(memberReference: FirMemberReference, data: Nothing?) {
         visitMemberReference(memberReference)
+    }
+
+    final override fun visitModifiableFunction(modifiableFunction: FirModifiableFunction, data: Nothing?) {
+        visitModifiableFunction(modifiableFunction)
     }
 
     final override fun visitModifiableMemberAccess(modifiableMemberAccess: FirModifiableMemberAccess, data: Nothing?) {

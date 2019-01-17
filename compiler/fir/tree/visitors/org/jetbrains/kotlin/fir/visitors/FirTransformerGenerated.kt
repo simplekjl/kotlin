@@ -6,6 +6,7 @@ package org.jetbrains.kotlin.fir.visitors
 
 import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.declarations.*
+import org.jetbrains.kotlin.fir.declarations.impl.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.*
 import org.jetbrains.kotlin.fir.types.*
@@ -39,8 +40,16 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
         return transformDeclarationWithBody(function, data)
     }
 
+    open fun transformAnonymousFunction(anonymousFunction: FirAnonymousFunction, data: D): CompositeTransformResult<FirDeclaration> {
+        return transformFunction(anonymousFunction, data)
+    }
+
     open fun transformConstructor(constructor: FirConstructor, data: D): CompositeTransformResult<FirDeclaration> {
         return transformFunction(constructor, data)
+    }
+
+    open fun transformModifiableFunction(modifiableFunction: FirModifiableFunction, data: D): CompositeTransformResult<FirDeclaration> {
+        return transformFunction(modifiableFunction, data)
     }
 
     open fun transformNamedFunction(namedFunction: FirNamedFunction, data: D): CompositeTransformResult<FirDeclaration> {
@@ -295,6 +304,10 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
         return transformAnnotationCall(annotationCall, data)
     }
 
+    final override fun visitAnonymousFunction(anonymousFunction: FirAnonymousFunction, data: D): CompositeTransformResult<FirElement> {
+        return transformAnonymousFunction(anonymousFunction, data)
+    }
+
     final override fun visitAnonymousInitializer(anonymousInitializer: FirAnonymousInitializer, data: D): CompositeTransformResult<FirElement> {
         return transformAnonymousInitializer(anonymousInitializer, data)
     }
@@ -429,6 +442,10 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
 
     final override fun visitMemberReference(memberReference: FirMemberReference, data: D): CompositeTransformResult<FirElement> {
         return transformMemberReference(memberReference, data)
+    }
+
+    final override fun visitModifiableFunction(modifiableFunction: FirModifiableFunction, data: D): CompositeTransformResult<FirElement> {
+        return transformModifiableFunction(modifiableFunction, data)
     }
 
     final override fun visitModifiableMemberAccess(modifiableMemberAccess: FirModifiableMemberAccess, data: D): CompositeTransformResult<FirElement> {
