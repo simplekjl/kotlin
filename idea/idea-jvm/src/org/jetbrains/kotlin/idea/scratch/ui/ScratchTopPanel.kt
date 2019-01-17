@@ -60,6 +60,7 @@ class ScratchTopPanel private constructor(val scratchFile: ScratchFile) : JPanel
     private val moduleChooser: ModulesComboBox
     private val isReplCheckbox: JCheckBox
     private val isMakeBeforeRunCheckbox: JCheckBox
+    private val isInteractiveCheckbox: JCheckBox
 
     private val actionsToolbar: ActionToolbar
 
@@ -81,6 +82,16 @@ class ScratchTopPanel private constructor(val scratchFile: ScratchFile) : JPanel
 
         add(JSeparator(SwingConstants.VERTICAL))
 
+        isInteractiveCheckbox = JCheckBox("Interactive mode")
+        add(isInteractiveCheckbox)
+        isInteractiveCheckbox.addItemListener {
+            scratchFile.saveOptions {
+                copy(isInteractiveMode = isInteractiveCheckbox.isSelected)
+            }
+        }
+
+        add(JSeparator(SwingConstants.VERTICAL))
+
         isReplCheckbox = JCheckBox("Use REPL")
         add(isReplCheckbox)
         isReplCheckbox.addItemListener {
@@ -94,6 +105,7 @@ class ScratchTopPanel private constructor(val scratchFile: ScratchFile) : JPanel
         scratchFile.options.let {
             isReplCheckbox.isSelected = it.isRepl
             isMakeBeforeRunCheckbox.isSelected = it.isMakeBeforeRun
+            isInteractiveCheckbox.isSelected = it.isInteractiveMode
         }
     }
 
