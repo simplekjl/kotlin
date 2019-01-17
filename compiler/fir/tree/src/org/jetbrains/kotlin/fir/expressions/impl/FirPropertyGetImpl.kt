@@ -6,14 +6,11 @@
 package org.jetbrains.kotlin.fir.expressions.impl
 
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.fir.FirAbstractElement
-import org.jetbrains.kotlin.fir.FirMemberReference
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.expressions.FirPropertyGet
 
 class FirPropertyGetImpl(
     session: FirSession,
-    psi: PsiElement?
-) : FirAbstractElement(session, psi), FirPropertyGet {
-    override lateinit var calleeReference: FirMemberReference
-}
+    psi: PsiElement?,
+    safe: Boolean = false
+) : FirAbstractMemberAccess(session, psi, safe), FirPropertyGet

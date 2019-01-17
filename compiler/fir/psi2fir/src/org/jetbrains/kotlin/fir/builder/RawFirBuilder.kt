@@ -895,15 +895,24 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                 if (firOperation in FirOperation.ASSIGNMENTS) {
                     return FirPropertySetImpl(session, expression, rightArgument, firOperation).apply {
                         val left = expression.left
-                        if (left is KtSimpleNameExpression) {
-                            calleeReference = FirSimpleMemberReference(
-                                session, left.getReferencedNameElement(), left.getReferencedNameAsName()
-                            )
-                        } else {
-                            // TODO: array accesses etc.
-                            calleeReference = FirErrorMemberReference(
-                                session, left, "Unsupported LValue: ${left?.javaClass}"
-                            )
+                        calleeReference = when (left) {
+                            is KtSimpleNameExpression -> {
+                                FirSimpleMemberReference(session, left.getReferencedNameElement(), left.getReferencedNameAsName())
+                            }
+                            is KtQualifiedExpression -> {
+                                val firMemberAccess = left.toFirExpression() as? FirMemberAccess
+                                if (firMemberAccess != null) {
+                                    explicitReceiver = firMemberAccess.explicitReceiver
+                                    safe = firMemberAccess.safe
+                                    firMemberAccess.calleeReference
+                                } else {
+                                    FirErrorMemberReference(session, left, "Unsupported qualified LValue: ${left.text}")
+                                }
+                            }
+                            else -> {
+                                // TODO: array accesses etc.
+                                FirErrorMemberReference(session, left, "Unsupported LValue: ${left?.javaClass}")
+                            }
                         }
                     }
                 } else {
@@ -989,6 +998,15 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                     arguments += argument.getArgumentExpression().toFirExpression("No argument expression")
                 }
             }
+        }
+
+        override fun visitQualifiedExpression(expression: KtQualifiedExpression, data: Unit): FirElement {
+            val selector = expression.selectorExpression
+                ?: return FirErrorExpressionImpl(session, expression, "Qualified expression without selector")
+            val firSelector = selector.toFirExpression() as FirModifiableMemberAccess
+            firSelector.safe = expression is KtSafeQualifiedExpression
+            firSelector.explicitReceiver = expression.receiverExpression.toFirExpression()
+            return firSelector
         }
 
         override fun visitParenthesizedExpression(expression: KtParenthesizedExpression, data: Unit): FirElement {

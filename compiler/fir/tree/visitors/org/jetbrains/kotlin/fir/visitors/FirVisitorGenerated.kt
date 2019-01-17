@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.fir.visitors
 import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.fir.expressions.impl.*
 import org.jetbrains.kotlin.fir.types.*
 
 
@@ -188,6 +189,10 @@ abstract class FirVisitor<out R, in D> {
 
     open fun visitMemberAccess(memberAccess: FirMemberAccess, data: D): R {
         return visitExpression(memberAccess, data)
+    }
+
+    open fun visitModifiableMemberAccess(modifiableMemberAccess: FirModifiableMemberAccess, data: D): R {
+        return visitMemberAccess(modifiableMemberAccess, data)
     }
 
     open fun visitPropertyGet(propertyGet: FirPropertyGet, data: D): R {
