@@ -40,3 +40,4 @@ build/
 .idea/.name
 .idea/artifacts/dist_auto_reference_dont_use.xml
 kotlin-ultimate/
+bootstrap/
