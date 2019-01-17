@@ -8,10 +8,11 @@ package org.jetbrains.kotlin.fir.declarations
 import org.jetbrains.kotlin.fir.FirTargetElement
 import org.jetbrains.kotlin.fir.VisitedSupertype
 import org.jetbrains.kotlin.fir.expressions.FirAnnotationContainer
+import org.jetbrains.kotlin.fir.expressions.FirStatement
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 
 // May be should inherit FirTypeParameterContainer
-interface FirFunction : @VisitedSupertype FirDeclarationWithBody, FirAnnotationContainer, FirTargetElement {
+interface FirFunction : @VisitedSupertype FirDeclarationWithBody, FirAnnotationContainer, FirTargetElement, FirStatement {
     val valueParameters: List<FirValueParameter>
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
