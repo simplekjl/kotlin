@@ -1,0 +1,22 @@
+FILE: locals.kt
+    public? final? function withLocals(p: Int): Int {
+        public? final? class Local {
+            public? constructor(pp: Int): super<kotlin.Any>()
+
+            public? final? property pp(val): Int
+                public? get(): Int
+
+            public? final? function diff(): <implicit> {
+                return@@@diff minus#(pp#, p#)
+            }
+
+        }
+
+        val x = Local#(Int(42)).diff#()
+        public? final? function sum(y: Int, z: Int, f: ( (Int, Int) -> Int )): Int {
+            return@@@sum plus#(x#, f#(plus#(y#, z#)))
+        }
+
+        val code = STUB.foo#()
+        return@@@withLocals sum#(code#, Local#(Int(1)).diff#(), STUB)
+    }
