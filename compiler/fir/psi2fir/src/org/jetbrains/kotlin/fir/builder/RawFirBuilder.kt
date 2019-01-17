@@ -766,6 +766,18 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             return result.toReturn(expression.getTargetLabel()?.getReferencedName())
         }
 
+        override fun visitTryExpression(expression: KtTryExpression, data: Unit): FirElement {
+            val tryBlock = expression.tryBlock.toFirBlock()
+            val finallyBlock = expression.finallyBlock?.finalExpression?.toFirBlock()
+            return FirTryExpressionImpl(session, expression, tryBlock, finallyBlock).apply {
+                for (clause in expression.catchClauses) {
+                    val parameter = clause.catchParameter?.toFirValueParameter() ?: continue
+                    val block = clause.catchBody.toFirBlock()
+                    catches += FirCatchImpl(session, clause, parameter, block)
+                }
+            }
+        }
+
         override fun visitIfExpression(expression: KtIfExpression, data: Unit): FirElement {
             return FirWhenExpressionImpl(
                 session,
@@ -870,8 +882,13 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
         }
 
         private fun KtUnaryExpression.bangBangToWhen(): FirWhenExpression {
-            // TODO: replace stub with throw
-            return baseExpression.toFirExpression("No operand").generateNotNullOrOther(FirExpressionStub(session, this), "bangbang")
+            return baseExpression.toFirExpression("No operand").generateNotNullOrOther(
+                FirThrowExpressionImpl(
+                    session, this, FirFunctionCallImpl(session, this).apply {
+                        calleeReference = FirSimpleMemberReference(session, this@bangBangToWhen, KNPE)
+                    }
+                ), "bangbang"
+            )
         }
 
         override fun visitBinaryExpression(expression: KtBinaryExpression, data: Unit): FirElement {
@@ -1013,8 +1030,16 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             return expression.expression?.accept(this, data) ?: FirErrorExpressionImpl(session, expression, "Empty parentheses")
         }
 
+        override fun visitThrowExpression(expression: KtThrowExpression, data: Unit): FirElement {
+            return FirThrowExpressionImpl(session, expression, expression.thrownExpression.toFirExpression("Nothing to throw"))
+        }
+
         override fun visitExpression(expression: KtExpression, data: Unit): FirElement {
             return FirExpressionStub(session, expression)
         }
+    }
+
+    companion object {
+        val KNPE = Name.identifier("KotlinNullPointerException")
     }
 }

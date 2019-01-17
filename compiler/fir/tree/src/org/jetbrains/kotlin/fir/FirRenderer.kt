@@ -413,6 +413,20 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
         println("}")
     }
 
+    override fun visitTryExpression(tryExpression: FirTryExpression) {
+        print("try")
+        tryExpression.tryBlock.accept(this)
+        for (catchClause in tryExpression.catches) {
+            print("catch (")
+            catchClause.parameter.accept(this)
+            print(")")
+            catchClause.block.accept(this)
+        }
+        val finallyBlock = tryExpression.finallyBlock ?: return
+        print("finally")
+        finallyBlock.accept(this)
+    }
+
     override fun visitExpression(expression: FirExpression) {
         print(
             when (expression) {
@@ -629,6 +643,11 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
             operatorCall.type.accept(this)
         }
         visitCall(operatorCall)
+    }
+
+    override fun visitThrowExpression(throwExpression: FirThrowExpression) {
+        print("throw ")
+        throwExpression.exception.accept(this)
     }
 
     override fun visitErrorExpression(errorExpression: FirErrorExpression) {
