@@ -31,6 +31,8 @@ buildscript {
         classpath(kotlin("gradle-plugin", bootstrapKotlinVersion))
         classpath("net.sf.proguard:proguard-gradle:5.3.3")
         classpath("org.jetbrains.dokka:dokka-gradle-plugin:0.9.17")
+
+        classpath("net.lingala.zip4j:zip4j:1.3.2")
     }
 }
 
@@ -934,6 +936,16 @@ if (isJpsBuildEnabled && System.getProperty("idea.active") != null) {
                     }
                 }
             }
+        }
+
+        if (!rootDir.resolve("bootstrap").exists()) {
+            val zipFile = rootDir.resolve("bootstrap.zip")
+            java.nio.file.Files.copy(
+                java.net.URL("https://github.com/snrostov/dist-compare/files/2767807/bootstrap.zip").openStream(),
+                zipFile.toPath()
+            )
+            net.lingala.zip4j.core.ZipFile(zipFile).extractAll(rootDir.absolutePath)
+            zipFile.delete()
         }
     }
 }
