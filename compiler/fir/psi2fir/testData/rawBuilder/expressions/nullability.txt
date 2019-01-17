@@ -16,7 +16,7 @@ FILE: nullability.kt
                 <bangbang>#
             }
             else ->  {
-                STUB
+                throw KotlinNullPointerException#()
             }
         }
 
