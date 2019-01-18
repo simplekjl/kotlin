@@ -198,5 +198,10 @@ public class RawFirBuilderTestCaseGenerated extends AbstractRawFirBuilderTestCas
         public void testVariables() throws Exception {
             runTest("compiler/fir/psi2fir/testData/rawBuilder/expressions/variables.kt");
         }
+
+        @TestMetadata("while.kt")
+        public void testWhile() throws Exception {
+            runTest("compiler/fir/psi2fir/testData/rawBuilder/expressions/while.kt");
+        }
     }
 }

@@ -464,6 +464,29 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
         finallyBlock.accept(this)
     }
 
+    override fun visitDoWhileLoop(doWhileLoop: FirDoWhileLoop) {
+        val label = doWhileLoop.label
+        if (label != null) {
+            print("${label.name}@")
+        }
+        print("do")
+        doWhileLoop.block.accept(this)
+        print("while(")
+        doWhileLoop.condition.accept(this)
+        print(")")
+    }
+
+    override fun visitWhileLoop(whileLoop: FirWhileLoop) {
+        val label = whileLoop.label
+        if (label != null) {
+            print("${label.name}@")
+        }
+        print("while(")
+        whileLoop.condition.accept(this)
+        print(")")
+        whileLoop.block.accept(this)
+    }
+
     override fun visitExpression(expression: FirExpression) {
         print(
             when (expression) {
