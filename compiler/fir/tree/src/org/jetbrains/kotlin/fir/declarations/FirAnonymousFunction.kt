@@ -5,12 +5,13 @@
 
 package org.jetbrains.kotlin.fir.declarations
 
+import org.jetbrains.kotlin.fir.FirLabeledElement
 import org.jetbrains.kotlin.fir.VisitedSupertype
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.types.FirType
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 
-interface FirAnonymousFunction : @VisitedSupertype FirFunction, FirExpression, FirTypedDeclaration {
+interface FirAnonymousFunction : @VisitedSupertype FirFunction, FirExpression, FirTypedDeclaration, FirLabeledElement {
     val receiverType: FirType?
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
