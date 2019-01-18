@@ -140,6 +140,18 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitElement(statement, null)
     }
 
+    open fun visitClass(klass: FirClass) {
+        visitStatement(klass, null)
+    }
+
+    open fun visitAnonymousObject(anonymousObject: FirAnonymousObject) {
+        visitClass(anonymousObject, null)
+    }
+
+    open fun visitModifiableClass(modifiableClass: FirModifiableClass) {
+        visitClass(modifiableClass, null)
+    }
+
     open fun visitExpression(expression: FirExpression) {
         visitStatement(expression, null)
     }
@@ -312,6 +324,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitAnonymousInitializer(anonymousInitializer)
     }
 
+    final override fun visitAnonymousObject(anonymousObject: FirAnonymousObject, data: Nothing?) {
+        visitAnonymousObject(anonymousObject)
+    }
+
     final override fun visitBlock(block: FirBlock, data: Nothing?) {
         visitBlock(block)
     }
@@ -330,6 +346,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     final override fun visitCatch(catch: FirCatch, data: Nothing?) {
         visitCatch(catch)
+    }
+
+    final override fun visitClass(klass: FirClass, data: Nothing?) {
+        visitClass(klass)
     }
 
     final override fun <T> visitConstExpression(constExpression: FirConstExpression<T>, data: Nothing?) {
@@ -438,6 +458,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     final override fun visitMemberReference(memberReference: FirMemberReference, data: Nothing?) {
         visitMemberReference(memberReference)
+    }
+
+    final override fun visitModifiableClass(modifiableClass: FirModifiableClass, data: Nothing?) {
+        visitModifiableClass(modifiableClass)
     }
 
     final override fun visitModifiableFunction(modifiableFunction: FirModifiableFunction, data: Nothing?) {

@@ -276,7 +276,7 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
         }
 
         private fun KtClassOrObject.extractSuperTypeListEntriesTo(
-            container: FirClassImpl, delegatedSelfType: FirType
+            container: FirModifiableClass, delegatedSelfType: FirType
         ): FirType? {
             var superTypeCallEntry: KtSuperTypeCallEntry? = null
             var delegatedSuperType: FirType? = null
@@ -461,6 +461,19 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                 }
 
                 firClass
+            }
+        }
+
+        override fun visitObjectLiteralExpression(expression: KtObjectLiteralExpression, data: Unit): FirElement {
+            val objectDeclaration = expression.objectDeclaration
+            return FirAnonymousObjectImpl(session, expression).apply {
+                objectDeclaration.extractAnnotationsTo(this)
+                val delegatedSelfType = objectDeclaration.toDelegatedSelfType()
+                objectDeclaration.extractSuperTypeListEntriesTo(this, delegatedSelfType)
+
+                for (declaration in objectDeclaration.declarations) {
+                    declarations += declaration.convert<FirDeclaration>()
+                }
             }
         }
 
