@@ -12,12 +12,12 @@ FILE: locals.kt
 
         }
 
-        val x = Local#(Int(42)).diff#()
+        val x: <implicit> = Local#(Int(42)).diff#()
         public? final? function sum(y: Int, z: Int, f: ( (Int, Int) -> Int )): Int {
             return@@@sum plus#(x#, f#(plus#(y#, z#)))
         }
 
-        val code = object : Any {
+        val code: <implicit> = object : Any {
             public? constructor(): super<Any>()
 
             public? final? function foo(): <implicit> {
