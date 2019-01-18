@@ -9967,6 +9967,11 @@ public class DiagnosticsUsingJavacTestGenerated extends AbstractDiagnosticsUsing
                     runTest("compiler/testData/diagnostics/tests/inference/nothingType/lambdaNothingAndExpectedType.kt");
                 }
 
+                @TestMetadata("nestedLambdaInferenceWithIncorporationOfVariables.kt")
+                public void testNestedLambdaInferenceWithIncorporationOfVariables() throws Exception {
+                    runTest("compiler/testData/diagnostics/tests/inference/nothingType/nestedLambdaInferenceWithIncorporationOfVariables.kt");
+                }
+
                 @TestMetadata("nothingWithCallableReference.kt")
                 public void testNothingWithCallableReference() throws Exception {
                     runTest("compiler/testData/diagnostics/tests/inference/nothingType/nothingWithCallableReference.kt");
