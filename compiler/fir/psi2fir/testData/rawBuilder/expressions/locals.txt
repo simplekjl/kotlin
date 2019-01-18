@@ -17,7 +17,15 @@ FILE: locals.kt
             return@@@sum plus#(x#, f#(plus#(y#, z#)))
         }
 
-        val code = STUB.foo#()
+        val code = object : Any {
+            public? constructor(): super<Any>()
+
+            public? final? function foo(): <implicit> {
+                return@@@foo hashCode#()
+            }
+
+        }
+        .foo#()
         return@@@withLocals sum#(code#, Local#(Int(1)).diff#(), function <anonymous>(x: Int, y: Int): <implicit> {
             return plus#(x#, y#)
         }
