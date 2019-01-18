@@ -2155,6 +2155,11 @@ public class LocalInspectionTestGenerated extends AbstractLocalInspectionTest {
                 runTest("idea/testData/inspectionsLocal/coroutines/deferredIsResult/complex.kt");
             }
 
+            @TestMetadata("lambda.kt")
+            public void testLambda() throws Exception {
+                runTest("idea/testData/inspectionsLocal/coroutines/deferredIsResult/lambda.kt");
+            }
+
             @TestMetadata("rename.kt")
             public void testRename() throws Exception {
                 runTest("idea/testData/inspectionsLocal/coroutines/deferredIsResult/rename.kt");

@@ -32,24 +32,17 @@ abstract class AbstractIsResultInspection(
         val returnTypeText = function.getReturnTypeReference()?.text
         if (returnTypeText != null && typeShortName !in returnTypeText) return
         val name = (function as? KtNamedFunction)?.nameAsName?.asString()
-        if (name in allowedNames) return
-        if (function is KtNamedFunction) {
-            val receiverTypeReference = function.receiverTypeReference
-            // Filter given type extensions
-            if (receiverTypeReference != null && typeShortName in receiverTypeReference.text) return
-        }
-        if (function is KtFunctionLiteral || returnTypeText == null) {
-            // Heuristics to save performance: check if something creates given type in function text
-            val text = function.bodyExpression?.text
-            if (text != null && allowedNames.none { it in text } && typeShortName !in text && allowedSuffix !in text) return
-        }
+        if (name in allowedNames || name == null) return
+        val receiverTypeReference = function.receiverTypeReference
+        // Filter given type extensions
+        if (receiverTypeReference != null && typeShortName in receiverTypeReference.text) return
 
-        val descriptor = function.resolveToDescriptorIfAny() as? FunctionDescriptor ?: return
+        val descriptor = function.resolveToDescriptorIfAny() ?: return
         val returnType = descriptor.returnType ?: return
         val returnTypeClass = returnType.constructor.declarationDescriptor as? ClassDescriptor ?: return
         if (returnTypeClass.fqNameSafe.asString() != typeFullName) return
 
-        if (name != null && name.endsWith(allowedSuffix)) {
+        if (name.endsWith(allowedSuffix)) {
             analyzeFunctionWithAllowedSuffix(name, descriptor, toReport, holder)
         } else {
             holder.registerProblem(
@@ -57,7 +50,7 @@ abstract class AbstractIsResultInspection(
                 "Function returning $typeShortName with a name that does not end with $allowedSuffix",
                 ProblemHighlightType.GENERIC_ERROR_OR_WARNING,
                 *listOfNotNull(
-                    name?.let { RenameToFix("$it$allowedSuffix") },
+                    RenameToFix("$name$allowedSuffix"),
                     AddCallOrUnwrapTypeFix(
                         withBody = function.hasBody(),
                         functionName = suggestedFunctionNameToCall,
