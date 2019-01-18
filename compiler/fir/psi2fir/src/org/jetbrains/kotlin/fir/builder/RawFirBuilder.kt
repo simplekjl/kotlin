@@ -1148,7 +1148,7 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             }
             val result = expression.baseExpression?.accept(this, data) ?: FirErrorExpressionImpl(session, expression, "Empty label")
             if (size != firLabels.size) {
-                throw AssertionError("Unused label: ${expression.text}")
+                //throw AssertionError("Unused label: ${expression.text}")
             }
             return result
         }
