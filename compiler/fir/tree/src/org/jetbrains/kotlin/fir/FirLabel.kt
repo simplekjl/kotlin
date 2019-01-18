@@ -5,6 +5,11 @@
 
 package org.jetbrains.kotlin.fir
 
+import org.jetbrains.kotlin.fir.visitors.FirVisitor
+
 interface FirLabel : FirElement {
     val name: String
+
+    override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
+        visitor.visitLabel(this, data)
 }
