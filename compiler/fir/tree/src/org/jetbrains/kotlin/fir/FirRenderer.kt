@@ -470,6 +470,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
                 is FirExpressionStub -> "STUB"
                 is FirUnitExpression -> "Unit"
                 is FirWhenSubjectExpression -> "\$subj\$"
+                is FirElseIfTrueCondition -> "else"
                 else -> "??? ${expression.javaClass}"
             }
         )
