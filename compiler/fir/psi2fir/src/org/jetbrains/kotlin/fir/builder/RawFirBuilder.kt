@@ -519,6 +519,14 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             removeAt(size - 1)
         }
 
+        private fun <T> MutableList<T>.pop(): T? {
+            val result = lastOrNull()
+            if (result != null) {
+                removeAt(size - 1)
+            }
+            return result
+        }
+
         override fun visitNamedFunction(function: KtNamedFunction, data: Unit): FirElement {
             val typeReference = function.typeReference
             val returnType = if (function.hasBlockBody()) {
@@ -585,7 +593,7 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                         valueParameter.convert<FirValueParameter>()
                     }
                 }
-                label = firLabels.lastOrNull() ?: firFunctionCalls.lastOrNull()?.calleeReference?.name?.let {
+                label = firLabels.pop() ?: firFunctionCalls.lastOrNull()?.calleeReference?.name?.let {
                     FirLabelImpl(session, expression, it.asString())
                 }
                 val bodyExpression = literal.bodyExpression.toFirExpression("Lambda has no body")
@@ -952,6 +960,24 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             }
         }
 
+        override fun visitDoWhileExpression(expression: KtDoWhileExpression, data: Unit): FirElement {
+            return FirDoWhileLoopImpl(
+                session, expression, expression.condition.toFirExpression("No condition in do-while loop")
+            ).apply {
+                label = firLabels.pop()
+                block = expression.body.toFirBlock()
+            }
+        }
+
+        override fun visitWhileExpression(expression: KtWhileExpression, data: Unit): FirElement {
+            return FirWhileLoopImpl(
+                session, expression, expression.condition.toFirExpression("No condition in while loop")
+            ).apply {
+                label = firLabels.pop()
+                block = expression.body.toFirBlock()
+            }
+        }
+
         private fun KtBinaryExpression.elvisToWhen(): FirWhenExpression {
             val rightArgument = right.toFirExpression("No right operand")
             val leftArgument = left.toFirExpression("No left operand")
@@ -1115,12 +1141,13 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
 
         override fun visitLabeledExpression(expression: KtLabeledExpression, data: Unit): FirElement {
             val labelName = expression.getLabelName()
+            val size = firLabels.size
             if (labelName != null) {
                 firLabels += FirLabelImpl(session, expression, labelName)
             }
             val result = expression.baseExpression?.accept(this, data) ?: FirErrorExpressionImpl(session, expression, "Empty label")
-            if (labelName != null) {
-                firLabels.removeLast()
+            if (size != firLabels.size) {
+                throw AssertionError("Unused label: ${expression.text}")
             }
             return result
         }
