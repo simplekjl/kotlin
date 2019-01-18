@@ -176,6 +176,11 @@ public inline class UByte @PublishedApi internal constructor(@PublishedApi inter
     @kotlin.internal.InlineOnly
     public inline fun toULong(): ULong = ULong(data.toLong() and 0xFF)
 
+    @kotlin.internal.InlineOnly
+    public inline fun toFloat(): Float = data.toFloat()
+    @kotlin.internal.InlineOnly
+    public inline fun toDouble(): Double = data.toDouble()
+
     public override fun toString(): String = toInt().toString()
 
 }
@@ -196,3 +201,12 @@ public inline fun Int.toUByte(): UByte = UByte(this.toByte())
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
 public inline fun Long.toUByte(): UByte = UByte(this.toByte())
+
+@SinceKotlin("1.3")
+@ExperimentalUnsignedTypes
+@kotlin.internal.InlineOnly
+public inline fun Float.toUByte(): UByte = UByte(this.toByte())
+@SinceKotlin("1.3")
+@ExperimentalUnsignedTypes
+@kotlin.internal.InlineOnly
+public inline fun Double.toUByte(): UByte = UByte(this.toByte())
