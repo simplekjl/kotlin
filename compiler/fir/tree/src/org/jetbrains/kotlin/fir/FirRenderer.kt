@@ -241,6 +241,8 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     override fun visitVariable(variable: FirVariable) {
         variable.annotations.renderAnnotations()
         visitNamedDeclaration(variable)
+        print(": ")
+        variable.returnType.accept(this)
         variable.initializer?.let {
             print(" = ")
             it.accept(this)

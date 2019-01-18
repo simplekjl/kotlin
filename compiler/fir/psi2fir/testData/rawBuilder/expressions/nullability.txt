@@ -1,6 +1,6 @@
 FILE: nullability.kt
     public? final? function orFourtyTwo(arg: Int?): <implicit> {
-        return@@@orFourtyTwo when (val <elvis> = arg#) {
+        return@@@orFourtyTwo when (val <elvis>: <implicit> = arg#) {
             !=($subj$, Null(null)) ->  {
                 <elvis>#
             }
@@ -11,7 +11,7 @@ FILE: nullability.kt
 
     }
     public? final? function bang(arg: Int?): <implicit> {
-        return@@@bang when (val <bangbang> = arg#) {
+        return@@@bang when (val <bangbang>: <implicit> = arg#) {
             !=($subj$, Null(null)) ->  {
                 <bangbang>#
             }

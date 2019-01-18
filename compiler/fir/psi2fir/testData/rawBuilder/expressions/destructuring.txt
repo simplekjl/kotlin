@@ -13,11 +13,11 @@ FILE: destructuring.kt
 
     }
     public? final? function foo(some: Some): kotlin.Unit {
-        val <destruct> = some#
-        var x = component1(<destruct>#)
-        var y = component2(<destruct>#)
-        var z = component3(<destruct>#)
-        val <unary> = x#
+        val <destruct>: <implicit> = some#
+        var x: <implicit> = component1(<destruct>#)
+        var y: <implicit> = component2(<destruct>#)
+        var z: String = component3(<destruct>#)
+        val <unary>: <implicit> = x#
         x# = inc#(<unary>#)
         <unary>#
         y# *= Double(2.0)
