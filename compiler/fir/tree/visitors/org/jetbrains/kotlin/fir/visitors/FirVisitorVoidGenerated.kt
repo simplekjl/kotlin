@@ -460,6 +460,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitLoop(loop)
     }
 
+    final override fun visitMemberAccess(memberAccess: FirMemberAccess, data: Nothing?) {
+        visitMemberAccess(memberAccess)
+    }
+
     final override fun visitMemberDeclaration(memberDeclaration: FirMemberDeclaration, data: Nothing?) {
         visitMemberDeclaration(memberDeclaration)
     }
