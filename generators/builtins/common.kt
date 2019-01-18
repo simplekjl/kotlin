@@ -50,6 +50,13 @@ enum class UnsignedType {
     val mask = "0x${List(byteSize) { "FF" }.chunked(2).joinToString("_") { it.joinToString("") }}"
 }
 
+enum class FloatingType {
+    FLOAT,
+    DOUBLE;
+
+    val capitalized: String get() = name.toLowerCase().capitalize()
+}
+
 enum class ProgressionKind {
     CHAR,
     INT,
