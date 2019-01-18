@@ -145,7 +145,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
         if (memberDeclaration is FirCallableMember && memberDeclaration.isOverride) {
             print("override ")
         }
-        if (memberDeclaration is FirClass) {
+        if (memberDeclaration is FirRegularClass) {
             if (memberDeclaration.isInner) {
                 print("inner ")
             }
@@ -197,7 +197,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     override fun visitDeclaration(declaration: FirDeclaration) {
         print(
             when (declaration) {
-                is FirClass -> declaration.classKind.name.toLowerCase().replace("_", " ")
+                is FirRegularClass -> declaration.classKind.name.toLowerCase().replace("_", " ")
                 is FirTypeAlias -> "typealias"
                 is FirNamedFunction -> "function"
                 is FirProperty -> "property"
@@ -208,18 +208,18 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitEnumEntry(enumEntry: FirEnumEntry) {
-        visitClass(enumEntry)
+        visitRegularClass(enumEntry)
     }
 
-    override fun visitClass(klass: FirClass) {
-        visitMemberDeclaration(klass)
-        if (klass.superTypes.isNotEmpty()) {
+    override fun visitRegularClass(regularClass: FirRegularClass) {
+        visitMemberDeclaration(regularClass)
+        if (regularClass.superTypes.isNotEmpty()) {
             print(" : ")
-            klass.superTypes.renderSeparated()
+            regularClass.superTypes.renderSeparated()
         }
         println(" {")
         pushIndent()
-        for (declaration in klass.declarations) {
+        for (declaration in regularClass.declarations) {
             declaration.accept(this)
             println()
         }

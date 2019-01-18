@@ -47,7 +47,7 @@ open class FirTypeResolveTransformer : FirTransformer<Nothing?>() {
         return super.transformFile(file, data)
     }
 
-    private fun lookupSuperTypes(klass: FirClass): List<ConeClassLikeType> {
+    private fun lookupSuperTypes(klass: FirRegularClass): List<ConeClassLikeType> {
         return mutableListOf<ConeClassLikeType>().also { klass.symbol.collectSuperTypes(it) }
     }
 
@@ -60,28 +60,28 @@ open class FirTypeResolveTransformer : FirTransformer<Nothing?>() {
         }
     }
 
-    override fun transformClass(klass: FirClass, data: Nothing?): CompositeTransformResult<FirDeclaration> {
+    override fun transformRegularClass(regularClass: FirRegularClass, data: Nothing?): CompositeTransformResult<FirDeclaration> {
         return withScopeCleanup {
-            klass.withTypeParametersScope {
-                resolveSuperTypesAndExpansions(klass)
+            regularClass.withTypeParametersScope {
+                resolveSuperTypesAndExpansions(regularClass)
 
-                val firProvider = FirProvider.getInstance(klass.session)
-                val classId = klass.symbol.classId
+                val firProvider = FirProvider.getInstance(regularClass.session)
+                val classId = regularClass.symbol.classId
                 scope.scopes += FirNestedClassifierScope(classId, firProvider)
-                val companionObjects = klass.declarations.filterIsInstance<FirClass>().filter { it.isCompanion }
+                val companionObjects = regularClass.declarations.filterIsInstance<FirRegularClass>().filter { it.isCompanion }
                 for (companionObject in companionObjects) {
                     scope.scopes += FirNestedClassifierScope(companionObject.symbol.classId, firProvider)
                 }
 
-                lookupSuperTypes(klass).mapTo(scope.scopes) {
+                lookupSuperTypes(regularClass).mapTo(scope.scopes) {
                     val symbol = it.symbol
                     if (symbol is FirBasedSymbol<*>) {
                         FirNestedClassifierScope(symbol.classId, FirProvider.getInstance(symbol.fir.session))
                     } else {
-                        FirNestedClassifierScope(symbol.classId, FirSymbolProvider.getInstance(klass.session))
+                        FirNestedClassifierScope(symbol.classId, FirSymbolProvider.getInstance(regularClass.session))
                     }
                 }
-                super.transformClass(klass, data)
+                super.transformRegularClass(regularClass, data)
             }
         }
     }

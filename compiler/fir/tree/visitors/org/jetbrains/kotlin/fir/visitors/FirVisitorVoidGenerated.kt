@@ -72,12 +72,12 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitNamedDeclaration(memberDeclaration, null)
     }
 
-    open fun visitClass(klass: FirClass) {
-        visitMemberDeclaration(klass, null)
+    open fun visitRegularClass(regularClass: FirRegularClass) {
+        visitMemberDeclaration(regularClass, null)
     }
 
     open fun visitEnumEntry(enumEntry: FirEnumEntry) {
-        visitClass(enumEntry, null)
+        visitRegularClass(enumEntry, null)
     }
 
     open fun visitTypeAlias(typeAlias: FirTypeAlias) {
@@ -332,10 +332,6 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitCatch(catch)
     }
 
-    final override fun visitClass(klass: FirClass, data: Nothing?) {
-        visitClass(klass)
-    }
-
     final override fun <T> visitConstExpression(constExpression: FirConstExpression<T>, data: Nothing?) {
         visitConstExpression(constExpression)
     }
@@ -482,6 +478,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     final override fun visitPropertySet(propertySet: FirPropertySet, data: Nothing?) {
         visitPropertySet(propertySet)
+    }
+
+    final override fun visitRegularClass(regularClass: FirRegularClass, data: Nothing?) {
+        visitRegularClass(regularClass)
     }
 
     final override fun visitResolvedDeclarationStatus(resolvedDeclarationStatus: FirResolvedDeclarationStatus, data: Nothing?) {
