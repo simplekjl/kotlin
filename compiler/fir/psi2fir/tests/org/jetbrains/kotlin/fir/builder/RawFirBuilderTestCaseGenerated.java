@@ -154,6 +154,11 @@ public class RawFirBuilderTestCaseGenerated extends AbstractRawFirBuilderTestCas
             runTest("compiler/fir/psi2fir/testData/rawBuilder/expressions/calls.kt");
         }
 
+        @TestMetadata("destructuring.kt")
+        public void testDestructuring() throws Exception {
+            runTest("compiler/fir/psi2fir/testData/rawBuilder/expressions/destructuring.kt");
+        }
+
         @TestMetadata("locals.kt")
         public void testLocals() throws Exception {
             runTest("compiler/fir/psi2fir/testData/rawBuilder/expressions/locals.kt");

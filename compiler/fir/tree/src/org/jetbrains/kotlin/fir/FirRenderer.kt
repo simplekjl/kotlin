@@ -672,6 +672,11 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
         visitCall(operatorCall)
     }
 
+    override fun visitComponentCall(componentCall: FirComponentCall) {
+        print("component${componentCall.componentIndex}")
+        visitCall(componentCall)
+    }
+
     override fun visitThrowExpression(throwExpression: FirThrowExpression) {
         print("throw ")
         throwExpression.exception.accept(this)
