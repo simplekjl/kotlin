@@ -16,4 +16,9 @@ interface FirCatch : FirElement {
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitCatch(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        parameter.accept(visitor, data)
+        block.accept(visitor, data)
+    }
 }

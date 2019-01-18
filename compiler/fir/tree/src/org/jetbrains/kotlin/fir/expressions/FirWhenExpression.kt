@@ -17,4 +17,12 @@ interface FirWhenExpression : FirExpression {
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitWhenExpression(this, data)
+
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        subjectVariable?.accept(visitor, data) ?: subject?.accept(visitor, data)
+        for (branch in branches) {
+            branch.accept(visitor, data)
+        }
+    }
 }

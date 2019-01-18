@@ -19,6 +19,7 @@ interface FirAnonymousFunction : @VisitedSupertype FirFunction, FirExpression, F
 
     override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
         super<FirTypedDeclaration>.acceptChildren(visitor, data)
+        super<FirLabeledElement>.acceptChildren(visitor, data)
         receiverType?.accept(visitor, data)
         for (parameter in valueParameters) {
             parameter.accept(visitor, data)

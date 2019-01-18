@@ -11,4 +11,9 @@ import org.jetbrains.kotlin.fir.visitors.FirVisitor
 interface FirFunctionCall : @VisitedSupertype FirCall, FirMemberAccess {
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitFunctionCall(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        super<FirCall>.acceptChildren(visitor, data)
+        super<FirMemberAccess>.acceptChildren(visitor, data)
+    }
 }

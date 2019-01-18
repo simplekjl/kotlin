@@ -19,4 +19,9 @@ interface FirWhenBranch : FirElement {
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitWhenBranch(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        condition.accept(visitor, data)
+        result.accept(visitor, data)
+    }
 }

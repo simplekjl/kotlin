@@ -16,4 +16,10 @@ interface FirLoop : @VisitedSupertype FirStatement, FirLabeledElement {
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitLoop(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        condition.accept(visitor, data)
+        block.accept(visitor, data)
+        super<FirLabeledElement>.acceptChildren(visitor, data)
+    }
 }
