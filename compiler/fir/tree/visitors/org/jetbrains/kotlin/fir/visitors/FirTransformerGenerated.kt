@@ -460,6 +460,10 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
         return transformLoop(loop, data)
     }
 
+    final override fun visitMemberAccess(memberAccess: FirMemberAccess, data: D): CompositeTransformResult<FirElement> {
+        return transformMemberAccess(memberAccess, data)
+    }
+
     final override fun visitMemberDeclaration(memberDeclaration: FirMemberDeclaration, data: D): CompositeTransformResult<FirElement> {
         return transformMemberDeclaration(memberDeclaration, data)
     }
