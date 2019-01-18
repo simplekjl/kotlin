@@ -168,6 +168,10 @@ abstract class FirVisitor<out R, in D> {
         return visitCall(annotationCall, data)
     }
 
+    open fun visitComponentCall(componentCall: FirComponentCall, data: D): R {
+        return visitCall(componentCall, data)
+    }
+
     open fun visitDelegatedConstructorCall(delegatedConstructorCall: FirDelegatedConstructorCall, data: D): R {
         return visitCall(delegatedConstructorCall, data)
     }

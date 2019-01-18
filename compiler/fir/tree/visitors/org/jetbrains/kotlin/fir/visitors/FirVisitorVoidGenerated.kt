@@ -168,6 +168,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitCall(annotationCall, null)
     }
 
+    open fun visitComponentCall(componentCall: FirComponentCall) {
+        visitCall(componentCall, null)
+    }
+
     open fun visitDelegatedConstructorCall(delegatedConstructorCall: FirDelegatedConstructorCall) {
         visitCall(delegatedConstructorCall, null)
     }
@@ -350,6 +354,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     final override fun visitClass(klass: FirClass, data: Nothing?) {
         visitClass(klass)
+    }
+
+    final override fun visitComponentCall(componentCall: FirComponentCall, data: Nothing?) {
+        visitComponentCall(componentCall)
     }
 
     final override fun <T> visitConstExpression(constExpression: FirConstExpression<T>, data: Nothing?) {

@@ -753,7 +753,12 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
         override fun visitBlockExpression(expression: KtBlockExpression, data: Unit): FirElement {
             return FirBlockImpl(session, expression).apply {
                 for (statement in expression.statements) {
-                    statements += statement.toFirStatement("Statement expected: ${statement.text}")
+                    val firStatement = statement.toFirStatement("Statement expected: ${statement.text}")
+                    if (firStatement !is FirBlock) {
+                        statements += firStatement
+                    } else {
+                        statements += firStatement.statements
+                    }
                 }
             }
         }
@@ -1048,6 +1053,15 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
 
         override fun visitThrowExpression(expression: KtThrowExpression, data: Unit): FirElement {
             return FirThrowExpressionImpl(session, expression, expression.thrownExpression.toFirExpression("Nothing to throw"))
+        }
+
+        override fun visitDestructuringDeclaration(multiDeclaration: KtDestructuringDeclaration, data: Unit): FirElement {
+            val baseVariable = FirVariableImpl(
+                session, multiDeclaration, Name.special("<destruct>"),
+                FirImplicitTypeImpl(session, multiDeclaration),
+                false, multiDeclaration.initializer?.toFirExpression()
+            )
+            return generateDestructuringBlock(session, multiDeclaration, baseVariable) { toFirOrImplicitType() }
         }
 
         override fun visitExpression(expression: KtExpression, data: Unit): FirElement {

@@ -9,18 +9,17 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.KtNodeTypes
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.declarations.FirNamedDeclaration
 import org.jetbrains.kotlin.fir.declarations.impl.FirVariableImpl
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.*
 import org.jetbrains.kotlin.fir.references.FirSimpleMemberReference
+import org.jetbrains.kotlin.fir.types.FirType
 import org.jetbrains.kotlin.fir.types.impl.FirImplicitTypeImpl
 import org.jetbrains.kotlin.ir.expressions.IrConstKind
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.psi.KtConstantExpression
-import org.jetbrains.kotlin.psi.KtExpression
-import org.jetbrains.kotlin.psi.KtSimpleNameExpression
-import org.jetbrains.kotlin.psi.KtUnaryExpression
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.types.expressions.OperatorConventions
 
 internal fun String.parseCharacter(): Char? {
@@ -227,3 +226,26 @@ internal fun generatePropertyGet(session: FirSession, psi: PsiElement?, name: Na
     FirPropertyGetImpl(session, psi).apply {
         calleeReference = FirSimpleMemberReference(session, psi, name)
     }
+
+internal fun generateDestructuringBlock(
+    session: FirSession,
+    multiDeclaration: KtDestructuringDeclaration,
+    container: FirNamedDeclaration,
+    toFirOrImplicitType: KtTypeReference?.() -> FirType
+): FirExpression {
+    return FirBlockImpl(session, multiDeclaration).apply {
+        if (container is FirVariable) {
+            statements += container
+        }
+        val isVar = multiDeclaration.isVar
+        for ((index, entry) in multiDeclaration.entries.withIndex()) {
+            statements += FirVariableImpl(
+                session, entry, entry.nameAsSafeName,
+                entry.typeReference.toFirOrImplicitType(), isVar,
+                FirComponentCallImpl(session, entry, index + 1).apply {
+                    arguments += generatePropertyGet(session, entry, container.name)
+                }
+            )
+        }
+    }
+}
