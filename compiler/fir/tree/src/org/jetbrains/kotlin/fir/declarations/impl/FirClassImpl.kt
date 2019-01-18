@@ -32,7 +32,7 @@ open class FirClassImpl(
     isCompanion: Boolean,
     isData: Boolean,
     isInline: Boolean
-) : FirAbstractMemberDeclaration(session, psi, name, visibility, modality, isExpect, isActual), FirRegularClass {
+) : FirAbstractMemberDeclaration(session, psi, name, visibility, modality, isExpect, isActual), FirRegularClass, FirModifiableClass {
 
     init {
         symbol.bind(this)

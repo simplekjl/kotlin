@@ -140,6 +140,18 @@ abstract class FirVisitor<out R, in D> {
         return visitElement(statement, data)
     }
 
+    open fun visitClass(klass: FirClass, data: D): R {
+        return visitStatement(klass, data)
+    }
+
+    open fun visitAnonymousObject(anonymousObject: FirAnonymousObject, data: D): R {
+        return visitClass(anonymousObject, data)
+    }
+
+    open fun visitModifiableClass(modifiableClass: FirModifiableClass, data: D): R {
+        return visitClass(modifiableClass, data)
+    }
+
     open fun visitExpression(expression: FirExpression, data: D): R {
         return visitStatement(expression, data)
     }

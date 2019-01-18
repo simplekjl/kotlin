@@ -211,20 +211,31 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
         visitRegularClass(enumEntry)
     }
 
+    private fun FirDeclarationContainer.renderDeclarations() {
+        println(" {")
+        pushIndent()
+        for (declaration in declarations) {
+            declaration.accept(this@FirRenderer)
+            println()
+        }
+        popIndent()
+        println("}")
+    }
+
     override fun visitRegularClass(regularClass: FirRegularClass) {
         visitMemberDeclaration(regularClass)
         if (regularClass.superTypes.isNotEmpty()) {
             print(" : ")
             regularClass.superTypes.renderSeparated()
         }
-        println(" {")
-        pushIndent()
-        for (declaration in regularClass.declarations) {
-            declaration.accept(this)
-            println()
-        }
-        popIndent()
-        println("}")
+        regularClass.renderDeclarations()
+    }
+
+    override fun visitAnonymousObject(anonymousObject: FirAnonymousObject) {
+        anonymousObject.annotations.renderAnnotations()
+        print("object : ")
+        anonymousObject.superTypes.renderSeparated()
+        anonymousObject.renderDeclarations()
     }
 
     override fun visitVariable(variable: FirVariable) {
