@@ -72,12 +72,12 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
         return transformNamedDeclaration(memberDeclaration, data)
     }
 
-    open fun transformClass(klass: FirClass, data: D): CompositeTransformResult<FirDeclaration> {
-        return transformMemberDeclaration(klass, data)
+    open fun transformRegularClass(regularClass: FirRegularClass, data: D): CompositeTransformResult<FirDeclaration> {
+        return transformMemberDeclaration(regularClass, data)
     }
 
     open fun transformEnumEntry(enumEntry: FirEnumEntry, data: D): CompositeTransformResult<FirDeclaration> {
-        return transformClass(enumEntry, data)
+        return transformRegularClass(enumEntry, data)
     }
 
     open fun transformTypeAlias(typeAlias: FirTypeAlias, data: D): CompositeTransformResult<FirDeclaration> {
@@ -332,10 +332,6 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
         return transformCatch(catch, data)
     }
 
-    final override fun visitClass(klass: FirClass, data: D): CompositeTransformResult<FirElement> {
-        return transformClass(klass, data)
-    }
-
     final override fun <T> visitConstExpression(constExpression: FirConstExpression<T>, data: D): CompositeTransformResult<FirElement> {
         return transformConstExpression(constExpression, data)
     }
@@ -482,6 +478,10 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
 
     final override fun visitPropertySet(propertySet: FirPropertySet, data: D): CompositeTransformResult<FirElement> {
         return transformPropertySet(propertySet, data)
+    }
+
+    final override fun visitRegularClass(regularClass: FirRegularClass, data: D): CompositeTransformResult<FirElement> {
+        return transformRegularClass(regularClass, data)
     }
 
     final override fun visitResolvedDeclarationStatus(resolvedDeclarationStatus: FirResolvedDeclarationStatus, data: D): CompositeTransformResult<FirElement> {
