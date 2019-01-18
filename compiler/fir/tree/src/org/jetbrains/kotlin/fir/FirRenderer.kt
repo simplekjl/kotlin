@@ -305,6 +305,10 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
 
     override fun visitAnonymousFunction(anonymousFunction: FirAnonymousFunction) {
         anonymousFunction.annotations.renderAnnotations()
+        val label = anonymousFunction.label
+        if (label != null) {
+            print("${label.name}@")
+        }
         print("function ")
         val receiverType = anonymousFunction.receiverType
         if (receiverType != null) {
@@ -402,13 +406,17 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     override fun visitReturnStatement(returnStatement: FirReturnStatement) {
         print("return")
         val target = returnStatement.target
-        val labelName = target.labelName
-        if (labelName != null) {
-            print("@$labelName")
-        }
         val labeledElement = target.labeledElement
         if (labeledElement is FirNamedFunction) {
             print("@@@${labeledElement.name}")
+        } else {
+            val labelName = target.labelName
+            if (labelName != null) {
+                if (labeledElement is FirAnonymousFunction) {
+                    print("@@")
+                }
+                print("@$labelName")
+            }
         }
         print(" ")
         returnStatement.result.accept(this)

@@ -11,11 +11,13 @@ import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirFunctionTarget
+import org.jetbrains.kotlin.fir.FirLabel
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.declarations.impl.*
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.*
+import org.jetbrains.kotlin.fir.labels.FirLabelImpl
 import org.jetbrains.kotlin.fir.references.FirErrorMemberReference
 import org.jetbrains.kotlin.fir.references.FirSimpleMemberReference
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
@@ -127,7 +129,23 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                 if (labelName == null) {
                     target.bind(firFunctions.last())
                 } else {
-                    // TODO
+                    for (firFunction in firFunctions.asReversed()) {
+                        when (firFunction) {
+                            is FirAnonymousFunction -> {
+                                if (firFunction.label?.name == labelName) {
+                                    target.bind(firFunction)
+                                    return@apply
+                                }
+                            }
+                            is FirNamedFunction -> {
+                                if (firFunction.name.asString() == labelName) {
+                                    target.bind(firFunction)
+                                    return@apply
+                                }
+                            }
+                        }
+                    }
+                    target.bind(FirErrorFunction(session, psi, "Cannot bind label $labelName to a function"))
                 }
             }
         }
@@ -542,6 +560,44 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             firFunction.body = function.buildFirBody()
             firFunctions.removeLast()
             return firFunction
+        }
+
+        override fun visitLambdaExpression(expression: KtLambdaExpression, data: Unit): FirElement {
+            val literal = expression.functionLiteral
+            val returnType = FirImplicitTypeImpl(session, literal)
+            val receiverType = FirImplicitTypeImpl(session, literal)
+            return FirAnonymousFunctionImpl(session, literal, returnType, receiverType).apply {
+                firFunctions += this
+                var destructuringBlock: FirExpression? = null
+                for (valueParameter in literal.valueParameters) {
+                    val multiDeclaration = valueParameter.destructuringDeclaration
+                    valueParameters += if (multiDeclaration != null) {
+                        val multiParameter = FirValueParameterImpl(
+                            session, multiDeclaration, Name.special("<destruct>"),
+                            FirImplicitTypeImpl(session, multiDeclaration),
+                            defaultValue = null, isCrossinline = false, isNoinline = false, isVararg = false
+                        )
+                        destructuringBlock = generateDestructuringBlock(
+                            session, multiDeclaration, multiParameter
+                        ) { toFirOrImplicitType() }
+                        multiParameter
+                    } else {
+                        valueParameter.convert<FirValueParameter>()
+                    }
+                }
+                label = firLabels.lastOrNull() ?: firFunctionCalls.lastOrNull()?.calleeReference?.name?.let {
+                    FirLabelImpl(session, expression, it.asString())
+                }
+                val bodyExpression = literal.bodyExpression.toFirExpression("Lambda has no body")
+                if (destructuringBlock is FirBlock && bodyExpression is FirBlockImpl) {
+                    for ((index, statement) in destructuringBlock.statements.withIndex()) {
+                        bodyExpression.statements.add(index, statement)
+                    }
+                }
+                body = FirSingleExpressionBlock(session, bodyExpression.toReturn())
+
+                firFunctions.removeLast()
+            }
         }
 
         private fun KtSecondaryConstructor.toFirConstructor(
@@ -1014,6 +1070,8 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             }
         }
 
+        private val firFunctionCalls = mutableListOf<FirFunctionCall>()
+
         override fun visitCallExpression(expression: KtCallExpression, data: Unit): FirElement {
             val calleeExpression = expression.calleeExpression
             return FirFunctionCallImpl(session, expression).apply {
@@ -1032,9 +1090,11 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                     }
                 }
                 this.calleeReference = calleeReference
+                firFunctionCalls += this
                 for (argument in expression.valueArguments) {
                     arguments += argument.getArgumentExpression().toFirExpression("No argument expression")
                 }
+                firFunctionCalls.removeLast()
             }
         }
 
@@ -1049,6 +1109,20 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
 
         override fun visitParenthesizedExpression(expression: KtParenthesizedExpression, data: Unit): FirElement {
             return expression.expression?.accept(this, data) ?: FirErrorExpressionImpl(session, expression, "Empty parentheses")
+        }
+
+        private val firLabels = mutableListOf<FirLabel>()
+
+        override fun visitLabeledExpression(expression: KtLabeledExpression, data: Unit): FirElement {
+            val labelName = expression.getLabelName()
+            if (labelName != null) {
+                firLabels += FirLabelImpl(session, expression, labelName)
+            }
+            val result = expression.baseExpression?.accept(this, data) ?: FirErrorExpressionImpl(session, expression, "Empty label")
+            if (labelName != null) {
+                firLabels.removeLast()
+            }
+            return result
         }
 
         override fun visitThrowExpression(expression: KtThrowExpression, data: Unit): FirElement {
