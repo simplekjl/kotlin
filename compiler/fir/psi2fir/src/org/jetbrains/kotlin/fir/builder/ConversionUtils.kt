@@ -165,10 +165,7 @@ internal fun IElementType.toFirOperation(): FirOperation =
 
 internal fun FirExpression.generateNotNullOrOther(other: FirExpression, caseId: String): FirWhenExpression {
     val subjectName = Name.special("<$caseId>")
-    val subjectVariable = FirVariableImpl(
-        session, psi, subjectName,
-        FirImplicitTypeImpl(session, psi), false, this
-    )
+    val subjectVariable = generateTemporaryVariable(session, psi, subjectName, this)
     val subjectExpression = FirWhenSubjectExpression(session, psi)
     return FirWhenExpressionImpl(
         session, psi, this, subjectVariable
@@ -202,12 +199,7 @@ internal fun generateIncrementOrDecrementBlock(
     return FirBlockImpl(session, baseExpression).apply {
         val tempName = Name.special("<unary>")
         val argumentName = argument.getReferencedNameAsName()
-        statements += FirVariableImpl(
-            session, baseExpression, tempName,
-            FirImplicitTypeImpl(session, baseExpression),
-            false,
-            generatePropertyGet(session, argument, argumentName)
-        )
+        statements += generateTemporaryVariable(session, baseExpression, tempName, generatePropertyGet(session, argument, argumentName))
         statements += FirPropertySetImpl(
             session, baseExpression,
             FirFunctionCallImpl(session, baseExpression).apply {
@@ -249,3 +241,11 @@ internal fun generateDestructuringBlock(
         }
     }
 }
+
+internal fun generateTemporaryVariable(
+    session: FirSession, psi: PsiElement?, name: Name, initializer: FirExpression
+): FirVariable = FirVariableImpl(session, psi, name, FirImplicitTypeImpl(session, psi), false, initializer)
+
+internal fun generateTemporaryVariable(
+    session: FirSession, psi: PsiElement?, specialName: String, initializer: FirExpression
+): FirVariable = generateTemporaryVariable(session, psi, Name.special("<$specialName>"), initializer)
