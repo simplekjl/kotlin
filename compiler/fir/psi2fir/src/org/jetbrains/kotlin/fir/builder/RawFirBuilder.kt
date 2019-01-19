@@ -983,16 +983,11 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             val parameter = expression.loopParameter
             return FirBlockImpl(session, expression).apply {
                 val rangeName = Name.special("<range>")
-                statements += FirVariableImpl(
-                    session, expression.loopRange, rangeName,
-                    FirImplicitTypeImpl(session, expression.loopRange),
-                    false, rangeExpression
-                )
+                statements += generateTemporaryVariable(session, expression.loopRange, rangeName, rangeExpression)
                 val iteratorName = Name.special("<iterator>")
-                statements += FirVariableImpl(
+                statements += generateTemporaryVariable(
                     session, expression.loopRange, iteratorName,
-                    FirImplicitTypeImpl(session, expression.loopRange),
-                    false, FirFunctionCallImpl(session, expression).apply {
+                    FirFunctionCallImpl(session, expression).apply {
                         calleeReference = FirSimpleMemberReference(session, expression, Name.identifier("iterator"))
                         explicitReceiver = generatePropertyGet(session, expression.loopRange, rangeName)
                     }
@@ -1008,11 +1003,10 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                     val block = expression.body.toFirBlock()
                     if (block is FirBlockImpl && parameter != null) {
                         val multiDeclaration = parameter.destructuringDeclaration
-                        val firLoopParameter = FirVariableImpl(
+                        val firLoopParameter = generateTemporaryVariable(
                             session, expression,
                             if (multiDeclaration != null) Name.special("<destruct>") else parameter.nameAsSafeName,
-                            FirImplicitTypeImpl(session, expression),
-                            false, FirFunctionCallImpl(session, expression).apply {
+                            FirFunctionCallImpl(session, expression).apply {
                                 calleeReference = FirSimpleMemberReference(session, expression, Name.identifier("next"))
                                 explicitReceiver = generatePropertyGet(session, expression, iteratorName)
                             }
@@ -1215,10 +1209,9 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
         }
 
         override fun visitDestructuringDeclaration(multiDeclaration: KtDestructuringDeclaration, data: Unit): FirElement {
-            val baseVariable = FirVariableImpl(
-                session, multiDeclaration, Name.special("<destruct>"),
-                FirImplicitTypeImpl(session, multiDeclaration),
-                false, multiDeclaration.initializer?.toFirExpression()
+            val baseVariable = generateTemporaryVariable(
+                session, multiDeclaration, "destruct",
+                multiDeclaration.initializer.toFirExpression("Destructuring declaration without initializer")
             )
             return generateDestructuringBlock(session, multiDeclaration, baseVariable) { toFirOrImplicitType() }
         }
