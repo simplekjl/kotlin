@@ -3,7 +3,11 @@ fun foo(limit: Int) {
     some@ while (k < limit) {
         k++
         println(k)
-        while (k == 13) k++
+        while (k == 13) {
+            k++
+            if (k < limit) break@some
+            if (k > limit) continue
+        }
     }
 }
 

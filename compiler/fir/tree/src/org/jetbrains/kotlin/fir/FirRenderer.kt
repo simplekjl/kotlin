@@ -10,10 +10,7 @@ import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.descriptors.annotations.AnnotationUseSiteTarget
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
-import org.jetbrains.kotlin.fir.expressions.impl.FirElseIfTrueCondition
-import org.jetbrains.kotlin.fir.expressions.impl.FirExpressionStub
-import org.jetbrains.kotlin.fir.expressions.impl.FirUnitExpression
-import org.jetbrains.kotlin.fir.expressions.impl.FirWhenSubjectExpression
+import org.jetbrains.kotlin.fir.expressions.impl.*
 import org.jetbrains.kotlin.fir.symbols.ConeClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.ConeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
@@ -485,6 +482,24 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
         whileLoop.condition.accept(this)
         print(")")
         whileLoop.block.accept(this)
+    }
+
+    private fun visitLoopJump(jump: FirJump<FirLoop>) {
+        val target = jump.target
+        val labeledElement = target.labeledElement
+        print("@@@[")
+        labeledElement.condition.accept(this)
+        print("] ")
+    }
+
+    override fun visitBreakStatement(breakStatement: FirBreakStatement) {
+        print("break")
+        visitLoopJump(breakStatement)
+    }
+
+    override fun visitContinueStatement(continueStatement: FirContinueStatement) {
+        print("continue")
+        visitLoopJump(continueStatement)
     }
 
     override fun visitExpression(expression: FirExpression) {
