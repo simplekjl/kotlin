@@ -9,10 +9,7 @@ import org.jetbrains.kotlin.descriptors.ClassKind
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.descriptors.Visibility
-import org.jetbrains.kotlin.fir.FirElement
-import org.jetbrains.kotlin.fir.FirFunctionTarget
-import org.jetbrains.kotlin.fir.FirLabel
-import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.declarations.impl.*
 import org.jetbrains.kotlin.fir.expressions.*
@@ -960,22 +957,26 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             }
         }
 
+        private val firLoops = mutableListOf<FirLoop>()
+
+        private fun FirAbstractLoop.configure(generateBlock: () -> FirBlock): FirAbstractLoop {
+            label = firLabels.pop()
+            firLoops += this
+            block = generateBlock()
+            firLoops.removeLast()
+            return this
+        }
+
         override fun visitDoWhileExpression(expression: KtDoWhileExpression, data: Unit): FirElement {
             return FirDoWhileLoopImpl(
                 session, expression, expression.condition.toFirExpression("No condition in do-while loop")
-            ).apply {
-                label = firLabels.pop()
-                block = expression.body.toFirBlock()
-            }
+            ).configure { expression.body.toFirBlock() }
         }
 
         override fun visitWhileExpression(expression: KtWhileExpression, data: Unit): FirElement {
             return FirWhileLoopImpl(
                 session, expression, expression.condition.toFirExpression("No condition in while loop")
-            ).apply {
-                label = firLabels.pop()
-                block = expression.body.toFirBlock()
-            }
+            ).configure { expression.body.toFirBlock() }
         }
 
         override fun visitForExpression(expression: KtForExpression, data: Unit?): FirElement {
@@ -998,8 +999,7 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                         calleeReference = FirSimpleMemberReference(session, expression, Name.identifier("hasNext"))
                         explicitReceiver = generatePropertyGet(session, expression, iteratorName)
                     }
-                ).apply {
-                    label = firLabels.pop()
+                ).configure {
                     val block = expression.body.toFirBlock()
                     if (block is FirBlockImpl && parameter != null) {
                         val multiDeclaration = parameter.destructuringDeclaration
@@ -1024,9 +1024,34 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                             block.statements.add(0, firLoopParameter)
                         }
                     }
-                    this.block = block
+                    block
                 }
             }
+        }
+
+        private fun FirAbstractLoopJump.bindLabel(expression: KtExpressionWithLabel): FirAbstractLoopJump {
+            val labelName = expression.getLabelName()
+            target = FirLoopTarget(labelName)
+            if (labelName == null) {
+                target.bind(firLoops.last())
+            } else {
+                for (firLoop in firLoops.asReversed()) {
+                    if (firLoop.label?.name == labelName) {
+                        target.bind(firLoop)
+                        return this
+                    }
+                }
+                target.bind(FirErrorLoop(session, psi, "Cannot bind label $labelName to a loop"))
+            }
+            return this
+        }
+
+        override fun visitBreakExpression(expression: KtBreakExpression, data: Unit): FirElement {
+            return FirBreakStatementImpl(session, expression).bindLabel(expression)
+        }
+
+        override fun visitContinueExpression(expression: KtContinueExpression, data: Unit): FirElement {
+            return FirContinueStatementImpl(session, expression).bindLabel(expression)
         }
 
         private fun KtBinaryExpression.elvisToWhen(): FirWhenExpression {
