@@ -978,6 +978,63 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             }
         }
 
+        override fun visitForExpression(expression: KtForExpression, data: Unit?): FirElement {
+            val rangeExpression = expression.loopRange.toFirExpression("No range in for loop")
+            val parameter = expression.loopParameter
+            return FirBlockImpl(session, expression).apply {
+                val rangeName = Name.special("<range>")
+                statements += FirVariableImpl(
+                    session, expression.loopRange, rangeName,
+                    FirImplicitTypeImpl(session, expression.loopRange),
+                    false, rangeExpression
+                )
+                val iteratorName = Name.special("<iterator>")
+                statements += FirVariableImpl(
+                    session, expression.loopRange, iteratorName,
+                    FirImplicitTypeImpl(session, expression.loopRange),
+                    false, FirFunctionCallImpl(session, expression).apply {
+                        calleeReference = FirSimpleMemberReference(session, expression, Name.identifier("iterator"))
+                        explicitReceiver = generatePropertyGet(session, expression.loopRange, rangeName)
+                    }
+                )
+                statements += FirWhileLoopImpl(
+                    session, expression,
+                    FirFunctionCallImpl(session, expression).apply {
+                        calleeReference = FirSimpleMemberReference(session, expression, Name.identifier("hasNext"))
+                        explicitReceiver = generatePropertyGet(session, expression, iteratorName)
+                    }
+                ).apply {
+                    label = firLabels.pop()
+                    val block = expression.body.toFirBlock()
+                    if (block is FirBlockImpl && parameter != null) {
+                        val multiDeclaration = parameter.destructuringDeclaration
+                        val firLoopParameter = FirVariableImpl(
+                            session, expression,
+                            if (multiDeclaration != null) Name.special("<destruct>") else parameter.nameAsSafeName,
+                            FirImplicitTypeImpl(session, expression),
+                            false, FirFunctionCallImpl(session, expression).apply {
+                                calleeReference = FirSimpleMemberReference(session, expression, Name.identifier("next"))
+                                explicitReceiver = generatePropertyGet(session, expression, iteratorName)
+                            }
+                        )
+                        if (multiDeclaration != null) {
+                            val destructuringBlock = generateDestructuringBlock(
+                                session, multiDeclaration, firLoopParameter
+                            ) { toFirOrImplicitType() }
+                            if (destructuringBlock is FirBlock) {
+                                for ((index, statement) in destructuringBlock.statements.withIndex()) {
+                                    block.statements.add(index, statement)
+                                }
+                            }
+                        } else {
+                            block.statements.add(0, firLoopParameter)
+                        }
+                    }
+                    this.block = block
+                }
+            }
+        }
+
         private fun KtBinaryExpression.elvisToWhen(): FirWhenExpression {
             val rightArgument = right.toFirExpression("No right operand")
             val leftArgument = left.toFirExpression("No left operand")
