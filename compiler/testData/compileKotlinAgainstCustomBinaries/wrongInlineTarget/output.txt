@@ -17,21 +17,39 @@ compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt
     allInline = 1
     ^
 compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:17:7: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
-    a.inlineFun {}
+    a.inlineFunBase {}
       ^
 compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:18:7: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
-    a.inlineGetter
+    a.inlineGetterBase
       ^
 compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:19:7: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
-    a.inlineGetter = 1
+    a.inlineGetterBase = 1
       ^
 compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:22:7: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
-    a.inlineSetter = 1
+    a.inlineSetterBase = 1
       ^
 compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:24:7: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
-    a.allInline
+    a.allInlineBase
       ^
 compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:25:7: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
-    a.allInline = 1
+    a.allInlineBase = 1
       ^
+compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:32:9: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
+        inlineFunBase {}
+        ^
+compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:33:9: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
+        inlineGetterBase
+        ^
+compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:34:9: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
+        inlineGetterBase = 1
+        ^
+compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:37:9: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
+        inlineSetterBase = 1
+        ^
+compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:39:9: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
+        allInlineBase
+        ^
+compiler/testData/compileKotlinAgainstCustomBinaries/wrongInlineTarget/source.kt:40:9: error: cannot inline bytecode built with JVM target 1.8 into bytecode that is being built with JVM target 1.6. Please specify proper '-jvm-target' option
+        allInlineBase = 1
+        ^
 COMPILATION_ERROR

@@ -1,4 +1,4 @@
-// JVM_TARGET: 1.8
+// JVM_TBaseRGET: 1.8
 package a
 
 inline fun inlineFun(p: () -> Unit) {
@@ -19,21 +19,20 @@ var allInline: Int
 
 
 
-class A {
-    inline fun inlineFun(p: () -> Unit) {
+open class Base {
+    inline fun inlineFunBase(p: () -> Unit) {
         p()
     }
 
-    var inlineGetter: Int
+    var inlineGetterBase: Int
         inline get() = 1
         set(varue) { varue.hashCode() }
 
-    var inlineSetter: Int
+    var inlineSetterBase: Int
         get() = 1
         inline set(varue) { varue.hashCode() }
 
-    var allInline: Int
+    var allInlineBase: Int
         inline get() = 1
         inline set(varue) { varue.hashCode() }
-
 }
