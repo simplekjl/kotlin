@@ -10,18 +10,20 @@
       <element id="file-copy" path="$PROJECT_DIR$/bootstrap/build.txt" />
       <element id="file-copy" path="$PROJECT_DIR$/bootstrap/kotlin-stdlib-jre7.jar" />
       <element id="file-copy" path="$PROJECT_DIR$/bootstrap/kotlin-stdlib-jre8.jar" />
-      <element id="file-copy" path="$PROJECT_DIR$/bootstrap/kotlin-stdlib-minimal-for-test.jar" />
+      <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-minimal-for-test/1.3.30-dev-940/5e69eb7bd91381ffb3d4a60b95c9a2c02d99f77d/kotlin-stdlib-minimal-for-test-1.3.30-dev-940.jar" output-file-name="kotlin-stdlib-minimal-for-test.jar" />
       <element id="directory" name="builtins">
-        <element id="dir-copy" path="$PROJECT_DIR$/bootstrap/builtins" />
+        <element id="extracted-dir" path="/Users/jetbrains/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/builtins/1.3.30-dev-940/bed3a4988d7a91306ed6c244b16aeb468492c1a7/builtins-1.3.30-dev-940.jar" path-in-jar="/" />
       </element>
       <element id="directory" name="common">
-        <element id="dir-copy" path="$PROJECT_DIR$/bootstrap/common" />
+        <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.3.30-dev-940/7533fc04c3ab770eab39aaedd4cbf96c9fe058a4/kotlin-stdlib-common-1.3.30-dev-940.jar" output-file-name="kotlin-stdlib-common.jar" />
+        <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-common/1.3.30-dev-940/cdc1f4a7f326022c0c639618926a01ac00f94cdd/kotlin-stdlib-common-1.3.30-dev-940-sources.jar" output-file-name="kotlin-stdlib-common-sources.jar" />
       </element>
       <element id="directory" name="js">
-        <element id="dir-copy" path="$PROJECT_DIR$/bootstrap/js" />
+        <element id="extracted-dir" path="/Users/jetbrains/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-js/1.3.30-dev-940/ca864e09654fec95db8a0e22504a10fffa570fd0/kotlin-stdlib-js-1.3.30-dev-940.jar" path-in-jar="/kotlin.js" />
+        <element id="extracted-dir" path="/Users/jetbrains/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-js/1.3.30-dev-940/ca864e09654fec95db8a0e22504a10fffa570fd0/kotlin-stdlib-js-1.3.30-dev-940.jar" path-in-jar="/kotlin.js.map" />
       </element>
       <element id="directory" name="maven">
-        <element id="dir-copy" path="$PROJECT_DIR$/bootstrap/maven" />
+        <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.3.30-dev-940/e490d136760d8c2e1bcf3af22abc35048830e126/kotlin-stdlib-1.3.30-dev-940-sources.jar" output-file-name="kotlin-stdlib-sources.jar" />
       </element>
       <element id="directory" name="kotlinc">
         <element id="artifact" artifact-name="kotlinc" />

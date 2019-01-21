@@ -227,11 +227,11 @@
         <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.3.30-dev-824/9593a99a40636833a7ba075d83301ffaa42f4411/kotlin-stdlib-jdk8-1.3.30-dev-824.jar" output-file-name="kotlin-stdlib-jdk8.jar" />
         <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.3.30-dev-824/1e1f65448925444d68c516c09c2b0752d640717/kotlin-stdlib-jdk7-1.3.30-dev-824.jar" output-file-name="kotlin-stdlib-jdk7.jar" />
         <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.3.30-dev-824/a910d5b2331911f9f91823bc0149bf6edbdb943d/kotlin-stdlib-1.3.30-dev-824.jar" output-file-name="kotlin-stdlib.jar" />
-        <element id="file-copy" path="$PROJECT_DIR$/bootstrap/kotlin-stdlib-jdk7-sources.jar" />
-        <element id="file-copy" path="$PROJECT_DIR$/bootstrap/kotlin-stdlib-jdk8-sources.jar" />
-        <element id="file-copy" path="$PROJECT_DIR$/bootstrap/kotlin-stdlib-js-sources.jar" />
-        <element id="file-copy" path="$PROJECT_DIR$/bootstrap/kotlin-stdlib-js.jar" />
-        <element id="file-copy" path="$PROJECT_DIR$/bootstrap/kotlin-stdlib-sources.jar" />
+        <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.3.30-dev-940/2703dca7654193b788237ee65531bced5c2d4901/kotlin-stdlib-jdk7-1.3.30-dev-940-sources.jar" output-file-name="kotlin-stdlib-jdk7-sources.jar" />
+        <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.3.30-dev-940/1c854c0619ff8fa1d59910c15269e75988245daf/kotlin-stdlib-jdk8-1.3.30-dev-940-sources.jar" output-file-name="kotlin-stdlib-jdk8-sources.jar" />
+        <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-js/1.3.30-dev-940/d25853099013df0952f7a2c81822f42415e55235/kotlin-stdlib-js-1.3.30-dev-940-sources.jar" output-file-name="kotlin-stdlib-js-sources.jar" />
+        <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-js/1.3.30-dev-940/ca864e09654fec95db8a0e22504a10fffa570fd0/kotlin-stdlib-js-1.3.30-dev-940.jar" output-file-name="kotlin-stdlib-js.jar" />
+        <element id="file-copy" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.3.30-dev-940/e490d136760d8c2e1bcf3af22abc35048830e126/kotlin-stdlib-1.3.30-dev-940-sources.jar" output-file-name="kotlin-stdlib-sources.jar" />
         <element id="artifact" artifact-name="kotlin-compiler.jar" />
         <element id="artifact" artifact-name="kotlin-reflect.jar" />
         <element id="artifact" artifact-name="kotlin-daemon-client.jar" />
