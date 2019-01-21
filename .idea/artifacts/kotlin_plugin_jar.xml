@@ -3,7 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/kotlin_plugin_jar</output-path>
     <root id="archive" name="kotlin-plugin.jar">
       <element id="directory" name="kotlin">
-        <element id="dir-copy" path="$PROJECT_DIR$/bootstrap/builtins/kotlin" />
+        <element id="extracted-dir" path="/Users/jetbrains/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/builtins/1.3.30-dev-940/bed3a4988d7a91306ed6c244b16aeb468492c1a7/builtins-1.3.30-dev-940.jar" path-in-jar="/kotlin" />
       </element>
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/prepare/idea-plugin/build/tmp/shadowJar/MANIFEST.MF" />
