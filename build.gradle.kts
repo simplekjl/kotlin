@@ -80,6 +80,8 @@ val appcodeKotlinPlugin by configurations.creating
 val clionKotlinPlugin by configurations.creating
 
 val includeCidr by extra(project.getBooleanProperty("cidrPluginsEnabled") ?: false)
+val isJpsBuildEnabled = findProperty("jpsBuild")?.toString() == "true"
+val jpsBootstrap by configurations.creating
 
 dependencies {
     if (includeCidr) {
@@ -222,7 +224,6 @@ extra["compilerModules"] = arrayOf(
         ":compiler:ir.tree",
         ":compiler:ir.psi2ir",
         ":compiler:ir.backend.common",
-        ":compiler:backend.jvm",
         ":compiler:backend.js",
         ":compiler:backend-common",
         ":compiler:backend",
@@ -836,7 +837,6 @@ fun org.jetbrains.gradle.ext.JUnit.configureForKotlin() {
     workingDirectory = rootDir.toString()
 }
 
-val isJpsBuildEnabled = findProperty("jpsBuild")?.toString() == "true"
 if (isJpsBuildEnabled && System.getProperty("idea.active") != null) {
     allprojects {
         apply(mapOf("plugin" to "idea"))
