@@ -15,8 +15,9 @@ dependencies {
     compile(project(":core:descriptors"))
     compile(project(":compiler:fir:tree"))
     compile(project(":compiler:ir.tree"))
+    compile(commonDep("org.jetbrains:annotations"))
 
-    compileOnly(intellijCoreDep()) { includeJars("intellij-core", "annotations") }
+    compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
     
     testRuntime(intellijDep())
 

@@ -9,7 +9,8 @@ jvmTarget = "1.6"
 dependencies {
     compile(project(":compiler:util"))
     compile(project(":compiler:frontend"))
-    compileOnly(intellijCoreDep()) { includeJars("intellij-core", "annotations") }
+    compile(commonDep("org.jetbrains:annotations"))
+    compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
     compileOnly(intellijDep()) { includeJars("trove4j") }
 }
 

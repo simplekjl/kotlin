@@ -12,7 +12,8 @@ dependencies {
     compile(project(":compiler:frontend"))
     compile(project(":compiler:frontend.java"))
     compile(project(":compiler:serialization"))
-    compileOnly(intellijCoreDep()) { includeJars("intellij-core", "annotations", "asm-all", rootProject = rootProject) }
+    compile(commonDep("org.jetbrains:annotations"))
+    compileOnly(intellijCoreDep()) { includeJars("intellij-core", "asm-all", rootProject = rootProject) }
 }
 
 sourceSets {

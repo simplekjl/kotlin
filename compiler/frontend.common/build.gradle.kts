@@ -6,7 +6,8 @@ plugins {
 dependencies {
     compile(project(":compiler:psi"))
     compile(project(":compiler:container"))
-    compileOnly(intellijCoreDep()) { includeJars("intellij-core", "annotations") }
+    compile(commonDep("org.jetbrains:annotations"))
+    compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
 }
 
 

@@ -16,17 +16,17 @@ dependencies {
     compile(project(":compiler:cli"))
     compile(project(":kotlin-build-common"))
     compile(project(":compiler:daemon-common"))
+    compile(commonDep("org.jetbrains:annotations"))
     compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
-    compileOnly(intellijDep()) { includeJars("annotations") }
 
     testCompile(commonDep("junit:junit"))
     testCompile(project(":kotlin-test:kotlin-test-junit"))
     testCompile(kotlinStdlib())
-    testCompileOnly("org.jetbrains:annotations:13.0")
+    testCompile(commonDep("org.jetbrains:annotations"))
     testCompile(projectTests(":kotlin-build-common"))
     testCompile(projectTests(":compiler:tests-common"))
     testCompileOnly(intellijCoreDep()) { includeJars("intellij-core") }
-    testCompile(intellijDep()) { includeJars("annotations", "log4j", "jdom") }
+    testCompile(intellijDep()) { includeJars("log4j", "jdom") }
 }
 
 sourceSets {

@@ -12,8 +12,9 @@ jvmTarget = "1.6"
 
 dependencies {
     compile(project(":core:descriptors"))
-
-    compileOnly(intellijCoreDep()) { includeJars("intellij-core", "annotations") }
+    compile(commonDep("org.jetbrains:annotations"))
+    
+    compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
 }
 
 sourceSets {

@@ -10,8 +10,9 @@ dependencies {
     compile(project(":compiler:frontend.common"))
     compile(project(":compiler:frontend.java"))
     compile(project(":compiler:fir:resolve"))
+    compile(commonDep("org.jetbrains:annotations"))
 
-    compileOnly(intellijCoreDep()) { includeJars("intellij-core", "annotations") }
+    compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
 }
 
 

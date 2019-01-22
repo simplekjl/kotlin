@@ -15,8 +15,9 @@ dependencies {
     compile(project(":core:descriptors"))
     compile(project(":compiler:fir:cones"))
     compile(project(":compiler:ir.tree"))
+    compile(commonDep("org.jetbrains:annotations"))
     // Necessary only to store bound PsiElement inside FirElement
-    compileOnly(intellijCoreDep()) { includeJars("intellij-core", "annotations") }
+    compileOnly(intellijCoreDep()) { includeJars("intellij-core") }
 }
 
 sourceSets {

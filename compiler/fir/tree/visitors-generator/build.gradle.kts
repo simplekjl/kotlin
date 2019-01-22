@@ -14,10 +14,11 @@ jvmTarget = "1.6"
 
 dependencies {
     compile(project(":compiler:psi"))
+    compile(commonDep("org.jetbrains:annotations"))
 
     compile(intellijCoreDep()) { includeJars("intellij-core") }
     compile(intellijDep()) {
-        includeJars("trove4j", "picocontainer", "annotations", rootProject = rootProject)
+        includeJars("trove4j", "picocontainer", rootProject = rootProject)
         isTransitive = false
     }
     compile(intellijDep()) { includeJars("guava", rootProject = rootProject) }
