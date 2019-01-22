@@ -9,7 +9,7 @@ import proguard.gradle.ProGuardTask
 buildscript {
     extra["defaultSnapshotVersion"] = "1.3-SNAPSHOT"
 
-    kotlinBootstrapFrom(BootstrapOption.TeamCity("1.3.20-dev-1708", onlySuccessBootstrap = false))
+    kotlinBootstrapFrom(BootstrapOption.TeamCity("1.3.30-dev-991", onlySuccessBootstrap = false))
 
     repositories.withRedirector(project) {
         bootstrapKotlinRepo?.let(::maven)
@@ -218,6 +218,7 @@ extra["compilerModules"] = arrayOf(
         ":compiler:ir.tree",
         ":compiler:ir.psi2ir",
         ":compiler:ir.backend.common",
+        ":compiler:backend.jvm",
         ":compiler:backend.js",
         ":compiler:backend-common",
         ":compiler:backend",

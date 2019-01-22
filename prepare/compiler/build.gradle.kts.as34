@@ -47,7 +47,7 @@ val compiledModulesSources = compilerModules.map {
 }
 
 dependencies {
-    compile(project(":kotlin-stdlib"))
+    compile(kotlinStdlib())
     compile(project(":kotlin-script-runtime"))
     compile(project(":kotlin-reflect"))
     compile(commonDep("org.jetbrains.intellij.deps", "trove4j"))
@@ -71,7 +71,7 @@ dependencies {
 
     trove4jJar(intellijDep()) { includeIntellijCoreJarDependencies(project) { it.startsWith("trove4j") } }
 
-    fatJarContents(project(":core:builtins", configuration = "builtins"))
+    fatJarContents(project(":core:builtins"))
     fatJarContents(commonDep("javax.inject"))
     fatJarContents(commonDep("org.jline", "jline"))
     fatJarContents(commonDep("org.fusesource.jansi", "jansi"))

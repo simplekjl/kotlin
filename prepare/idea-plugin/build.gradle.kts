@@ -16,6 +16,7 @@ val projectsToShadow by extra(listOf(
         ":plugins:annotation-based-compiler-plugins-ide-support",
         ":compiler:backend",
         ":compiler:backend-common",
+        ":compiler:backend.jvm",
         ":compiler:ir.backend.common",
         ":kotlin-build-common",
         ":compiler:cli-common",
@@ -75,11 +76,11 @@ val sideJars by configurations.creating
 
 dependencies {
     packedJars(protobufFull())
-    packedJars(project(":core:builtins", configuration = "builtins"))
+    packedJars(project(":core:builtins"))
     sideJars(project(":kotlin-script-runtime"))
-    sideJars(project(":kotlin-stdlib"))
-    sideJars(project(":kotlin-stdlib-jdk7"))
-    sideJars(project(":kotlin-stdlib-jdk8"))
+    sideJars(kotlinStdlib())
+    sideJars(kotlinStdlib("jdk7"))
+    sideJars(kotlinStdlib("jdk8"))
     sideJars(project(":kotlin-reflect"))
     sideJars(project(":kotlin-compiler-client-embeddable"))
     sideJars(commonDep("io.javaslang", "javaslang"))
