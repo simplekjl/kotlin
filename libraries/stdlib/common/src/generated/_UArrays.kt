@@ -576,6 +576,90 @@ public inline fun UShortArray.copyOfRange(fromIndex: Int, toIndex: Int): UShortA
 }
 
 /**
+ * Returns an array containing all elements of the original array and then all elements of the given [elements] collection.
+ */
+@SinceKotlin("1.3")
+@ExperimentalUnsignedTypes
+public operator fun UIntArray.plus(elements: Collection<UInt>): UIntArray {
+    var index = size
+    val result = storage.copyOf(size + elements.size)
+    for (element in elements) result[index++] = element.toInt()
+    return UIntArray(result)
+}
+
+/**
+ * Returns an array containing all elements of the original array and then all elements of the given [elements] collection.
+ */
+@SinceKotlin("1.3")
+@ExperimentalUnsignedTypes
+public operator fun ULongArray.plus(elements: Collection<ULong>): ULongArray {
+    var index = size
+    val result = storage.copyOf(size + elements.size)
+    for (element in elements) result[index++] = element.toLong()
+    return ULongArray(result)
+}
+
+/**
+ * Returns an array containing all elements of the original array and then all elements of the given [elements] collection.
+ */
+@SinceKotlin("1.3")
+@ExperimentalUnsignedTypes
+public operator fun UByteArray.plus(elements: Collection<UByte>): UByteArray {
+    var index = size
+    val result = storage.copyOf(size + elements.size)
+    for (element in elements) result[index++] = element.toByte()
+    return UByteArray(result)
+}
+
+/**
+ * Returns an array containing all elements of the original array and then all elements of the given [elements] collection.
+ */
+@SinceKotlin("1.3")
+@ExperimentalUnsignedTypes
+public operator fun UShortArray.plus(elements: Collection<UShort>): UShortArray {
+    var index = size
+    val result = storage.copyOf(size + elements.size)
+    for (element in elements) result[index++] = element.toShort()
+    return UShortArray(result)
+}
+
+/**
+ * Returns an array containing all elements of the original array and then all elements of the given [elements] array.
+ */
+@SinceKotlin("1.3")
+@ExperimentalUnsignedTypes
+public operator fun UIntArray.plus(elements: UIntArray): UIntArray {
+    return UIntArray(storage + elements.storage)
+}
+
+/**
+ * Returns an array containing all elements of the original array and then all elements of the given [elements] array.
+ */
+@SinceKotlin("1.3")
+@ExperimentalUnsignedTypes
+public operator fun ULongArray.plus(elements: ULongArray): ULongArray {
+    return ULongArray(storage + elements.storage)
+}
+
+/**
+ * Returns an array containing all elements of the original array and then all elements of the given [elements] array.
+ */
+@SinceKotlin("1.3")
+@ExperimentalUnsignedTypes
+public operator fun UByteArray.plus(elements: UByteArray): UByteArray {
+    return UByteArray(storage + elements.storage)
+}
+
+/**
+ * Returns an array containing all elements of the original array and then all elements of the given [elements] array.
+ */
+@SinceKotlin("1.3")
+@ExperimentalUnsignedTypes
+public operator fun UShortArray.plus(elements: UShortArray): UShortArray {
+    return UShortArray(storage + elements.storage)
+}
+
+/**
  * Returns an array of type [ByteArray], which is a copy of this array where each element is a signed reinterpretation
  * of the corresponding element of this array.
  */
