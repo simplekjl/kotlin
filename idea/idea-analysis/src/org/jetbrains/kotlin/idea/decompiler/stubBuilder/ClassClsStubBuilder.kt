@@ -265,7 +265,7 @@ private class ClassClsStubBuilder(
                         LOG.info(msg)
                     } else {
                         // General case, report
-                        LOG.error(msg)
+                        LOG.warn(msg)
                     }
                     return
                 }
