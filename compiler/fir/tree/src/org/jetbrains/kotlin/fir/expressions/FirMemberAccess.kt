@@ -17,4 +17,9 @@ interface FirMemberAccess : FirExpression {
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitMemberAccess(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        calleeReference.accept(visitor, data)
+        explicitReceiver?.accept(visitor, data)
+    }
 }

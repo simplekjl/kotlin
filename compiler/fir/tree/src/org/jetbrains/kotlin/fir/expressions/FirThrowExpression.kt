@@ -12,4 +12,8 @@ interface FirThrowExpression : FirExpression {
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitThrowExpression(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        exception.accept(visitor, data)
+    }
 }

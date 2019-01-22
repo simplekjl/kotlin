@@ -16,4 +16,9 @@ interface FirTypeOperatorCall : FirOperatorCall {
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitTypeOperatorCall(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        type.accept(visitor, data)
+        super.acceptChildren(visitor, data)
+    }
 }

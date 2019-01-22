@@ -16,4 +16,10 @@ interface FirTryExpression : FirExpression {
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitTryExpression(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        tryBlock.accept(visitor, data)
+        catches.forEach { it.accept(visitor, data) }
+        finallyBlock?.accept(visitor, data)
+    }
 }

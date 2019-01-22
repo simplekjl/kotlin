@@ -14,4 +14,9 @@ interface FirPropertySet : FirMemberAccess {
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitPropertySet(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        value.accept(visitor, data)
+        super.acceptChildren(visitor, data)
+    }
 }

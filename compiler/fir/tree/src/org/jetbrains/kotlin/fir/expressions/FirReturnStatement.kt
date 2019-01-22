@@ -13,4 +13,8 @@ interface FirReturnStatement : FirJump<FirFunction> {
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitReturnStatement(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        result.accept(visitor, data)
+    }
 }
