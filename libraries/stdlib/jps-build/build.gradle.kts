@@ -3,7 +3,7 @@ import java.util.regex.Pattern
 description = "Kotlin Mock Runtime for Tests (JPS)"
 
 repositories {
-    maven("https://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:(id:Kotlin_dev_Compiler),number:1.3.30-dev-940,branch:default:any/artifacts/content/internal/repo")
+    maven("https://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:(id:Kotlin_dev_Compiler),number:1.3.30-dev-991,branch:default:any/artifacts/content/internal/repo")
 }
 
 val distLib by configurations.creating
