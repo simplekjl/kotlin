@@ -4,6 +4,8 @@ package foo
 // CHECK_NOT_CALLED: test
 // CHECK_NOT_CALLED: fn
 
+private const val testPackagePrefix = ""
+
 class A(val x: Any? = null) {
     inline fun <reified T, reified R> test(b: B) = b.fn<T, R>()
 
@@ -19,10 +21,10 @@ fun box(): String {
     val x = X()
     val y = Y()
 
-    assertEquals(true, A(x).test<X, Y>(B(y)), "A(x).test<X, Y>(B(y))")
-    assertEquals(false, A(y).test<X, Y>(B(y)), "A(y).test<X, Y>(B(y))")
-    assertEquals(false, A(y).test<X, Y>(B(x)), "A(y).test<X, Y>(B(x))")
-    assertEquals(false, A(x).test<X, Y>(B(x)), "A(x).test<X, Y>(B(x))")
+    assertEquals(true, A(x).test<X, Y>(B(y)), "${testPackagePrefix}A(x).test<X, Y>(${testPackagePrefix}B(y))")
+    assertEquals(false, A(y).test<X, Y>(B(y)), "${testPackagePrefix}A(y).test<X, Y>(${testPackagePrefix}B(y))")
+    assertEquals(false, A(y).test<X, Y>(B(x)), "${testPackagePrefix}A(y).test<X, Y>(${testPackagePrefix}B(x))")
+    assertEquals(false, A(x).test<X, Y>(B(x)), "${testPackagePrefix}A(x).test<X, Y>(${testPackagePrefix}B(x))")
 
     return "OK"
 }

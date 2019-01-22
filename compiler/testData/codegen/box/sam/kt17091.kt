@@ -13,6 +13,8 @@ class A2 {
 
 typealias Z = String
 
+private const val testPackagePrefix = ""
+
 class A {
     fun doWork(job: () -> Unit) {
         java.lang.Runnable(job).run()
@@ -23,9 +25,9 @@ fun box(): String {
     var result = "fail"
     A().doWork { result = "OK" }
 
-    if (java.lang.Class.forName("Kt17091Kt\$sam\$java_lang_Runnable$0") == null) return "fail: can't find sam wrapper"
+    if (java.lang.Class.forName("${testPackagePrefix}Kt17091Kt\$sam\$java_lang_Runnable$0") == null) return "fail: can't find sam wrapper"
 
-    if (java.lang.Class.forName("A2\$sam\$java_lang_Runnable$0") == null) return "fail 2: can't find sam wrapper"
+    if (java.lang.Class.forName("${testPackagePrefix}A2\$sam\$java_lang_Runnable$0") == null) return "fail 2: can't find sam wrapper"
 
     return result
 }

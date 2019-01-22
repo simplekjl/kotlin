@@ -15,6 +15,8 @@ import kotlin.coroutines.jvm.internal.*
 
 suspend fun dummy() {}
 
+private const val testPackagePrefix = ""
+
 class Test {
     suspend fun getStackTraceElement(): StackTraceElement {
         dummy() // to force state-machine generation
@@ -31,7 +33,7 @@ fun builder(c: suspend () -> Unit) {
 fun box(): String {
     var res = "OK"
     builder {
-        if (Test().getStackTraceElement().className != "some.llong.name.Test") {
+        if (Test().getStackTraceElement().className != "${testPackagePrefix}some.llong.name.Test") {
             res = Test().getStackTraceElement().className
         }
     }

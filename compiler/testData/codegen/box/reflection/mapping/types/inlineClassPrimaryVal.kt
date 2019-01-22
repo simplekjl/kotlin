@@ -6,6 +6,8 @@ import kotlin.reflect.KCallable
 import kotlin.reflect.jvm.*
 import kotlin.test.assertEquals
 
+private const val testPackagePrefix = ""
+
 inline class Z1(val publicX: Int) {
     companion object {
         val publicXRef = Z1::publicX
@@ -33,26 +35,26 @@ fun KCallable<*>.getJavaTypesOfParams() = parameters.map { it.type.javaType }.to
 fun KCallable<*>.getJavaTypeOfResult() = returnType.javaType.toString()
 
 fun box(): String {
-    assertEquals("[class Z1]",  Z1.publicXRef.getJavaTypesOfParams())
-    assertEquals("int",         Z1.publicXRef.getJavaTypeOfResult())
+    assertEquals("[class ${testPackagePrefix}Z1]",  Z1.publicXRef.getJavaTypesOfParams())
+    assertEquals("int",                             Z1.publicXRef.getJavaTypeOfResult())
 
     assertEquals("[]",          Z1.publicXBoundRef.getJavaTypesOfParams())
     assertEquals("int",         Z1.publicXBoundRef.getJavaTypeOfResult())
 
-    assertEquals("[class Z2]",  Z2.internalXRef.getJavaTypesOfParams())
-    assertEquals("int",         Z2.internalXRef.getJavaTypeOfResult())
+    assertEquals("[class ${testPackagePrefix}Z2]",  Z2.internalXRef.getJavaTypesOfParams())
+    assertEquals("int",                             Z2.internalXRef.getJavaTypeOfResult())
 
     assertEquals("[]",          Z2.internalXBoundRef.getJavaTypesOfParams())
     assertEquals("int",         Z2.internalXBoundRef.getJavaTypeOfResult())
 
-    assertEquals("[class Z3]",  Z3.privateXRef.getJavaTypesOfParams())
-    assertEquals("int",         Z3.privateXRef.getJavaTypeOfResult())
+    assertEquals("[class ${testPackagePrefix}Z3]",  Z3.privateXRef.getJavaTypesOfParams())
+    assertEquals("int",                             Z3.privateXRef.getJavaTypeOfResult())
 
     assertEquals("[]",          Z3.privateXBoundRef.getJavaTypesOfParams())
     assertEquals("int",         Z3.privateXBoundRef.getJavaTypeOfResult())
 
 
-    assertEquals("[class ZZ]",  ZZ::x.getJavaTypesOfParams())
+    assertEquals("[class ${testPackagePrefix}ZZ]",  ZZ::x.getJavaTypesOfParams())
 
     // KT-28170
     assertEquals("int",         ZZ::x.getJavaTypeOfResult())

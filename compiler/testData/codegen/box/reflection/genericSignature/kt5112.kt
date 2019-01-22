@@ -4,6 +4,8 @@
 
 package test
 
+private const val testPackagePrefix = ""
+
 class G<T>(val s: T) {
 
 }
@@ -22,9 +24,9 @@ public class ErrorsJvmClass {
 
 fun box(): String {
     val genericTypeInClassObject = ErrorsJvmTrait.javaClass.getDeclaredField("param").getGenericType()
-    if (genericTypeInClassObject.toString() != "test.G<java.lang.String>") return "fail1: $genericTypeInClassObject"
+    if (genericTypeInClassObject.toString() != "${testPackagePrefix}test.G<java.lang.String>") return "fail1: $genericTypeInClassObject"
 
     val genericTypeInClass = ErrorsJvmClass::class.java.getField("param").getGenericType()
-    if (genericTypeInClass.toString() != "test.G<java.lang.String>") return "fail1: genericTypeInClass"
+    if (genericTypeInClass.toString() != "${testPackagePrefix}test.G<java.lang.String>") return "fail1: genericTypeInClass"
     return "OK"
 }

@@ -5,6 +5,8 @@
 
 package test
 
+private const val testPackagePrefix = ""
+
 class A {}
 
 fun getMain(className: String): java.lang.reflect.Method {
@@ -13,8 +15,8 @@ fun getMain(className: String): java.lang.reflect.Method {
 }
 
 fun box(): String {
-    val bMain = getMain("pkg.AKt")
-    val cMain = getMain("pkg.BKt")
+    val bMain = getMain("${testPackagePrefix}pkg.AKt")
+    val cMain = getMain("${testPackagePrefix}pkg.BKt")
 
     val args = Array(1, { "" })
 

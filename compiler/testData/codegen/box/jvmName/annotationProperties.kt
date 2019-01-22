@@ -14,14 +14,15 @@ annotation class Meta(val anno: Anno)
 @Meta(Anno(value = "OK"))
 fun bar() {}
 
+private const val testPackagePrefix = ""
 
 fun box(): String {
     val f = Foo::class.annotations.single()
-    assertEquals("@Anno(uglyJvmName=OK)", f.toString())
+    assertEquals("@${testPackagePrefix}Anno(uglyJvmName=OK)", f.toString())
     assertEquals("OK", (f as Anno).value)
 
     val b = ::bar.annotations.single()
-    assertEquals("@Meta(anno=@Anno(uglyJvmName=OK))", b.toString())
+    assertEquals("@${testPackagePrefix}Meta(anno=@${testPackagePrefix}Anno(uglyJvmName=OK))", b.toString())
     assertEquals("OK", (b as Meta).anno.value)
 
     return "OK"

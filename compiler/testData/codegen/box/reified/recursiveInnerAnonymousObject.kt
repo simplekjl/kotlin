@@ -5,6 +5,8 @@
 
 import kotlin.test.assertEquals
 
+private const val testPackagePrefix = ""
+
 abstract class A<R> {
     abstract fun f(): String
     override fun toString() = f()
@@ -34,7 +36,7 @@ fun box(): String {
     val x2 = res.second.bar()
     assertEquals("OK", x1.toString())
     assertEquals("OK", x2.toString())
-    assertEquals("A<java.lang.Integer>", x1.javaClass.getGenericSuperclass()?.toString())
-    assertEquals("A<java.lang.String>", x2.javaClass.getGenericSuperclass()?.toString())
+    assertEquals("${testPackagePrefix}A<java.lang.Integer>", x1.javaClass.getGenericSuperclass()?.toString())
+    assertEquals("${testPackagePrefix}A<java.lang.String>", x2.javaClass.getGenericSuperclass()?.toString())
     return "OK"
 }

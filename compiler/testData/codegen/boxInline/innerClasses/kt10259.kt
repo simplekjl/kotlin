@@ -13,6 +13,8 @@ inline fun test(s: () -> Unit) {
 
 import test.*
 
+private const val testPackagePrefix = ""
+
 fun box(): String {
     var encl1 = "fail";
     var encl2 = "fail";
@@ -28,8 +30,8 @@ fun box(): String {
         }()
     }
 
-    if (encl1 != "_2Kt\$box\$\$inlined\$test\$lambda$1") return "fail 1: $encl1"
-    if (encl2 != "_2Kt\$box\$\$inlined\$test\$lambda$1$2") return "fail 2: $encl2"
+    if (encl1 != "${testPackagePrefix}_2Kt\$box\$\$inlined\$test\$lambda$1") return "fail 1: $encl1"
+    if (encl2 != "${testPackagePrefix}_2Kt\$box\$\$inlined\$test\$lambda$1$2") return "fail 2: $encl2"
 
     return "OK"
 }

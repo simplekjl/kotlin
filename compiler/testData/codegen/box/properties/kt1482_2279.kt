@@ -1,10 +1,12 @@
 // TARGET_BACKEND: JVM
+// WITH_RUNTIME
+private const val testPackagePrefix = ""
 
 abstract class ClassValAbstract {
     abstract var a: Int
 
     companion object {
-        val methods = (this as java.lang.Object).getClass()?.getClassLoader()?.loadClass("ClassValAbstract")?.getMethods()!!
+        val methods = ClassValAbstract::class.java.getMethods()!!
     }
 }
 

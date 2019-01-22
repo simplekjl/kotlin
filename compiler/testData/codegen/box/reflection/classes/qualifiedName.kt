@@ -5,15 +5,17 @@
 
 import kotlin.test.assertEquals
 
+private const val testPackagePrefix = ""
+
 class Klass {
     class Nested
     companion object
 }
 
 fun box(): String {
-    assertEquals("Klass", Klass::class.qualifiedName)
-    assertEquals("Klass.Nested", Klass.Nested::class.qualifiedName)
-    assertEquals("Klass.Companion", Klass.Companion::class.qualifiedName)
+    assertEquals("${testPackagePrefix}Klass", Klass::class.qualifiedName)
+    assertEquals("${testPackagePrefix}Klass.Nested", Klass.Nested::class.qualifiedName)
+    assertEquals("${testPackagePrefix}Klass.Companion", Klass.Companion::class.qualifiedName)
 
     class Local
     assertEquals(null, Local::class.qualifiedName)

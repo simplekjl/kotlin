@@ -7,6 +7,8 @@
 
 package test
 
+private const val testPackagePrefix = ""
+
 annotation class A
 annotation class B(val s: String)
 
@@ -18,7 +20,7 @@ fun box(): String {
     val createA = A::class.constructors.single()
 
     val a1 = createA.call()
-    if (a1.toString() != "@test.A()") return "Fail: toString does not correspond to the documentation of java.lang.annotation.Annotation#toString: $a1"
+    if (a1.toString() != "@${testPackagePrefix}test.A()") return "Fail: toString does not correspond to the documentation of java.lang.annotation.Annotation#toString: $a1"
 
     val a2 = createA.call()
     if (a1 === a2) return "Fail: instances created by the constructor should be different"
@@ -28,7 +30,7 @@ fun box(): String {
 
     val createB = B::class.constructors.single()
     val b1 = createB.call("1")
-    if (b1.toString() != "@test.B(s=1)") return "Fail: toString does not correspond to the documentation of java.lang.annotation.Annotation#toString: $b1"
+    if (b1.toString() != "@${testPackagePrefix}test.B(s=1)") return "Fail: toString does not correspond to the documentation of java.lang.annotation.Annotation#toString: $b1"
     if (b1 != b1) return "Fail: instance should be equal to itself"
 
     val b2 = createB.call("2")

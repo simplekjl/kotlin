@@ -5,6 +5,8 @@
 
 import kotlin.test.assertEquals
 
+private const val testPackagePrefix = ""
+
 abstract class A<R> {
     abstract fun f(): String
 }
@@ -20,6 +22,6 @@ inline fun<reified T> foo(): A<T> {
 fun box(): String {
     val y = foo<String>();
     assertEquals("OK", y.f())
-    assertEquals("A<java.lang.String>", y.javaClass.getGenericSuperclass()?.toString())
+    assertEquals("${testPackagePrefix}A<java.lang.String>", y.javaClass.getGenericSuperclass()?.toString())
     return "OK"
 }

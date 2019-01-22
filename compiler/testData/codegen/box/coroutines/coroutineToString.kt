@@ -3,10 +3,13 @@
 // TARGET_BACKEND: JVM
 // WITH_REFLECT
 // WITH_COROUTINES
-
+package test
 import helpers.*
 import kotlin.coroutines.*
+
 import kotlin.coroutines.intrinsics.*
+
+private const val testPackagePrefix = ""
 
 class A<T : String> {
     suspend fun foo() {}
@@ -31,5 +34,5 @@ fun box(): String {
         result = A<String>().bar()
     }
 
-    return if (result == "Continuation at A.bar(coroutineToString.kt:16)") "OK" else "Fail: $result"
+    return if (result == "Continuation at ${testPackagePrefix}test.A.bar(coroutineToString.kt:19)") "OK" else "Fail: $result"
 }

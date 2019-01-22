@@ -4,12 +4,14 @@
 
 import kotlin.test.assertEquals
 
+private const val testPackagePrefix = ""
+
 enum class E { X, Y, Z }
 
 fun box(): String {
-    assertEquals("fun values(): kotlin.Array<E>", E::values.toString())
+    assertEquals("fun values(): kotlin.Array<${testPackagePrefix}E>", E::values.toString())
     assertEquals(listOf(E.X, E.Y, E.Z), E::values.call().toList())
-    assertEquals("fun valueOf(kotlin.String): E", E::valueOf.toString())
+    assertEquals("fun valueOf(kotlin.String): ${testPackagePrefix}E", E::valueOf.toString())
     assertEquals(E.Y, E::valueOf.call("Y"))
 
     return "OK"

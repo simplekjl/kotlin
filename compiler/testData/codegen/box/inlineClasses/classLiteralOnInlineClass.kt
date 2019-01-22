@@ -11,6 +11,8 @@ inline class IcLong(val l: Long)
 inline class IcAny(val a: Any?)
 inline class IcOverIc(val o: IcLong)
 
+private const val testPackagePrefix = ""
+
 fun check(c: KClass<*>, s: String) {
     if (c.toString() != s) error("Fail, expected: $s, actual: $c")
 }
@@ -30,10 +32,10 @@ fun box(): String {
     val a = IcAny("foo")
     val o = IcOverIc(IcLong(0))
 
-    check(i::class, "class root.IcInt")
-    check(l::class, "class root.IcLong")
-    check(a::class, "class root.IcAny")
-    check(o::class, "class root.IcOverIc")
+    check(i::class, "class ${testPackagePrefix}root.IcInt")
+    check(l::class, "class ${testPackagePrefix}root.IcLong")
+    check(a::class, "class ${testPackagePrefix}root.IcAny")
+    check(o::class, "class ${testPackagePrefix}root.IcOverIc")
     check(1u::class, "class kotlin.UInt")
 
     check(i::class.simpleName, "IcInt")
@@ -42,31 +44,31 @@ fun box(): String {
     check(o::class.simpleName, "IcOverIc")
     check(1u::class.simpleName, "UInt")
 
-    reifiedCheck<IcInt>("class root.IcInt", "IcInt")
-    reifiedCheck<IcLong>("class root.IcLong", "IcLong")
-    reifiedCheck<IcAny>("class root.IcAny", "IcAny")
-    reifiedCheck<IcOverIc>("class root.IcOverIc", "IcOverIc")
+    reifiedCheck<IcInt>("class ${testPackagePrefix}root.IcInt", "IcInt")
+    reifiedCheck<IcLong>("class ${testPackagePrefix}root.IcLong", "IcLong")
+    reifiedCheck<IcAny>("class ${testPackagePrefix}root.IcAny", "IcAny")
+    reifiedCheck<IcOverIc>("class ${testPackagePrefix}root.IcOverIc", "IcOverIc")
     reifiedCheck<UInt>("class kotlin.UInt", "UInt")
 
     val arrI = arrayOf(i)
-    check(arrI[0]::class, "class root.IcInt")
+    check(arrI[0]::class, "class ${testPackagePrefix}root.IcInt")
 
     val arrL = arrayOf(l)
-    check(arrL[0]::class, "class root.IcLong")
+    check(arrL[0]::class, "class ${testPackagePrefix}root.IcLong")
 
     val arrA = arrayOf(a)
-    check(arrA[0]::class, "class root.IcAny")
+    check(arrA[0]::class, "class ${testPackagePrefix}root.IcAny")
 
     val arrO = arrayOf(o)
-    check(arrO[0]::class, "class root.IcOverIc")
+    check(arrO[0]::class, "class ${testPackagePrefix}root.IcOverIc")
 
     val arrU = arrayOf(1u)
     check(arrU[0]::class, "class kotlin.UInt")
 
-    check(IcInt::class, "class root.IcInt")
-    check(IcLong::class, "class root.IcLong")
-    check(IcAny::class, "class root.IcAny")
-    check(IcOverIc::class, "class root.IcOverIc")
+    check(IcInt::class, "class ${testPackagePrefix}root.IcInt")
+    check(IcLong::class, "class ${testPackagePrefix}root.IcLong")
+    check(IcAny::class, "class ${testPackagePrefix}root.IcAny")
+    check(IcOverIc::class, "class ${testPackagePrefix}root.IcOverIc")
     check(UInt::class, "class kotlin.UInt")
 
     return "OK"

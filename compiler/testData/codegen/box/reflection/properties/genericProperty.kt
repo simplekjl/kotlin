@@ -7,10 +7,12 @@
 
 import kotlin.test.assertEquals
 
+private const val testPackagePrefix = ""
+
 data class Box<T>(val element: T)
 
 fun box(): String {
     val p = Box<String>::element
-    assertEquals("val Box<T>.element: T", p.toString())
+    assertEquals("val ${testPackagePrefix}Box<T>.element: T", p.toString())
     return p.call(Box("OK"))
 }

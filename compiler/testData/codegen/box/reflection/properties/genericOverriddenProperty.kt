@@ -8,6 +8,8 @@
 
 import kotlin.test.assertEquals
 
+private const val testPackagePrefix = ""
+
 interface H<T> {
     val parent : T?
 }
@@ -15,7 +17,7 @@ interface H<T> {
 interface A : H<A>
 
 fun box(): String {
-    assertEquals("A?", A::parent.returnType.toString())
+    assertEquals("${testPackagePrefix}A?", A::parent.returnType.toString())
     assertEquals("T?", H<A>::parent.returnType.toString())
 
     return "OK"

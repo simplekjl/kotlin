@@ -1,6 +1,7 @@
 // FILE: Outer.kt
 
 package another
+
 open class Outer {
     protected class Stage(val run: () -> Unit)
     protected class My(var stage: Stage? = null) {
@@ -19,7 +20,10 @@ open class Outer {
 // FILE: Main.kt
 
 package other
-class Derived : another.Outer() {
+
+import another.Outer
+
+class Derived : Outer() {
     init {
         my {
             initStage { }

@@ -4,6 +4,8 @@
 
 import kotlin.test.*
 
+private const val testPackagePrefix = ""
+
 class A {
     class Nested
 
@@ -11,9 +13,9 @@ class A {
 }
 
 fun box(): String {
-    assertEquals("class A", "${A::class}")
-    assertEquals("class A\$Nested", "${A.Nested::class}")
-    assertEquals("class A\$Companion", "${A.Companion::class}")
+    assertEquals("class ${testPackagePrefix}A", "${A::class}")
+    assertEquals("class ${testPackagePrefix}A\$Nested", "${A.Nested::class}")
+    assertEquals("class ${testPackagePrefix}A\$Companion", "${A.Companion::class}")
 
     assertEquals("class kotlin.Any", "${Any::class}")
     assertEquals("class kotlin.Int", "${Int::class}")

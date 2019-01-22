@@ -21,7 +21,6 @@ import org.jetbrains.kotlin.codegen.CodegenTestCase
 import org.jetbrains.kotlin.load.kotlin.PackagePartClassUtils
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.test.KotlinTestUtils
 import java.io.File
 import java.util.regex.Pattern
 
@@ -30,6 +29,8 @@ private val FILE_NAME_ANNOTATIONS = arrayOf("@file:JvmName", "@file:kotlin.jvm.J
 private val packagePattern = Pattern.compile("(?m)^\\s*package[ |\t]+([\\w|\\.]*)")
 
 private val importPattern = Pattern.compile("import[ |\t]([\\w|]*\\.)")
+
+private const val TEST_PACKAGE_PREFIX_PROP = "private const val testPackagePrefix = \"\""
 
 internal fun patchFiles(
     file: File,
@@ -70,6 +71,12 @@ internal fun patchFiles(
         file.content = resultFiles.fold(file.content) { r, param ->
             r.patchImports(param.oldPackage, param.newPackage)
         }.patchSelfImports(file.newPackage)
+    }
+
+    //patch TEST_PACKAGE_PREFIX_PROP
+    resultFiles.forEach {
+        it.content =
+            it.content.replace(TEST_PACKAGE_PREFIX_PROP, TEST_PACKAGE_PREFIX_PROP.substringBeforeLast("") + newPackagePrefix + ".\"")
     }
 
     resultFiles.forEach { resultFile ->

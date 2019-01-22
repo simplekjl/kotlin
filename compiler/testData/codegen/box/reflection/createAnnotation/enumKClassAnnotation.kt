@@ -8,6 +8,8 @@
 import kotlin.reflect.KClass
 import kotlin.test.assertEquals
 
+private const val testPackagePrefix = ""
+
 annotation class Foo(val value: String)
 
 annotation class Anno(
@@ -45,8 +47,8 @@ fun box(): String {
     assertEquals(a2, a1)
     assertEquals(a1.hashCode(), a2.hashCode())
 
-    assertEquals("@Anno(level=WARNING, klass=class java.lang.Number, foo=@Foo(value=OK), " +
-                 "levels=[WARNING], klasses=[class java.lang.Number], foos=[@Foo(value=OK)])", a1.toString())
+    assertEquals("@${testPackagePrefix}Anno(level=WARNING, klass=class java.lang.Number, foo=@${testPackagePrefix}Foo(value=OK), " +
+                 "levels=[WARNING], klasses=[class java.lang.Number], foos=[@${testPackagePrefix}Foo(value=OK)])", a1.toString())
 
     return "OK"
 }

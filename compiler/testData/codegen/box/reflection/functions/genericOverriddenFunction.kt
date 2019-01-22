@@ -7,6 +7,8 @@
 
 import kotlin.test.assertEquals
 
+private const val testPackagePrefix = ""
+
 interface H<T> {
     fun foo(): T?
 }
@@ -14,7 +16,7 @@ interface H<T> {
 interface A : H<A>
 
 fun box(): String {
-    assertEquals("A?", A::foo.returnType.toString())
+    assertEquals("${testPackagePrefix}A?", A::foo.returnType.toString())
     assertEquals("T?", H<A>::foo.returnType.toString())
 
     return "OK"

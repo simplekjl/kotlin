@@ -3,6 +3,8 @@
 
 import kotlin.test.assertEquals
 
+private const val testPackagePrefix = ""
+
 annotation class Ann1
 annotation class Ann2
 
@@ -16,6 +18,6 @@ fun box(): String {
     val setterParameters = Foo::delegate.setter.parameters
     assertEquals(2, setterParameters.size)
     assertEquals("[]", setterParameters.first().annotations.toString())
-    assertEquals("[@Ann2(), @Ann1()]", setterParameters.last().annotations.toString())
+    assertEquals("[@${testPackagePrefix}Ann2(), @${testPackagePrefix}Ann1()]", setterParameters.last().annotations.toString())
     return "OK"
 }

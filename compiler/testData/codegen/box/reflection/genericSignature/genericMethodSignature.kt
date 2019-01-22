@@ -2,6 +2,8 @@
 
 // WITH_REFLECT
 
+private const val testPackagePrefix = ""
+
 class Z<T> {}
 
 class TParam {}
@@ -30,10 +32,10 @@ fun box(): String {
 
     val params = listOf(
             Params(1, Any::class.java, "T", "T"),
-            Params(2, Z::class.java, "Z<T>", "Z<T>"),
-            Params(3, Z::class.java, "Z<java.lang.String>", "Z<java.lang.String>"),
-            Params(4, Any::class.java, "Zout<java.lang.String>", "X"),
-            Params(5, Any::class.java, "Zin<TParam>", "Y")
+            Params(2, Z::class.java, "${testPackagePrefix}Z<T>", "${testPackagePrefix}Z<T>"),
+            Params(3, Z::class.java, "${testPackagePrefix}Z<java.lang.String>", "${testPackagePrefix}Z<java.lang.String>"),
+            Params(4, Any::class.java, "${testPackagePrefix}Zout<java.lang.String>", "X"),
+            Params(5, Any::class.java, "${testPackagePrefix}Zin<${testPackagePrefix}TParam>", "Y")
     )
 
 

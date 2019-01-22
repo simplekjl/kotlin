@@ -23,10 +23,12 @@ class A2 {
 
 // FILE: kt17091_3.kt
 
-fun box(): String {
-    if (java.lang.Class.forName("Kt17091_3Kt\$sam\$java_util_concurrent_Callable$0") == null) return "fail: can't find sam wrapper"
+private const val testPackagePrefix = ""
 
-    if (java.lang.Class.forName("test.A2\$sam\$java_lang_Runnable$0") == null) return "fail 2: can't find sam wrapper"
+fun box(): String {
+    if (java.lang.Class.forName("${testPackagePrefix}Kt17091_3Kt\$sam\$java_util_concurrent_Callable$0") == null) return "fail: can't find sam wrapper"
+
+    if (java.lang.Class.forName("${testPackagePrefix}test.A2\$sam\$java_lang_Runnable$0") == null) return "fail 2: can't find sam wrapper"
 
     return A().foo().call()
 }
