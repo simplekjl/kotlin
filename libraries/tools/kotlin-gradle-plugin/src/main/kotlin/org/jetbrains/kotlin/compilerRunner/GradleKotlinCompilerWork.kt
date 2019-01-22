@@ -49,8 +49,7 @@ internal class GradleKotlinCompilerWorkArguments(
     val incrementalCompilationEnvironment: IncrementalCompilationEnvironment?,
     val incrementalModuleInfo: IncrementalModuleInfo?,
     val buildFile: File?,
-    val localStateDirectories: List<File>,
-    val taskPath: String
+    val localStateDirectories: List<File>
 ) : Serializable {
     companion object {
         const val serialVersionUID: Long = 0
@@ -78,14 +77,21 @@ internal class GradleKotlinCompilerWork @Inject constructor(
     private val incrementalModuleInfo = config.incrementalModuleInfo
     private val buildFile = config.buildFile
     private val localStateDirectories = config.localStateDirectories
-    private val taskPath = config.taskPath
 
-    private val log: KotlinLogger =
-        TaskLoggers.get(taskPath)?.let { GradleKotlinLogger(it) }
-            ?: run {
-                System.err.println("Could not get logger for '$taskPath'. Falling back to sl4j logger")
-                SL4JKotlinLogger(LoggerFactory.getLogger("GradleKotlinCompilerWork"))
+    /**
+     * todo passing task logger might be unnecessary, however there were some issues in past,
+     * so thorough testing is needed before the property can be removed
+     */
+    internal var taskLogger: KotlinLogger? = null
+    private val log: KotlinLogger by lazy {
+        run {
+            val slf4jLog = LoggerFactory.getLogger("GradleKotlinCompilerWork")
+            when (slf4jLog) {
+                is org.gradle.api.logging.Logger -> GradleKotlinLogger(slf4jLog)
+                else -> SL4JKotlinLogger(slf4jLog)
             }
+        }
+    }
 
     private val isIncremental: Boolean
         get() = incrementalCompilationEnvironment != null
