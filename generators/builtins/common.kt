@@ -34,6 +34,7 @@ enum class PrimitiveType(val byteSize: Int?) {
     companion object {
         val exceptBoolean = PrimitiveType.values().filterNot { it == BOOLEAN }
         val onlyNumeric = PrimitiveType.values().filterNot { it == BOOLEAN || it == CHAR }
+        val floatingPoint = listOf(FLOAT, DOUBLE)
     }
 }
 
@@ -48,13 +49,6 @@ enum class UnsignedType {
 
     val byteSize = (1 shl ordinal)
     val mask = "0x${List(byteSize) { "FF" }.chunked(2).joinToString("_") { it.joinToString("") }}"
-}
-
-enum class FloatingType {
-    FLOAT,
-    DOUBLE;
-
-    val capitalized: String get() = name.toLowerCase().capitalize()
 }
 
 enum class ProgressionKind {

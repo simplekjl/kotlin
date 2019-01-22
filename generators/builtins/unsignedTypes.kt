@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.generators.builtins.unsigned
 
 
-import org.jetbrains.kotlin.generators.builtins.FloatingType
+import org.jetbrains.kotlin.generators.builtins.PrimitiveType
 import org.jetbrains.kotlin.generators.builtins.UnsignedType
 import org.jetbrains.kotlin.generators.builtins.convert
 import org.jetbrains.kotlin.generators.builtins.generateBuiltIns.BuiltInsSourceGenerator
@@ -226,11 +226,15 @@ class UnsignedTypeGenerator(val type: UnsignedType, out: PrintWriter) : BuiltIns
     }
 
     private fun generateFloatingConversions() {
-        for (otherType in FloatingType.values()) {
+        for (otherType in PrimitiveType.floatingPoint) {
             val otherName = otherType.capitalized
             out.println("    @kotlin.internal.InlineOnly")
             out.print("    public inline fun to$otherName(): $otherName = ")
-            out.println("data.to$otherName()")
+            if (type == UnsignedType.ULONG) {
+                out.println("ulongTo$otherName(data)")
+            } else {
+                out.println("this.toLong().to$otherName()")
+            }
         }
         out.println()
     }
@@ -250,14 +254,14 @@ class UnsignedTypeGenerator(val type: UnsignedType, out: PrintWriter) : BuiltIns
         }
         out.println()
 
-        for (otherType in FloatingType.values()) {
+        for (otherType in PrimitiveType.floatingPoint) {
             val otherName = otherType.capitalized
-            val thisSigned = type.asSigned.capitalized
             out.println("@SinceKotlin(\"1.3\")")
             out.println("@ExperimentalUnsignedTypes")
             out.println("@kotlin.internal.InlineOnly")
             out.print("public inline fun $otherName.to$className(): $className = ")
-            out.println("$className(this.to$thisSigned())")
+            val conversion = if (otherType == PrimitiveType.DOUBLE) "" else ".toDouble()"
+            out.println("doubleTo$className(this$conversion)")
         }
     }
 

@@ -5,6 +5,7 @@
 
 package test.unsigned
 
+import kotlin.math.abs
 import kotlin.math.sign
 import kotlin.random.Random
 import kotlin.test.*
@@ -99,6 +100,57 @@ class UIntTest {
     }
 
 
+    @Test
+    fun convertToFloat() {
+        fun testEpsEquals(v1: Float, v2: UInt) {
+            val eps = 1e-3
+            assertTrue(abs(v1 - v2.toFloat()) < eps)
+        }
 
+        testEpsEquals(0.0f, zero)
+        testEpsEquals(1.0f, one)
+        testEpsEquals(0xFFFF_FFFF.toFloat(), max)
 
+        repeat(100) {
+            val v = Random.nextLong(0, 0xFFFF_FFFF)
+            testEpsEquals(v.toFloat(), v.toUInt())
+        }
+    }
+
+    @Test
+    fun convertDoubleToUInt() {
+        fun testEquals(v1: Double, v2: UInt) = assertEquals(v1.toUInt(), v2)
+
+        testEquals(0.0, zero)
+        testEquals(-1.0, zero)
+
+        testEquals(-2_000_000_000_000.0, zero)
+        testEquals((-0xFFFF_FFFF_FFFF).toDouble(), zero)
+        testEquals(Double.MIN_VALUE, zero)
+        testEquals(Double.NEGATIVE_INFINITY, zero)
+        testEquals(Double.NaN, zero)
+
+        testEquals(1.0, one)
+
+        testEquals(2_000_000_000_000.0, max)
+        testEquals(0xFFFF_FFFF.toDouble(), max)
+        testEquals(0xFFFF_FFFF_FFFF.toDouble(), max)
+        testEquals(Double.MAX_VALUE, max)
+        testEquals(Double.POSITIVE_INFINITY, max)
+
+        repeat(100) {
+            val v = -Random.nextDouble() * 0xFFFF_FFFF_FF
+            testEquals(v, zero)
+        }
+
+        repeat(100) {
+            val v = (1.0 + Random.nextDouble()) * 0xFFFF_FFFF_FF
+            testEquals(v, max)
+        }
+
+        repeat(100) {
+            val v = Random.nextDouble() * 0xFFFF_FFFF
+            testEquals(v, v.toLong().toUInt())
+        }
+    }
 }

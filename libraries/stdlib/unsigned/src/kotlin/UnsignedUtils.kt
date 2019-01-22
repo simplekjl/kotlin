@@ -63,6 +63,43 @@ internal fun ulongRemainder(v1: ULong, v2: ULong): ULong {
 }
 
 
+@PublishedApi
+internal fun doubleToUByte(v: Double): UByte = when {
+    v.isNaN() -> 0u
+    v <= UByte.MIN_VALUE.toDouble() -> UByte.MIN_VALUE
+    v >= UByte.MAX_VALUE.toDouble() -> UByte.MAX_VALUE
+    else -> v.toLong().toUByte()
+}
+@PublishedApi
+internal fun doubleToUShort(v: Double): UShort = when {
+    v.isNaN() -> 0u
+    v <= UShort.MIN_VALUE.toDouble() -> UShort.MIN_VALUE
+    v >= UShort.MAX_VALUE.toDouble() -> UShort.MAX_VALUE
+    else -> v.toLong().toUShort()
+}
+@PublishedApi
+internal fun doubleToUInt(v: Double): UInt = when {
+    v.isNaN() -> 0u
+    v <= UInt.MIN_VALUE.toDouble() -> UInt.MIN_VALUE
+    v >= UInt.MAX_VALUE.toDouble() -> UInt.MAX_VALUE
+    else -> v.toLong().toUInt()
+}
+@PublishedApi
+internal fun doubleToULong(v: Double): ULong = when {
+    v.isNaN() -> 0u
+    v <= ULong.MIN_VALUE.toDouble() -> ULong.MIN_VALUE
+    v >= ULong.MAX_VALUE.toDouble() -> ULong.MAX_VALUE
+    v <= Long.MAX_VALUE -> v.toLong().toULong()
+    else -> (v - Long.MAX_VALUE).toLong().toULong() + Long.MAX_VALUE.toULong()
+}
+
+
+@PublishedApi
+internal fun ulongToFloat(v: Long): Float = (v ushr 1).toFloat() * 2 + (v and 1)
+@PublishedApi
+internal fun ulongToDouble(v: Long): Double = (v ushr 1).toDouble() * 2 + (v and 1)
+
+
 internal fun ulongToString(v: Long): String = ulongToString(v, 10)
 
 internal fun ulongToString(v: Long, base: Int): String {

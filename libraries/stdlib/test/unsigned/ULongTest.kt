@@ -5,6 +5,8 @@
 
 package test.unsigned
 
+import kotlin.math.abs
+import kotlin.math.pow
 import kotlin.math.sign
 import kotlin.random.Random
 import kotlin.test.*
@@ -99,6 +101,79 @@ class ULongTest {
     }
 
 
+    @Test
+    fun convertToDouble() {
+        assertEquals(0.0, zero.toDouble())
+        assertEquals(1.0, one.toDouble())
 
+        fun testEpsEquals(v1: Double, v2: ULong) {
+            val eps = 1e+4
+            assertTrue(abs(v1 - v2.toDouble()) < eps)
+        }
 
+        testEpsEquals(2.0.pow(ULong.SIZE_BITS) - 1, max)
+        testEpsEquals(2.0 * Long.MAX_VALUE + 1, max)
+
+        repeat(100) {
+            val rand = Random.nextLong(from = 0, until = Long.MAX_VALUE)
+            val d = rand.toDouble()
+            val ul = rand.toULong()
+            testEpsEquals(d, ul)
+        }
+
+        repeat(100) {
+            val rand = Random.nextLong(from = 0, until = Long.MAX_VALUE)
+            val d = Long.MAX_VALUE.toDouble() + rand.toDouble()
+            val ul = Long.MAX_VALUE.toULong() + rand.toULong()
+            testEpsEquals(d, ul)
+        }
+    }
+
+    @Test
+    fun convertDoubleToULong() {
+        fun testEquals(v1: Double, v2: ULong) = assertEquals(v1.toULong(), v2)
+
+        testEquals(0.0, zero)
+        testEquals(-1.0, zero)
+
+        testEquals(-2_000_000_000_000.0, zero)
+        testEquals((-0xFFFF_FFFF_FFFF).toDouble(), zero)
+        testEquals(Double.MIN_VALUE, zero)
+        testEquals(Double.NEGATIVE_INFINITY, zero)
+        testEquals(Double.NaN, zero)
+
+        testEquals(1.0, one)
+
+        testEquals(2_000_000_000_000_000_000_000.0, max)
+        testEquals(2.0.pow(ULong.SIZE_BITS), max)
+        testEquals(2.0.pow(ULong.SIZE_BITS + 5), max)
+        testEquals(Double.MAX_VALUE, max)
+        testEquals(Double.POSITIVE_INFINITY, max)
+
+        repeat(100) {
+            val v = -Random.nextDouble() * 0xFFFF_FFFF_FFFF * 0xFFFF_FF
+            testEquals(v, zero)
+        }
+
+        repeat(100) {
+            val v = (1.0 + Random.nextDouble()) * 0xFFFF_FFFF_FFFF * 0xFFFF_FF
+            testEquals(v, max)
+        }
+
+        repeat(100) {
+            val v = Random.nextDouble() * Long.MAX_VALUE
+            testEquals(v, v.toLong().toULong())
+        }
+
+        repeat(100) {
+            val diff = Random.nextDouble() * Long.MAX_VALUE
+            val d = Long.MAX_VALUE.toDouble() + diff
+            val ul = Long.MAX_VALUE.toULong() + diff.toLong().toULong()
+            val eps = 1e-6
+
+            assertTrue(d.toULong() / ul <= 1u)
+            assertTrue(d / ul.toDouble() < 1 + eps)
+            assertTrue(d / ul.toDouble() > 1 - eps)
+        }
+    }
 }

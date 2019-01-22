@@ -177,9 +177,9 @@ public inline class UShort @PublishedApi internal constructor(@PublishedApi inte
     public inline fun toULong(): ULong = ULong(data.toLong() and 0xFFFF)
 
     @kotlin.internal.InlineOnly
-    public inline fun toFloat(): Float = data.toFloat()
+    public inline fun toFloat(): Float = this.toLong().toFloat()
     @kotlin.internal.InlineOnly
-    public inline fun toDouble(): Double = data.toDouble()
+    public inline fun toDouble(): Double = this.toLong().toDouble()
 
     public override fun toString(): String = toInt().toString()
 
@@ -205,8 +205,8 @@ public inline fun Long.toUShort(): UShort = UShort(this.toShort())
 @SinceKotlin("1.3")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
-public inline fun Float.toUShort(): UShort = UShort(this.toShort())
+public inline fun Float.toUShort(): UShort = doubleToUShort(this.toDouble())
 @SinceKotlin("1.3")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
-public inline fun Double.toUShort(): UShort = UShort(this.toShort())
+public inline fun Double.toUShort(): UShort = doubleToUShort(this)

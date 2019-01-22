@@ -183,9 +183,9 @@ public inline class UInt @PublishedApi internal constructor(@PublishedApi intern
     public inline fun toULong(): ULong = ULong(data.toLong() and 0xFFFF_FFFF)
 
     @kotlin.internal.InlineOnly
-    public inline fun toFloat(): Float = data.toFloat()
+    public inline fun toFloat(): Float = this.toLong().toFloat()
     @kotlin.internal.InlineOnly
-    public inline fun toDouble(): Double = data.toDouble()
+    public inline fun toDouble(): Double = this.toLong().toDouble()
 
     public override fun toString(): String = toLong().toString()
 
@@ -211,8 +211,8 @@ public inline fun Long.toUInt(): UInt = UInt(this.toInt())
 @SinceKotlin("1.3")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
-public inline fun Float.toUInt(): UInt = UInt(this.toInt())
+public inline fun Float.toUInt(): UInt = doubleToUInt(this.toDouble())
 @SinceKotlin("1.3")
 @ExperimentalUnsignedTypes
 @kotlin.internal.InlineOnly
-public inline fun Double.toUInt(): UInt = UInt(this.toInt())
+public inline fun Double.toUInt(): UInt = doubleToUInt(this)
