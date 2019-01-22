@@ -249,19 +249,26 @@ private class ClassClsStubBuilder(
 
     private fun createNestedClassStub(classBody: StubElement<out PsiElement>, nestedClassId: ClassId) {
         val (nameResolver, classProto, _, sourceElement) =
-                c.components.classDataFinder.findClassData(nestedClassId)
-                        ?: c.components.virtualFileForDebug.let { rootFile ->
-                            LOG.error(
-                                "Could not find class data for nested class $nestedClassId of class ${nestedClassId.outerClassId}\n" +
-                                        "Root file: ${rootFile.canonicalPath}\n" +
-                                        "Dir: ${rootFile.parent.canonicalPath}\n" +
-                                        "Children:\n" +
-                                        rootFile.parent.children.sortedBy { it.name }.joinToString(separator = "\n") {
-                                            "${it.name} (valid: ${it.isValid})"
-                                        }
-                            )
-                            return
-                        }
+            c.components.classDataFinder.findClassData(nestedClassId)
+                ?: c.components.virtualFileForDebug.let { rootFile ->
+                    val outerClassId = nestedClassId.outerClassId
+                    val sortedChildren = rootFile.parent.children.sortedBy { it.name }
+                    val msg = "Could not find class data for nested class $nestedClassId of class $outerClassId\n" +
+                            "Root file: ${rootFile.canonicalPath}\n" +
+                            "Dir: ${rootFile.parent.canonicalPath}\n" +
+                            "Children:\n" +
+                            sortedChildren.joinToString(separator = "\n") {
+                                "${it.name} (valid: ${it.isValid})"
+                            }
+                    if (outerClassId != null && sortedChildren.none { it.name.startsWith("${outerClassId.relativeClassName}\$a") }) {
+                        // KT-29427: case with obfuscation, ignore
+                        LOG.info(msg)
+                    } else {
+                        // General case, report
+                        LOG.error(msg)
+                    }
+                    return
+                }
         createClassStub(classBody, classProto, nameResolver, nestedClassId, sourceElement, c)
     }
 
