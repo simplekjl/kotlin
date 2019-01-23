@@ -698,7 +698,9 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                     initializer,
                     property.getter.toFirPropertyAccessor(property, propertyType, isGetter = true),
                     property.setter.toFirPropertyAccessor(property, propertyType, isGetter = false),
-                    if (property.hasDelegate()) FirExpressionStub(session, property) else null
+                    if (property.hasDelegate()) {
+                        { property.delegate?.expression }.toFirExpression("Should have delegate")
+                    } else null
                 ).apply {
                     property.extractTypeParametersTo(this)
                 }
