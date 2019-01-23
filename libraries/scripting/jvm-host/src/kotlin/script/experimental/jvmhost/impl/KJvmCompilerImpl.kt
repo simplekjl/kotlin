@@ -13,6 +13,7 @@ import com.intellij.psi.impl.PsiFileFactoryImpl
 import com.intellij.testFramework.LightVirtualFile
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
+import org.jetbrains.kotlin.cli.common.arguments.Argument
 import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.common.arguments.parseCommandLineArguments
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
@@ -42,6 +43,8 @@ import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.starProjectedType
 import kotlin.script.dependencies.ScriptContents
 import kotlin.script.experimental.api.*
@@ -66,6 +69,7 @@ class KJvmCompilerImpl(val hostConfiguration: ScriptingHostConfiguration) : KJvm
         scriptCompilationConfiguration: ScriptCompilationConfiguration
     ): ResultWithDiagnostics<CompiledScript<*>> {
         val messageCollector = ScriptDiagnosticsMessageCollector()
+        val reportingState = ReportingState()
 
         fun failure(vararg diagnostics: ScriptDiagnostic): ResultWithDiagnostics.Failure =
             ResultWithDiagnostics.Failure(*messageCollector.diagnostics.toTypedArray(), *diagnostics)
@@ -80,7 +84,8 @@ class KJvmCompilerImpl(val hostConfiguration: ScriptingHostConfiguration) : KJvm
 
             // TODO: refactor/cleanup when the internal resolving API will allow easier info passing between resolver and compiler
 
-            val kotlinCompilerConfiguration = createInitialCompilerConfiguration(scriptCompilationConfiguration, messageCollector)
+            val kotlinCompilerConfiguration =
+                createInitialCompilerConfiguration(scriptCompilationConfiguration, messageCollector, reportingState)
 
             val initialScriptCompilationConfiguration =
                 scriptCompilationConfiguration.withUpdatesFromCompilerConfiguration(kotlinCompilerConfiguration)
@@ -113,7 +118,7 @@ class KJvmCompilerImpl(val hostConfiguration: ScriptingHostConfiguration) : KJvm
 
             // collectScriptsCompilationDependencies calls resolver for every file, so at this point all updated configurations are collected
             environment.configuration.updateWithRefinedConfigurations(
-                initialScriptCompilationConfiguration, sourcesWithRefinementsState.refinedConfigurations
+                initialScriptCompilationConfiguration, sourcesWithRefinementsState.refinedConfigurations, messageCollector, reportingState
             )
 
             val analysisResult = analyze(sourceFiles, environment)
@@ -140,6 +145,10 @@ class KJvmCompilerImpl(val hostConfiguration: ScriptingHostConfiguration) : KJvm
     private class SourcesWithRefinedConfigurations(rootScript: SourceCode) {
         val knownSources = hashSetOf(rootScript)
         val refinedConfigurations = hashMapOf<SourceCode, ScriptCompilationConfiguration>()
+    }
+
+    private class ReportingState {
+        var currentArguments = K2JVMCompilerArguments()
     }
 
     private fun makeScriptDefinition(
@@ -174,7 +183,8 @@ class KJvmCompilerImpl(val hostConfiguration: ScriptingHostConfiguration) : KJvm
 
     private fun createInitialCompilerConfiguration(
         scriptCompilationConfiguration: ScriptCompilationConfiguration,
-        messageCollector: MessageCollector
+        messageCollector: MessageCollector,
+        reportingState: ReportingState
     ): CompilerConfiguration {
 
         val baseArguments = K2JVMCompilerArguments()
@@ -182,6 +192,9 @@ class KJvmCompilerImpl(val hostConfiguration: ScriptingHostConfiguration) : KJvm
             scriptCompilationConfiguration[ScriptCompilationConfiguration.compilerOptions] ?: emptyList(),
             baseArguments
         )
+
+        reportArgumentsIgnoredGenerally(baseArguments, messageCollector, reportingState)
+        reportingState.currentArguments = baseArguments
 
         return org.jetbrains.kotlin.config.CompilerConfiguration().apply {
 
@@ -260,7 +273,9 @@ class KJvmCompilerImpl(val hostConfiguration: ScriptingHostConfiguration) : KJvm
 
         private fun CompilerConfiguration.updateWithRefinedConfigurations(
             initialScriptCompilationConfiguration: ScriptCompilationConfiguration,
-            refinedScriptCompilationConfigurations: HashMap<SourceCode, ScriptCompilationConfiguration>
+            refinedScriptCompilationConfigurations: HashMap<SourceCode, ScriptCompilationConfiguration>,
+            messageCollector: ScriptDiagnosticsMessageCollector,
+            reportingState: ReportingState
         ) {
             val updatedCompilerOptions = refinedScriptCompilationConfigurations.flatMap {
                 it.value[ScriptCompilationConfiguration.compilerOptions] ?: emptyList()
@@ -272,13 +287,14 @@ class KJvmCompilerImpl(val hostConfiguration: ScriptingHostConfiguration) : KJvm
                 val updatedArguments = K2JVMCompilerArguments()
                 parseCommandLineArguments(updatedCompilerOptions, updatedArguments)
 
+                reportArgumentsIgnoredGenerally(updatedArguments, messageCollector, reportingState)
+                reportArgumentsIgnoredFromRefinement(updatedArguments, messageCollector, reportingState)
+
                 setupCommonArguments(updatedArguments)
 
                 setupJvmSpecificArguments(updatedArguments)
 
                 configureAdvancedJvmOptions(updatedArguments)
-
-                // TODO: report warnings for all ignored options
             }
         }
 
@@ -357,8 +373,76 @@ class KJvmCompilerImpl(val hostConfiguration: ScriptingHostConfiguration) : KJvm
                 KJvmCompiledModule(generationState)
             )
         }
+
+        private fun reportArgumentsIgnoredGenerally(
+            arguments: K2JVMCompilerArguments,
+            messageCollector: MessageCollector,
+            reportingState: ReportingState
+        ) {
+
+            reportIgnoredArguments(
+                arguments,
+                "The following compiler arguments are ignored on script compilation: ",
+                messageCollector, reportingState,
+                "version",
+                "destination",
+                "buildFile",
+                "commonSources",
+                "allWarningsAsErrors",
+                "script",
+                "scriptTemplates",
+                "scriptResolverEnvironment",
+                "disableStandardScript",
+                "disableDefaultScriptingPlugin",
+                "pluginClasspaths",
+                "pluginOptions",
+                "useJavac",
+                "compileJava",
+                "reportPerf",
+                "dumpPerf"
+            )
+        }
+
+        private fun reportArgumentsIgnoredFromRefinement(
+            arguments: K2JVMCompilerArguments, messageCollector: MessageCollector, reportingState: ReportingState
+        ) {
+            reportIgnoredArguments(
+                arguments,
+                "The following compiler arguments are ignored when configured from refinement callbacks: ",
+                messageCollector, reportingState,
+                "noJdk",
+                "jdkHome",
+                "javaModulePath",
+                "classpath",
+                "noStdlib",
+                "noReflect"
+            )
+        }
+
+        private fun reportIgnoredArguments(
+            arguments: K2JVMCompilerArguments, message: String,
+            messageCollector: MessageCollector, reportingState: ReportingState,
+            vararg toIgnore: String
+        ) {
+            val ignored = arguments.filterNewByList(reportingState.currentArguments, *toIgnore)
+
+            if (ignored.isNotEmpty()) {
+                messageCollector.report(CompilerMessageSeverity.STRONG_WARNING, "$message${ignored.joinToString(", ")}")
+            }
+        }
     }
 }
+
+private fun K2JVMCompilerArguments.filterNewByList(current: K2JVMCompilerArguments, vararg accepted: String): List<String> =
+    accepted.mapNotNull { argFieldName ->
+        val argProperty = K2JVMCompilerArguments::class.memberProperties
+            .find { it.name == argFieldName }
+            ?: throw Exception("unknown compiler argument property: $argFieldName: not found")
+        if (argProperty.get(this) != argProperty.get(current)) {
+            argProperty.findAnnotation<Argument>()?.value
+                ?: throw Exception("unknown compiler argument property: $argFieldName: no Argument annotation found")
+        } else null
+    }
 
 internal class ScriptDiagnosticsMessageCollector : MessageCollector {
 
