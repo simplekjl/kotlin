@@ -101,7 +101,7 @@ abstract class AbstractRawFirBuilderTestCase : KtParsingTestCase(
 
     private fun FirFile.transformChildren(): Set<FirElement> =
         ConsistencyTransformer().let {
-            this@transformChildren.accept(it, Unit)
+            this@transformChildren.transform<FirFile, Unit>(it, Unit)
             it.result
         }
 
@@ -153,7 +153,7 @@ abstract class AbstractRawFirBuilderTestCase : KtParsingTestCase(
                     throw AssertionError("FirElement ${element.javaClass} is visited twice: $elementDump")
                 }
             } else {
-                element.acceptChildren(this, Unit)
+                element.transformChildren(this, Unit)
             }
             return CompositeTransformResult(element)
         }
