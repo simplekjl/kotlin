@@ -176,6 +176,10 @@ abstract class FirVisitor<out R, in D> {
         return visitCall(annotationCall, data)
     }
 
+    open fun visitArrayGetCall(arrayGetCall: FirArrayGetCall, data: D): R {
+        return visitCall(arrayGetCall, data)
+    }
+
     open fun visitComponentCall(componentCall: FirComponentCall, data: D): R {
         return visitCall(componentCall, data)
     }

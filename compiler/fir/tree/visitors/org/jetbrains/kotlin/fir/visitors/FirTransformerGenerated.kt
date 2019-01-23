@@ -176,6 +176,10 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
         return transformCall(annotationCall, data)
     }
 
+    open fun transformArrayGetCall(arrayGetCall: FirArrayGetCall, data: D): CompositeTransformResult<FirStatement> {
+        return transformCall(arrayGetCall, data)
+    }
+
     open fun transformComponentCall(componentCall: FirComponentCall, data: D): CompositeTransformResult<FirStatement> {
         return transformCall(componentCall, data)
     }
@@ -338,6 +342,10 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
 
     final override fun visitAnonymousObject(anonymousObject: FirAnonymousObject, data: D): CompositeTransformResult<FirElement> {
         return transformAnonymousObject(anonymousObject, data)
+    }
+
+    final override fun visitArrayGetCall(arrayGetCall: FirArrayGetCall, data: D): CompositeTransformResult<FirElement> {
+        return transformArrayGetCall(arrayGetCall, data)
     }
 
     final override fun visitBlock(block: FirBlock, data: D): CompositeTransformResult<FirElement> {

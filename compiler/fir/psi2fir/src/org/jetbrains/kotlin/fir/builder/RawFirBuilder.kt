@@ -1201,6 +1201,15 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             }
         }
 
+        override fun visitArrayAccessExpression(expression: KtArrayAccessExpression, data: Unit): FirElement {
+            val arrayExpression = expression.arrayExpression
+            return FirArrayGetCallImpl(session, expression, arrayExpression.toFirExpression("No array expression")).apply {
+                for (indexExpression in expression.indexExpressions) {
+                    arguments += indexExpression.toFirExpression()
+                }
+            }
+        }
+
         override fun visitQualifiedExpression(expression: KtQualifiedExpression, data: Unit): FirElement {
             val selector = expression.selectorExpression
                 ?: return FirErrorExpressionImpl(session, expression, "Qualified expression without selector")
