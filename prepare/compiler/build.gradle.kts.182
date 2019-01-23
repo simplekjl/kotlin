@@ -88,16 +88,16 @@ dependencies {
     }
     when {
         Platform[173].orLower() -> {
-            fatJarContents(intellijDep()) { includeJars("jna-platform") }
+            fatJarContents(intellijDep()) { includeJars("jna-platform", "annotations", allowIdeaAnnotations = true) }
             fatJarContentsStripMetadata(intellijDep()) { includeJars("oromatcher", "jdom", "log4j") }
         }
         Platform[181].orLower() -> {
-            fatJarContents(intellijDep()) { includeJars("jna-platform", "lz4-java-1.3") }
+            fatJarContents(intellijDep()) { includeJars("jna-platform", "lz4-java-1.3", "annotations", allowIdeaAnnotations = true) }
             fatJarContentsStripMetadata(intellijDep()) { includeJars("oro-2.0.8", "jdom", "log4j") }
         }
         else -> {
             fatJarContents(intellijDep()) { includeJars("jna-platform", "lz4-1.3.0") }
-            fatJarContentsStripMetadata(intellijDep()) { includeJars("oro-2.0.8", "jdom", "log4j") }
+            fatJarContentsStripMetadata(intellijDep()) { includeJars("oro-2.0.8", "jdom", "log4j", "annotations", allowIdeaAnnotations = true) }
         }
     }
     fatJarContentsStripServices(intellijDep("jps-standalone")) { includeJars("jps-model") }

@@ -66,10 +66,10 @@ fun Project.intellijUltimateDep() = intellijDep("intellij")
 
 fun Project.intellijUltimatePluginDep(plugin: String) = intellijDep(plugin)
 
-fun ModuleDependency.includeJars(vararg names: String, rootProject: Project? = null) {
+fun ModuleDependency.includeJars(vararg names: String, rootProject: Project? = null, allowIdeaAnnotations: Boolean = false) {
     names.forEach {
         var baseName = it.removeSuffix(".jar")
-        if (baseName == "annotations") {
+        if (baseName == "annotations" && !allowIdeaAnnotations) {
             error("Don't use anntations.jar from intellij. Kotlin stdlib already has this annotations.")
         }
         if (rootProject != null && rootProject.extra.has("ignore.jar.$baseName")) {
