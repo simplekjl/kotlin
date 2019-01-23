@@ -1090,32 +1090,9 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             } else {
                 val firOperation = operationToken.toFirOperation()
                 if (firOperation in FirOperation.ASSIGNMENTS) {
-                    return FirPropertySetImpl(session, expression, rightArgument, firOperation).apply {
-                        val left = expression.left
-                        calleeReference = when (left) {
-                            is KtSimpleNameExpression -> {
-                                FirSimpleMemberReference(session, left.getReferencedNameElement(), left.getReferencedNameAsName())
-                            }
-                            is KtQualifiedExpression -> {
-                                val firMemberAccess = left.toFirExpression() as? FirMemberAccess
-                                if (firMemberAccess != null) {
-                                    explicitReceiver = firMemberAccess.explicitReceiver
-                                    safe = firMemberAccess.safe
-                                    firMemberAccess.calleeReference
-                                } else {
-                                    FirErrorMemberReference(session, left, "Unsupported qualified LValue: ${left.text}")
-                                }
-                            }
-                            else -> {
-                                // TODO: array accesses etc.
-                                FirErrorMemberReference(session, left, "Unsupported LValue: ${left?.javaClass}")
-                            }
-                        }
-                    }
+                    return expression.left.generateSet(session, expression, rightArgument, firOperation) { toFirExpression() }
                 } else {
-                    FirOperatorCallImpl(
-                        session, expression, firOperation
-                    )
+                    FirOperatorCallImpl(session, expression, firOperation)
                 }
             }.apply {
                 arguments += expression.left.toFirExpression("No left operand")

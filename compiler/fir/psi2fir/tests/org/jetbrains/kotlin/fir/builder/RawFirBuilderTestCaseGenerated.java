@@ -149,6 +149,11 @@ public class RawFirBuilderTestCaseGenerated extends AbstractRawFirBuilderTestCas
             runTest("compiler/fir/psi2fir/testData/rawBuilder/expressions/arrayAccess.kt");
         }
 
+        @TestMetadata("arrayAssignment.kt")
+        public void testArrayAssignment() throws Exception {
+            runTest("compiler/fir/psi2fir/testData/rawBuilder/expressions/arrayAssignment.kt");
+        }
+
         @TestMetadata("branches.kt")
         public void testBranches() throws Exception {
             runTest("compiler/fir/psi2fir/testData/rawBuilder/expressions/branches.kt");

@@ -8,11 +8,13 @@ package org.jetbrains.kotlin.fir.builder
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 import org.jetbrains.kotlin.KtNodeTypes
+import org.jetbrains.kotlin.fir.FirReference
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirNamedDeclaration
 import org.jetbrains.kotlin.fir.declarations.impl.FirVariableImpl
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.expressions.impl.*
+import org.jetbrains.kotlin.fir.references.FirErrorMemberReference
 import org.jetbrains.kotlin.fir.references.FirSimpleMemberReference
 import org.jetbrains.kotlin.fir.types.FirType
 import org.jetbrains.kotlin.fir.types.impl.FirImplicitTypeImpl
@@ -249,3 +251,63 @@ internal fun generateTemporaryVariable(
 internal fun generateTemporaryVariable(
     session: FirSession, psi: PsiElement?, specialName: String, initializer: FirExpression
 ): FirVariable = generateTemporaryVariable(session, psi, Name.special("<$specialName>"), initializer)
+
+private fun FirModifiableMemberAccess.initializeLValue(
+    session: FirSession,
+    left: KtExpression?,
+    convertQualified: KtQualifiedExpression.() -> FirMemberAccess?
+): FirReference {
+    return when (left) {
+        is KtSimpleNameExpression -> {
+            FirSimpleMemberReference(session, left.getReferencedNameElement(), left.getReferencedNameAsName())
+        }
+        is KtQualifiedExpression -> {
+            val firMemberAccess = left.convertQualified()
+            if (firMemberAccess != null) {
+                explicitReceiver = firMemberAccess.explicitReceiver
+                safe = firMemberAccess.safe
+                firMemberAccess.calleeReference
+            } else {
+                FirErrorMemberReference(session, left, "Unsupported qualified LValue: ${left.text}")
+            }
+        }
+        else -> {
+            // TODO: etc.
+            FirErrorMemberReference(session, left, "Unsupported LValue: ${left?.javaClass}")
+        }
+    }
+}
+
+internal fun KtExpression?.generateSet(
+    session: FirSession,
+    psi: PsiElement?,
+    value: FirExpression,
+    operation: FirOperation,
+    convert: KtExpression.() -> FirExpression
+): FirExpression {
+    if (this is KtArrayAccessExpression) {
+        val arrayExpression = this.arrayExpression
+        val arraySet = FirArraySetImpl(session, psi, value, operation).apply {
+            for (indexExpression in indexExpressions) {
+                arguments += indexExpression.convert()
+            }
+        }
+        if (arrayExpression is KtSimpleNameExpression) {
+            return arraySet.apply {
+                calleeReference = initializeLValue(session, arrayExpression) { convert() as? FirMemberAccess }
+            }
+        }
+        return FirBlockImpl(session, arrayExpression).apply {
+            val name = Name.special("<array-set>")
+            val firTemp = generateTemporaryVariable(
+                session, arrayExpression, name,
+                arrayExpression?.convert() ?: FirErrorExpressionImpl(session, arrayExpression, "No array expression")
+            )
+            statements += firTemp
+            statements += arraySet.apply { calleeReference = FirSimpleMemberReference(session, arrayExpression, name) }
+        }
+    }
+    return FirPropertySetImpl(session, psi, value, operation).apply {
+        calleeReference = initializeLValue(session, this@generateSet) { convert() as? FirMemberAccess }
+    }
+}

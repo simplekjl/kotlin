@@ -180,6 +180,10 @@ abstract class FirVisitor<out R, in D> {
         return visitCall(arrayGetCall, data)
     }
 
+    open fun visitArraySet(arraySet: FirArraySet, data: D): R {
+        return visitCall(arraySet, data)
+    }
+
     open fun visitComponentCall(componentCall: FirComponentCall, data: D): R {
         return visitCall(componentCall, data)
     }
@@ -236,8 +240,12 @@ abstract class FirVisitor<out R, in D> {
         return visitMemberAccess(propertyGet, data)
     }
 
+    open fun visitSet(set: FirSet, data: D): R {
+        return visitMemberAccess(set, data)
+    }
+
     open fun visitPropertySet(propertySet: FirPropertySet, data: D): R {
-        return visitMemberAccess(propertySet, data)
+        return visitSet(propertySet, data)
     }
 
     open fun visitThrowExpression(throwExpression: FirThrowExpression, data: D): R {

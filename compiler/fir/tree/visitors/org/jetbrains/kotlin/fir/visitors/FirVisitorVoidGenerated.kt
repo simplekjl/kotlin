@@ -180,6 +180,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitCall(arrayGetCall, null)
     }
 
+    open fun visitArraySet(arraySet: FirArraySet) {
+        visitCall(arraySet, null)
+    }
+
     open fun visitComponentCall(componentCall: FirComponentCall) {
         visitCall(componentCall, null)
     }
@@ -236,8 +240,12 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitMemberAccess(propertyGet, null)
     }
 
+    open fun visitSet(set: FirSet) {
+        visitMemberAccess(set, null)
+    }
+
     open fun visitPropertySet(propertySet: FirPropertySet) {
-        visitMemberAccess(propertySet, null)
+        visitSet(propertySet, null)
     }
 
     open fun visitThrowExpression(throwExpression: FirThrowExpression) {
@@ -346,6 +354,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     final override fun visitArrayGetCall(arrayGetCall: FirArrayGetCall, data: Nothing?) {
         visitArrayGetCall(arrayGetCall)
+    }
+
+    final override fun visitArraySet(arraySet: FirArraySet, data: Nothing?) {
+        visitArraySet(arraySet)
     }
 
     final override fun visitBlock(block: FirBlock, data: Nothing?) {
@@ -558,6 +570,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     final override fun visitReturnStatement(returnStatement: FirReturnStatement, data: Nothing?) {
         visitReturnStatement(returnStatement)
+    }
+
+    final override fun visitSet(set: FirSet, data: Nothing?) {
+        visitSet(set)
     }
 
     final override fun visitStarProjection(starProjection: FirStarProjection, data: Nothing?) {

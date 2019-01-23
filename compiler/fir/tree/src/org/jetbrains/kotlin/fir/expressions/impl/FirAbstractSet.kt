@@ -14,10 +14,15 @@ import org.jetbrains.kotlin.fir.expressions.FirPropertySet
 import org.jetbrains.kotlin.fir.transformSingle
 import org.jetbrains.kotlin.fir.visitors.FirTransformer
 
-class FirPropertySetImpl(
+abstract class FirAbstractSet(
     session: FirSession,
     psi: PsiElement?,
-    value: FirExpression,
-    operation: FirOperation,
+    final override var value: FirExpression,
+    final override val operation: FirOperation,
     safe: Boolean = false
-) : FirAbstractSet(session, psi, value, operation, safe), FirPropertySet
+) : FirAbstractMemberAccess(session, psi, safe), FirPropertySet {
+    override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
+        value = value.transformSingle(transformer, data)
+        return super<FirAbstractMemberAccess>.transformChildren(transformer, data)
+    }
+}

@@ -7,7 +7,16 @@ package org.jetbrains.kotlin.fir.expressions
 
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 
-interface FirPropertySet : FirSet {
+interface FirSet : FirMemberAccess {
+    val value: FirExpression
+
+    val operation: FirOperation
+
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
-        visitor.visitPropertySet(this, data)
+        visitor.visitSet(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        value.accept(visitor, data)
+        super.acceptChildren(visitor, data)
+    }
 }
