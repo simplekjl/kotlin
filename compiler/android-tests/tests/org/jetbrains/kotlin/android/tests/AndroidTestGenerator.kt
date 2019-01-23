@@ -61,7 +61,7 @@ internal fun patchFiles(
     resultFiles.forEach {
         file ->
         file.content = resultFiles.fold(file.content) { r, param ->
-            patchClassForName(param.newClassId, param.oldPackage, r)
+            patchClassForNameAndLoadClass(param.newClassId, param.oldPackage, r)
         }
     }
 
@@ -139,8 +139,22 @@ private fun getGeneratedClassName(file: File, text: String, newPackagePrefix: St
     return PackagePartClassUtils.getPackagePartFqName(packageFqName, file.name)
 }
 
-private fun patchClassForName(className: FqName, oldPackage: FqName, text: String): String {
-    return text.replace(("Class\\.forName\\(\"" + oldPackage.child(className.shortName()).asString() + "\"\\)").toRegex(), "Class.forName(\"" + className.asString() + "\")")
+private fun patchClassForNameAndLoadClass(className: FqName, oldPackage: FqName, text: String): String {
+    val newText = text.replace(
+        ("Class\\.forName\\(\"" + oldPackage.child(className.shortName()).asString() + "\"\\)").toRegex(),
+        "Class.forName(\"" + className.asString() + "\")"
+    ).replace(
+        ("Class\\.forName\\(\"" + oldPackage.asString() + "\\.").toRegex(),
+        "Class.forName(\"" + className.parent().asString() + "."
+    ).replace(
+        ("loadClass\\(\"" + oldPackage.asString() + "\\.").toRegex(),
+        "loadClass(\"" + className.parent().asString() + "."
+    )
+    if (oldPackage.asString().isNotEmpty()) {
+        return newText.replace("\"@${oldPackage.asString()}", "\"@${className.parent().asString()}").replace(
+            "<${oldPackage.asString()}", "<${className.parent().asString()}"
+        )
+    } else return newText
 }
 
 private fun String.patchImports(oldPackage: FqName, newPackage: FqName): String {
