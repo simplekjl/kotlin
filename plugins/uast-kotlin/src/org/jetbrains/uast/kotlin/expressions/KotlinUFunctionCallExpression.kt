@@ -204,8 +204,7 @@ class KotlinUFunctionCallExpression(
 
     private fun isAnnotationArgumentArrayInitializer(): Boolean {
         val resolvedCall = resolvedCall ?: return false
-        // KtAnnotationEntry -> KtValueArgumentList -> KtValueArgument -> arrayOf call
-        return psi.parents.elementAtOrNull(2) is KtAnnotationEntry && CompileTimeConstantUtils.isArrayFunctionCall(resolvedCall)
+        return CompileTimeConstantUtils.isArrayFunctionCall(resolvedCall) && psi.parents.any { it is KtAnnotationEntry }
     }
 
     override fun convertParent(): UElement? = super.convertParent().let { result ->
