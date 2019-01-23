@@ -17,13 +17,13 @@ class FirTryExpressionImpl(
     psi: PsiElement?,
     override var tryBlock: FirBlock,
     override var finallyBlock: FirBlock?
-) : FirAbstractElement(session, psi), FirTryExpression {
+) : FirAbstractExpression(session, psi), FirTryExpression {
     override val catches = mutableListOf<FirCatch>()
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         tryBlock = tryBlock.transformSingle(transformer, data)
         finallyBlock = finallyBlock?.transformSingle(transformer, data)
         catches.transformInplace(transformer, data)
-        return this
+        return super<FirAbstractExpression>.transformChildren(transformer, data)
     }
 }

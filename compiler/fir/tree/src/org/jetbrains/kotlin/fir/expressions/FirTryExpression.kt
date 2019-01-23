@@ -21,5 +21,6 @@ interface FirTryExpression : FirExpression {
         tryBlock.accept(visitor, data)
         catches.forEach { it.accept(visitor, data) }
         finallyBlock?.accept(visitor, data)
+        super.acceptChildren(visitor, data)
     }
 }

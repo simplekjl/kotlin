@@ -14,4 +14,4 @@ import org.jetbrains.kotlin.fir.expressions.FirExpression
 class FirElseIfTrueCondition(
     session: FirSession,
     psi: PsiElement?
-): FirAbstractElement(session, psi), FirExpression
+): FirAbstractExpression(session, psi)

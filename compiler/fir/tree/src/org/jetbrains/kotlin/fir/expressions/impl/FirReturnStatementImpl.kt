@@ -16,11 +16,11 @@ class FirReturnStatementImpl(
     session: FirSession,
     psi: PsiElement?,
     override var result: FirExpression
-) : FirAbstractElement(session, psi), FirReturnStatement {
+) : FirAbstractExpression(session, psi), FirReturnStatement {
     override lateinit var target: FirTarget<FirFunction>
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         result = result.transformSingle(transformer, data)
-        return this
+        return super<FirAbstractExpression>.transformChildren(transformer, data)
     }
 }

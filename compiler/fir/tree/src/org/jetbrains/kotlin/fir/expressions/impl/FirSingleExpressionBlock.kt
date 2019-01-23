@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.fir.expressions.impl
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.expressions.FirAnnotationCall
 import org.jetbrains.kotlin.fir.expressions.FirBlock
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.transformSingle
@@ -17,6 +18,8 @@ class FirSingleExpressionBlock(
     override val session: FirSession,
     private var expression: FirExpression
 ) : FirBlock {
+    override val annotations: List<FirAnnotationCall> = listOf()
+
     override val statements
         get() = listOf(expression)
 

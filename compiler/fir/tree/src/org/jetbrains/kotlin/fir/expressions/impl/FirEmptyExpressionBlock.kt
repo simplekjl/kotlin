@@ -7,11 +7,14 @@ package org.jetbrains.kotlin.fir.expressions.impl
 
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.expressions.FirAnnotationCall
 import org.jetbrains.kotlin.fir.expressions.FirBlock
 
 class FirEmptyExpressionBlock(
     override val session: FirSession
 ) : FirBlock {
+    override val annotations: List<FirAnnotationCall> = listOf()
+
     override val statements = listOf()
 
     override val psi: PsiElement?

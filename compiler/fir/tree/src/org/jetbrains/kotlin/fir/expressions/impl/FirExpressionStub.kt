@@ -9,4 +9,7 @@ import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 
-class FirExpressionStub(override val session: FirSession, override val psi: PsiElement?) : FirExpression
+class FirExpressionStub(
+    session: FirSession,
+    psi: PsiElement?
+) : FirAbstractExpression(session, psi)

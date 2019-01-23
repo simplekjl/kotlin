@@ -24,5 +24,6 @@ interface FirWhenExpression : FirExpression {
         for (branch in branches) {
             branch.accept(visitor, data)
         }
+        super.acceptChildren(visitor, data)
     }
 }

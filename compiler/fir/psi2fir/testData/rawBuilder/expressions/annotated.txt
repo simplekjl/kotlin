@@ -1,0 +1,24 @@
+FILE: annotated.kt
+    @Target(AnnotationTarget#.EXPRESSION#) @Retention(AnnotationRetention#.SOURCE#) public? final? annotation class Ann {
+        public? constructor(): super<kotlin.Any>()
+
+    }
+    public? final? function foo(arg: Int): Int {
+        when () {
+            ==(@Ann() arg#, Int(0)) ->  {
+                @Ann() return@@@foo Int(1)
+            }
+            else ->  {
+            }
+        }
+
+        @Ann() when () {
+            ==(arg#, Int(1)) ->  {
+                return@@@foo @Ann() Int(1)
+            }
+            else ->  {
+            }
+        }
+
+        return@@@foo Int(42)
+    }

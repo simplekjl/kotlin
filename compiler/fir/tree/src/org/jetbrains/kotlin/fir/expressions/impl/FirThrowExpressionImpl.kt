@@ -18,9 +18,9 @@ class FirThrowExpressionImpl(
     session: FirSession,
     psi: PsiElement?,
     override var exception: FirExpression
-) : FirAbstractElement(session, psi), FirThrowExpression {
+) : FirAbstractExpression(session, psi), FirThrowExpression {
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         exception = exception.transformSingle(transformer, data)
-        return this
+        return super<FirAbstractExpression>.transformChildren(transformer, data)
     }
 }

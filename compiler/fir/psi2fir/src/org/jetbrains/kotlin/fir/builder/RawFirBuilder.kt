@@ -270,6 +270,12 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             }
         }
 
+        private fun KtAnnotatedExpression.extractAnnotationsTo(container: FirAbstractExpression) {
+            for (annotationEntry in annotationEntries) {
+                container.annotations += annotationEntry.convert<FirAnnotationCall>()
+            }
+        }
+
         private fun KtTypeParameterListOwner.extractTypeParametersTo(container: FirAbstractMemberDeclaration) {
             for (typeParameter in typeParameters) {
                 container.typeParameters += typeParameter.convert<FirTypeParameter>()
@@ -1220,6 +1226,14 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
                 firLabels.removeLast()
                 println("Unused label: ${expression.text}")
             }
+            return result
+        }
+
+        override fun visitAnnotatedExpression(expression: KtAnnotatedExpression, data: Unit): FirElement {
+            val rawResult = expression.baseExpression?.accept(this, data)
+            val result = rawResult as? FirAbstractExpression
+                ?: FirErrorExpressionImpl(session, expression, "Strange annotated expression: ${rawResult?.render()}")
+            expression.extractAnnotationsTo(result)
             return result
         }
 

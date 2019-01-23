@@ -401,6 +401,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitReturnStatement(returnStatement: FirReturnStatement) {
+        returnStatement.annotations.renderAnnotations()
         print("return")
         val target = returnStatement.target
         val labeledElement = target.labeledElement
@@ -431,6 +432,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitWhenExpression(whenExpression: FirWhenExpression) {
+        whenExpression.annotations.renderAnnotations()
         print("when (")
         val subjectVariable = whenExpression.subjectVariable
         if (subjectVariable != null) {
@@ -448,6 +450,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitTryExpression(tryExpression: FirTryExpression) {
+        tryExpression.annotations.renderAnnotations()
         print("try")
         tryExpression.tryBlock.accept(this)
         for (catchClause in tryExpression.catches) {
@@ -493,16 +496,19 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitBreakStatement(breakStatement: FirBreakStatement) {
+        breakStatement.annotations.renderAnnotations()
         print("break")
         visitLoopJump(breakStatement)
     }
 
     override fun visitContinueStatement(continueStatement: FirContinueStatement) {
+        continueStatement.annotations.renderAnnotations()
         print("continue")
         visitLoopJump(continueStatement)
     }
 
     override fun visitExpression(expression: FirExpression) {
+        expression.annotations.renderAnnotations()
         print(
             when (expression) {
                 is FirExpressionStub -> "STUB"
@@ -515,6 +521,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun <T> visitConstExpression(constExpression: FirConstExpression<T>) {
+        constExpression.annotations.renderAnnotations()
         print("${constExpression.kind}(${constExpression.value})")
     }
 
@@ -708,6 +715,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitPropertyGet(propertyGet: FirPropertyGet) {
+        propertyGet.annotations.renderAnnotations()
         visitMemberAccess(propertyGet)
         propertyGet.calleeReference.accept(this)
     }
@@ -719,6 +727,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitPropertySet(propertySet: FirPropertySet) {
+        propertySet.annotations.renderAnnotations()
         visitMemberAccess(propertySet)
         propertySet.calleeReference.accept(this)
         print(" ")
@@ -726,6 +735,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitArraySet(arraySet: FirArraySet) {
+        arraySet.annotations.renderAnnotations()
         visitMemberAccess(arraySet)
         arraySet.calleeReference.accept(this)
         print("[")
@@ -735,12 +745,14 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitFunctionCall(functionCall: FirFunctionCall) {
+        functionCall.annotations.renderAnnotations()
         visitMemberAccess(functionCall)
         functionCall.calleeReference.accept(this)
         visitCall(functionCall)
     }
 
     override fun visitOperatorCall(operatorCall: FirOperatorCall) {
+        operatorCall.annotations.renderAnnotations()
         print(operatorCall.operation.operator)
         if (operatorCall is FirTypeOperatorCall) {
             print("/")
@@ -750,6 +762,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitArrayGetCall(arrayGetCall: FirArrayGetCall) {
+        arrayGetCall.annotations.renderAnnotations()
         arrayGetCall.array.accept(this)
         print("[")
         arrayGetCall.arguments.renderSeparated()
@@ -757,11 +770,13 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitComponentCall(componentCall: FirComponentCall) {
+        componentCall.annotations.renderAnnotations()
         print("component${componentCall.componentIndex}")
         visitCall(componentCall)
     }
 
     override fun visitThrowExpression(throwExpression: FirThrowExpression) {
+        throwExpression.annotations.renderAnnotations()
         print("throw ")
         throwExpression.exception.accept(this)
     }

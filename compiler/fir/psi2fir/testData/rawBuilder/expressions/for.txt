@@ -34,7 +34,7 @@ FILE: for.kt
             val <destruct>: <implicit> = <iterator>#.next#()
             val x: <implicit> = component1(<destruct>#)
             val y: <implicit> = component2(<destruct>#)
-            println#(??? class org.jetbrains.kotlin.fir.expressions.impl.FirErrorExpressionImpl)
+            println#(ERROR_EXPR(Incorrect template entry: $x))
         }
 
     }

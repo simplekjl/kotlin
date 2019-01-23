@@ -18,7 +18,7 @@ class FirWhenExpressionImpl(
     psiElement: PsiElement?,
     override var subject: FirExpression? = null,
     override var subjectVariable: FirVariable? = null
-) : FirAbstractElement(session, psiElement), FirWhenExpression {
+) : FirAbstractExpression(session, psiElement), FirWhenExpression {
     override val branches = mutableListOf<FirWhenBranch>()
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
@@ -28,6 +28,6 @@ class FirWhenExpressionImpl(
             subject = subject?.transformSingle(transformer, data)
         }
         branches.transformInplace(transformer, data)
-        return this
+        return super<FirAbstractExpression>.transformChildren(transformer, data)
     }
 }

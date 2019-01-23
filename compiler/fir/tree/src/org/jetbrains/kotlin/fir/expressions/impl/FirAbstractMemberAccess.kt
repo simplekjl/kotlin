@@ -14,7 +14,7 @@ abstract class FirAbstractMemberAccess(
     session: FirSession,
     psi: PsiElement?,
     final override var safe: Boolean = false
-) : FirAbstractElement(session, psi), FirModifiableMemberAccess {
+) : FirAbstractExpression(session, psi), FirModifiableMemberAccess {
     final override lateinit var calleeReference: FirReference
 
     final override var explicitReceiver: FirExpression? = null
@@ -22,6 +22,6 @@ abstract class FirAbstractMemberAccess(
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         calleeReference = calleeReference.transformSingle(transformer, data)
         explicitReceiver = explicitReceiver?.transformSingle(transformer, data)
-        return this
+        return super<FirAbstractExpression>.transformChildren(transformer, data)
     }
 }

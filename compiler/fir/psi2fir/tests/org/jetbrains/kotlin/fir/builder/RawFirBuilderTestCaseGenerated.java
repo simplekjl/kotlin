@@ -144,6 +144,11 @@ public class RawFirBuilderTestCaseGenerated extends AbstractRawFirBuilderTestCas
             KotlinTestUtils.assertAllTestsPresentByMetadata(this.getClass(), new File("compiler/fir/psi2fir/testData/rawBuilder/expressions"), Pattern.compile("^(.+)\\.kt$"), TargetBackend.ANY, true);
         }
 
+        @TestMetadata("annotated.kt")
+        public void testAnnotated() throws Exception {
+            runTest("compiler/fir/psi2fir/testData/rawBuilder/expressions/annotated.kt");
+        }
+
         @TestMetadata("arrayAccess.kt")
         public void testArrayAccess() throws Exception {
             runTest("compiler/fir/psi2fir/testData/rawBuilder/expressions/arrayAccess.kt");

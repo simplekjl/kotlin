@@ -15,6 +15,6 @@ import org.jetbrains.kotlin.fir.expressions.FirLoop
 abstract class FirAbstractLoopJump(
     session: FirSession,
     psi: PsiElement?
-) : FirAbstractElement(session, psi), FirJump<FirLoop> {
+) : FirAbstractExpression(session, psi), FirJump<FirLoop> {
     override lateinit var target: FirTarget<FirLoop>
 }

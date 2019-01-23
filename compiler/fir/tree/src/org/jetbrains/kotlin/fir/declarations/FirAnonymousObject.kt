@@ -16,4 +16,9 @@ interface FirAnonymousObject : @VisitedSupertype FirClass, FirExpression {
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
         visitor.visitAnonymousObject(this, data)
+
+    override fun <R, D> acceptChildren(visitor: FirVisitor<R, D>, data: D) {
+        super<FirClass>.acceptChildren(visitor, data)
+        super<FirExpression>.acceptChildren(visitor, data)
+    }
 }

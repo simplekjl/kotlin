@@ -13,4 +13,4 @@ import org.jetbrains.kotlin.fir.expressions.FirExpression
 class FirWhenSubjectExpression(
     session: FirSession,
     psi: PsiElement?
-): FirAbstractElement(session, psi), FirExpression
+): FirAbstractExpression(session, psi)
