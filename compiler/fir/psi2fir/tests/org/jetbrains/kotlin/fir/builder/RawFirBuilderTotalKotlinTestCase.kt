@@ -6,8 +6,13 @@
 package org.jetbrains.kotlin.fir.builder
 
 import com.intellij.testFramework.TestDataPath
+import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirRenderer
 import org.jetbrains.kotlin.fir.declarations.FirFile
+import org.jetbrains.kotlin.fir.expressions.FirErrorExpression
+import org.jetbrains.kotlin.fir.expressions.FirExpression
+import org.jetbrains.kotlin.fir.expressions.impl.FirExpressionStub
+import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
 import org.jetbrains.kotlin.test.JUnit3RunnerWithInners
 import org.junit.runner.RunWith
 import java.io.File
@@ -22,6 +27,9 @@ class RawFirBuilderTotalKotlinTestCase : AbstractRawFirBuilderTestCase() {
         var counter = 0
         var time = 0L
         var totalLength = 0
+        var expressionStubs = 0
+        var errorExpressions = 0
+        var normalExpressions = 0
         println("BASE PATH: $testDataPath")
         for (file in root.walkTopDown()) {
             if (file.isDirectory) continue
@@ -35,6 +43,24 @@ class RawFirBuilderTotalKotlinTestCase : AbstractRawFirBuilderTestCase() {
                 }
                 totalLength += StringBuilder().also { FirRenderer(it).visitFile(firFile!!) }.length
                 counter++
+                firFile?.accept(object : FirVisitorVoid() {
+                    override fun visitElement(element: FirElement) {
+                        element.acceptChildren(this)
+                    }
+
+                    override fun visitErrorExpression(errorExpression: FirErrorExpression) {
+                        errorExpressions++
+                    }
+
+                    override fun visitExpression(expression: FirExpression) {
+                        when (expression) {
+                            is FirExpressionStub -> expressionStubs++
+                            else -> normalExpressions++
+                        }
+                        expression.acceptChildren(this)
+                    }
+                })
+
             } catch (e: Exception) {
                 if (counter > 0) {
                     println("TIME PER FILE: ${(time / counter) * 1e-6} ms, COUNTER: $counter")
@@ -46,6 +72,9 @@ class RawFirBuilderTotalKotlinTestCase : AbstractRawFirBuilderTestCase() {
         println("SUCCESS!")
         println("TOTAL LENGTH: $totalLength")
         println("TIME PER FILE: ${(time / counter) * 1e-6} ms, COUNTER: $counter")
+        println("EXPRESSION STUBS: $expressionStubs")
+        println("ERROR EXPRESSIONS: $errorExpressions")
+        println("NORMAL EXPRESSIONS: $normalExpressions")
     }
 
     fun testTotalKotlinWithExpressionTrees() {
