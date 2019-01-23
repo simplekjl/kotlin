@@ -54,7 +54,10 @@ class RawFirBuilderTotalKotlinTestCase : AbstractRawFirBuilderTestCase() {
 
                     override fun visitExpression(expression: FirExpression) {
                         when (expression) {
-                            is FirExpressionStub -> expressionStubs++
+                            is FirExpressionStub -> {
+                                expressionStubs++
+                                println(expression.psi?.text)
+                            }
                             else -> normalExpressions++
                         }
                         expression.acceptChildren(this)
