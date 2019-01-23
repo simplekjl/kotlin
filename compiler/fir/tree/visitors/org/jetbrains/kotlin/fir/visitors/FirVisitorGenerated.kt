@@ -124,16 +124,24 @@ abstract class FirVisitor<out R, in D> {
         return visitElement(label, data)
     }
 
-    open fun visitMemberReference(memberReference: FirMemberReference, data: D): R {
-        return visitElement(memberReference, data)
-    }
-
     open fun visitPackageFragment(packageFragment: FirPackageFragment, data: D): R {
         return visitElement(packageFragment, data)
     }
 
     open fun visitFile(file: FirFile, data: D): R {
         return visitPackageFragment(file, data)
+    }
+
+    open fun visitReference(reference: FirReference, data: D): R {
+        return visitElement(reference, data)
+    }
+
+    open fun visitMemberReference(memberReference: FirMemberReference, data: D): R {
+        return visitReference(memberReference, data)
+    }
+
+    open fun visitThisReference(thisReference: FirThisReference, data: D): R {
+        return visitReference(thisReference, data)
     }
 
     open fun visitStatement(statement: FirStatement, data: D): R {

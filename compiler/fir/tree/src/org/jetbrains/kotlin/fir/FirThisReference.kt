@@ -6,11 +6,10 @@
 package org.jetbrains.kotlin.fir
 
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
-import org.jetbrains.kotlin.name.Name
 
-interface FirMemberReference : FirReference {
-    val name: Name
+interface FirThisReference : FirReference {
+    val labelName: String?
 
     override fun <R, D> accept(visitor: FirVisitor<R, D>, data: D): R =
-        visitor.visitMemberReference(this, data)
+        visitor.visitThisReference(this, data)
 }

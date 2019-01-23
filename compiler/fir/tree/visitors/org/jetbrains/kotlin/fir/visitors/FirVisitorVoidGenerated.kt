@@ -124,16 +124,24 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitElement(label, null)
     }
 
-    open fun visitMemberReference(memberReference: FirMemberReference) {
-        visitElement(memberReference, null)
-    }
-
     open fun visitPackageFragment(packageFragment: FirPackageFragment) {
         visitElement(packageFragment, null)
     }
 
     open fun visitFile(file: FirFile) {
         visitPackageFragment(file, null)
+    }
+
+    open fun visitReference(reference: FirReference) {
+        visitElement(reference, null)
+    }
+
+    open fun visitMemberReference(memberReference: FirMemberReference) {
+        visitReference(memberReference, null)
+    }
+
+    open fun visitThisReference(thisReference: FirThisReference) {
+        visitReference(thisReference, null)
     }
 
     open fun visitStatement(statement: FirStatement) {
@@ -516,6 +524,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
         visitPropertySet(propertySet)
     }
 
+    final override fun visitReference(reference: FirReference, data: Nothing?) {
+        visitReference(reference)
+    }
+
     final override fun visitRegularClass(regularClass: FirRegularClass, data: Nothing?) {
         visitRegularClass(regularClass)
     }
@@ -550,6 +562,10 @@ abstract class FirVisitorVoid : FirVisitor<Unit, Nothing?>() {
 
     final override fun visitTargetElement(targetElement: FirTargetElement, data: Nothing?) {
         visitTargetElement(targetElement)
+    }
+
+    final override fun visitThisReference(thisReference: FirThisReference, data: Nothing?) {
+        visitThisReference(thisReference)
     }
 
     final override fun visitThrowExpression(throwExpression: FirThrowExpression, data: Nothing?) {

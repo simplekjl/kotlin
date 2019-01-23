@@ -124,16 +124,24 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
         return transformElement(label, data)
     }
 
-    open fun <E : FirElement> transformMemberReference(memberReference: E, data: D): CompositeTransformResult<E> {
-        return transformElement(memberReference, data)
-    }
-
     open fun <E : FirElement> transformPackageFragment(packageFragment: E, data: D): CompositeTransformResult<E> {
         return transformElement(packageFragment, data)
     }
 
     open fun transformFile(file: FirFile, data: D): CompositeTransformResult<FirFile> {
         return transformPackageFragment(file, data)
+    }
+
+    open fun <E : FirElement> transformReference(reference: E, data: D): CompositeTransformResult<E> {
+        return transformElement(reference, data)
+    }
+
+    open fun <E : FirReference> transformMemberReference(memberReference: E, data: D): CompositeTransformResult<E> {
+        return transformReference(memberReference, data)
+    }
+
+    open fun <E : FirReference> transformThisReference(thisReference: E, data: D): CompositeTransformResult<E> {
+        return transformReference(thisReference, data)
     }
 
     open fun transformStatement(statement: FirStatement, data: D): CompositeTransformResult<FirStatement> {
@@ -516,6 +524,10 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
         return transformPropertySet(propertySet, data)
     }
 
+    final override fun visitReference(reference: FirReference, data: D): CompositeTransformResult<FirElement> {
+        return transformReference(reference, data)
+    }
+
     final override fun visitRegularClass(regularClass: FirRegularClass, data: D): CompositeTransformResult<FirElement> {
         return transformRegularClass(regularClass, data)
     }
@@ -550,6 +562,10 @@ abstract class FirTransformer<in D> : FirVisitor<CompositeTransformResult<FirEle
 
     final override fun visitTargetElement(targetElement: FirTargetElement, data: D): CompositeTransformResult<FirElement> {
         return transformTargetElement(targetElement, data)
+    }
+
+    final override fun visitThisReference(thisReference: FirThisReference, data: D): CompositeTransformResult<FirElement> {
+        return transformThisReference(thisReference, data)
     }
 
     final override fun visitThrowExpression(throwExpression: FirThrowExpression, data: D): CompositeTransformResult<FirElement> {

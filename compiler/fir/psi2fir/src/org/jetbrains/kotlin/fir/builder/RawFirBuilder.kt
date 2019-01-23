@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.fir.expressions.impl.*
 import org.jetbrains.kotlin.fir.labels.FirLabelImpl
 import org.jetbrains.kotlin.fir.references.FirErrorMemberReference
 import org.jetbrains.kotlin.fir.references.FirSimpleMemberReference
+import org.jetbrains.kotlin.fir.references.FirExplicitThisReference
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirTypeAliasSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirTypeParameterSymbol
@@ -1207,6 +1208,13 @@ class RawFirBuilder(val session: FirSession, val stubMode: Boolean) {
             firSelector.safe = expression is KtSafeQualifiedExpression
             firSelector.explicitReceiver = expression.receiverExpression.toFirExpression()
             return firSelector
+        }
+
+        override fun visitThisExpression(expression: KtThisExpression, data: Unit): FirElement {
+            val labelName = expression.getLabelName()
+            return FirPropertyGetImpl(session, expression).apply {
+                calleeReference = FirExplicitThisReference(session, expression, labelName)
+            }
         }
 
         override fun visitParenthesizedExpression(expression: KtParenthesizedExpression, data: Unit): FirElement {

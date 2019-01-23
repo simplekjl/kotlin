@@ -15,7 +15,7 @@ abstract class FirAbstractMemberAccess(
     psi: PsiElement?,
     final override var safe: Boolean = false
 ) : FirAbstractElement(session, psi), FirModifiableMemberAccess {
-    final override lateinit var calleeReference: FirMemberReference
+    final override lateinit var calleeReference: FirReference
 
     final override var explicitReceiver: FirExpression? = null
 

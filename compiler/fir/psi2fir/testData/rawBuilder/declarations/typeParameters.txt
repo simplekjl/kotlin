@@ -19,7 +19,7 @@ FILE: typeParameters.kt
         }
 
         public? open? override function concat(other: List<Int>): List<Int> {
-            return@@@concat STUB
+            return@@@concat this#
         }
 
     }

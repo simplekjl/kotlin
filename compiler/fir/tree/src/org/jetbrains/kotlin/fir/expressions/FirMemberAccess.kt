@@ -5,11 +5,11 @@
 
 package org.jetbrains.kotlin.fir.expressions
 
-import org.jetbrains.kotlin.fir.FirMemberReference
+import org.jetbrains.kotlin.fir.FirReference
 import org.jetbrains.kotlin.fir.visitors.FirVisitor
 
 interface FirMemberAccess : FirExpression {
-    val calleeReference: FirMemberReference
+    val calleeReference: FirReference
 
     val safe: Boolean get() = false
 
