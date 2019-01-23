@@ -4,8 +4,6 @@
 
 package foo
 
-private const val testPackagePrefix = ""
-
 external fun bar(l: Long, s: String): Double
 
 fun box(): String {
@@ -16,7 +14,7 @@ fun box(): String {
         return "Link error expected on object"
     }
     catch (e: java.lang.UnsatisfiedLinkError) {
-        if (e.message != "${testPackagePrefix}foo.TopLevelKt.bar(JLjava/lang/String;)D") return "Fail 1: " + e.message
+        if (e.message != "foo.TopLevelKt.bar(JLjava/lang/String;)D") return "Fail 1: " + e.message
     }
 
     return "OK"

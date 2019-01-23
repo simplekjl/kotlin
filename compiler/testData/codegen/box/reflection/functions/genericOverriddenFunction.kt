@@ -5,9 +5,9 @@
 
 // WITH_REFLECT
 
-import kotlin.test.assertEquals
+package test
 
-private const val testPackagePrefix = ""
+import kotlin.test.assertEquals
 
 interface H<T> {
     fun foo(): T?
@@ -16,7 +16,7 @@ interface H<T> {
 interface A : H<A>
 
 fun box(): String {
-    assertEquals("${testPackagePrefix}A?", A::foo.returnType.toString())
+    assertEquals("test.A?", A::foo.returnType.toString())
     assertEquals("T?", H<A>::foo.returnType.toString())
 
     return "OK"

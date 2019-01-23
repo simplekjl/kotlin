@@ -20,10 +20,9 @@ class C {
 // FILE: kt22906_2.kt
 import test.*
 
-private const val testPackagePrefix = ""
 
 fun box(): String {
-    if (java.lang.Class.forName("${testPackagePrefix}test.C\$sam\$java_util_concurrent_Callable\$0") == null) return "fail: can't find sam wrapper"
+    if (java.lang.Class.forName("test.C\$sam\$java_util_concurrent_Callable\$0") == null) return "fail: can't find sam wrapper"
 
     return C().startTemplate()
 }

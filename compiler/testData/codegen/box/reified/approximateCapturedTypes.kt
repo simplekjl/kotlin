@@ -4,7 +4,7 @@
 // WITH_RUNTIME
 // Basically this test checks that no captured type used as argument for signature mapping
 
-private const val testPackagePrefix = ""
+package test
 
 class SwOperator<T>: Operator<List<T>, T>
 
@@ -21,7 +21,7 @@ fun box(): String {
     val inv = o.lift(SwOperator())
     val signature = inv.javaClass.genericSuperclass.toString()
 
-    if (signature != "${testPackagePrefix}Inv<java.util.List<? extends java.lang.CharSequence>>") return "fail 1: $signature"
+    if (signature != "test.Inv<java.util.List<? extends java.lang.CharSequence>>") return "fail 1: $signature"
 
     return "OK"
 }

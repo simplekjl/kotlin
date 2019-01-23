@@ -54,15 +54,15 @@ class CodegenTestsOnAndroidRunner private constructor(private val pathManager: P
                     rootSuite.addTest(this)
                 }
 
-                renameReport()
-                enableD8(true)
-                runTestsOnEmulator(gradleRunner, TestSuite("D8")).apply {
-                    (0 until this.countTestCases()).forEach {
-                        val testCase = testAt(it) as TestCase
-                        testCase.name += "_D8"
-                    }
-                    rootSuite.addTest(this)
-                }
+//                renameReport()
+//                enableD8(true)
+//                runTestsOnEmulator(gradleRunner, TestSuite("D8")).apply {
+//                    (0 until this.countTestCases()).forEach {
+//                        val testCase = testAt(it) as TestCase
+//                        testCase.name += "_D8"
+//                    }
+//                    rootSuite.addTest(this)
+//                }
             } catch (e: RuntimeException) {
                 e.printStackTrace()
                 throw e

@@ -2,7 +2,7 @@
 
 // FULL_JDK
 
-private const val testPackagePrefix = ""
+package test
 
 class C {
     companion object {
@@ -42,14 +42,14 @@ fun check(body: () -> Unit, signature: String): String? {
 }
 
 fun box(): String {
-    return check({defaultGetter}, "${testPackagePrefix}NativePropertyAccessorsKt.getDefaultGetter()I")
-           ?: check({defaultSetter = 1}, "${testPackagePrefix}NativePropertyAccessorsKt.setDefaultSetter(I)V")
+    return check({defaultGetter}, "test.NativePropertyAccessorsKt.getDefaultGetter()I")
+           ?: check({defaultSetter = 1}, "test.NativePropertyAccessorsKt.setDefaultSetter(I)V")
 
-           ?: check({C.defaultGetter}, "${testPackagePrefix}C\$Companion.getDefaultGetter()I")
-           ?: check({C.defaultSetter = 1}, "${testPackagePrefix}C\$Companion.setDefaultSetter(I)V")
+           ?: check({C.defaultGetter}, "test.C\$Companion.getDefaultGetter()I")
+           ?: check({C.defaultSetter = 1}, "test.C\$Companion.setDefaultSetter(I)V")
 
-           ?: check({C().defaultGetter}, "${testPackagePrefix}C.getDefaultGetter()I")
-           ?: check({C().defaultSetter = 1}, "${testPackagePrefix}C.setDefaultSetter(I)V")
+           ?: check({C().defaultGetter}, "test.C.getDefaultGetter()I")
+           ?: check({C().defaultSetter = 1}, "test.C.setDefaultSetter(I)V")
 
            ?: "OK"
 }

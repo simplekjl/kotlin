@@ -2,10 +2,9 @@
 // TARGET_BACKEND: JVM
 
 // WITH_RUNTIME
+package test
 
 import kotlin.test.assertEquals
-
-private const val testPackagePrefix = ""
 
 abstract class A<R> {
     abstract fun f(): String
@@ -29,6 +28,6 @@ inline fun<reified T> foo(): G {
 fun box(): String {
     val y = foo<String>().bar();
     assertEquals("OK", y.toString())
-    assertEquals("${testPackagePrefix}A<java.lang.String>", y.javaClass.getGenericSuperclass()?.toString())
+    assertEquals("test.A<java.lang.String>", y.javaClass.getGenericSuperclass()?.toString())
     return "OK"
 }

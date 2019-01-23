@@ -73,11 +73,11 @@ internal fun patchFiles(
         }.patchSelfImports(file.newPackage)
     }
 
-    //patch TEST_PACKAGE_PREFIX_PROP
-    resultFiles.forEach {
-        it.content =
-            it.content.replace(TEST_PACKAGE_PREFIX_PROP, TEST_PACKAGE_PREFIX_PROP.substringBeforeLast("") + newPackagePrefix + ".\"")
-    }
+//    //patch TEST_PACKAGE_PREFIX_PROP
+//    resultFiles.forEach {
+//        it.content =
+//            it.content.replace(TEST_PACKAGE_PREFIX_PROP, TEST_PACKAGE_PREFIX_PROP.substringBeforeLast("") + newPackagePrefix + ".\"")
+//    }
 
     resultFiles.forEach { resultFile ->
         if (resultFile.name.endsWith(".kt") || resultFile.name.endsWith(".kts")) {

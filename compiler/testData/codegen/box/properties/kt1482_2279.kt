@@ -1,6 +1,6 @@
 // TARGET_BACKEND: JVM
 // WITH_RUNTIME
-private const val testPackagePrefix = ""
+package test
 
 abstract class ClassValAbstract {
     abstract var a: Int

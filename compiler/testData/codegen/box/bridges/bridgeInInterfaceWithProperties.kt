@@ -2,7 +2,7 @@
 // WITH_RUNTIME
 // FULL_JDK
 
-private const val testPackagePrefix = ""
+package test
 
 interface Test<T> {
     var T.foo: T
@@ -29,7 +29,7 @@ fun box(): String {
     checkMethodExists(TestClass::class.java, "setFoo", Any::class.java, Any::class.java)
     checkMethodExists(TestClass::class.java, "setFoo", String::class.java, String::class.java)
 
-    val test2DefaultImpls = java.lang.Class.forName("${testPackagePrefix}Test2\$DefaultImpls")
+    val test2DefaultImpls = java.lang.Class.forName("test.Test2\$DefaultImpls")
     checkMethodExists(test2DefaultImpls, "getFoo", Test2::class.java, String::class.java)
     checkMethodExists(test2DefaultImpls, "setFoo", Test2::class.java, String::class.java, String::class.java)
 

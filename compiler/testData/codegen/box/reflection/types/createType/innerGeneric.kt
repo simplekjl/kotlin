@@ -3,13 +3,12 @@
 // IGNORE_BACKEND: JS, NATIVE
 
 // WITH_REFLECT
+package test
 
 import kotlin.reflect.full.createType
 import kotlin.reflect.KClass
 import kotlin.reflect.KTypeProjection
 import kotlin.test.assertEquals
-
-private const val testPackagePrefix = ""
 
 class A<T1> {
     inner class B<T2, T3> {
@@ -24,9 +23,9 @@ fun box(): String {
     fun KClass<*>.inv() = KTypeProjection.invariant(this.createType())
 
     val type = A.B.C::class.createType(listOf(Long::class.inv(), Double::class.inv(), Float::class.inv(), Int::class.inv()))
-    assertEquals("${testPackagePrefix}A<kotlin.Int>.B<kotlin.Double, kotlin.Float>.C<kotlin.Long>", type.toString())
+    assertEquals("test.A<kotlin.Int>.B<kotlin.Double, kotlin.Float>.C<kotlin.Long>", type.toString())
 
-    assertEquals("${testPackagePrefix}A.D", A.D::class.createType().toString())
+    assertEquals("test.A.D", A.D::class.createType().toString())
 
     return "OK"
 }
