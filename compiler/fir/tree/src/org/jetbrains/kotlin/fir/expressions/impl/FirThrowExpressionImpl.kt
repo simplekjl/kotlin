@@ -7,12 +7,20 @@ package org.jetbrains.kotlin.fir.expressions.impl
 
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.fir.FirAbstractElement
+import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirThrowExpression
+import org.jetbrains.kotlin.fir.transformSingle
+import org.jetbrains.kotlin.fir.visitors.FirTransformer
 
 class FirThrowExpressionImpl(
     session: FirSession,
     psi: PsiElement?,
-    override val exception: FirExpression
-) : FirAbstractElement(session, psi), FirThrowExpression
+    override var exception: FirExpression
+) : FirAbstractElement(session, psi), FirThrowExpression {
+    override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
+        exception = exception.transformSingle(transformer, data)
+        return this
+    }
+}

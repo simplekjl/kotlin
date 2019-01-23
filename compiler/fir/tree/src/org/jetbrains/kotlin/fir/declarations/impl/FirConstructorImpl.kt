@@ -39,6 +39,7 @@ open class FirConstructorImpl(
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         valueParameters.transformInplace(transformer, data)
         delegatedConstructor?.transformSingle(transformer, data)
+        body = body?.transformSingle(transformer, data)
 
         return super<FirAbstractCallableMember>.transformChildren(transformer, data)
     }

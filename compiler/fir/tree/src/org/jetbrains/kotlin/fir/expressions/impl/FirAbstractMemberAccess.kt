@@ -6,10 +6,9 @@
 package org.jetbrains.kotlin.fir.expressions.impl
 
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.fir.FirAbstractElement
-import org.jetbrains.kotlin.fir.FirMemberReference
-import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.expressions.FirExpression
+import org.jetbrains.kotlin.fir.visitors.FirTransformer
 
 abstract class FirAbstractMemberAccess(
     session: FirSession,
@@ -19,4 +18,10 @@ abstract class FirAbstractMemberAccess(
     final override lateinit var calleeReference: FirMemberReference
 
     final override var explicitReceiver: FirExpression? = null
+
+    override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
+        calleeReference = calleeReference.transformSingle(transformer, data)
+        explicitReceiver = explicitReceiver?.transformSingle(transformer, data)
+        return this
+    }
 }

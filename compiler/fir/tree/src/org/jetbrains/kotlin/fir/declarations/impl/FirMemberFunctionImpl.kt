@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.fir.declarations.FirNamedFunction
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.fir.expressions.FirBlock
 import org.jetbrains.kotlin.fir.transformInplace
+import org.jetbrains.kotlin.fir.transformSingle
 import org.jetbrains.kotlin.fir.types.FirType
 import org.jetbrains.kotlin.fir.visitors.FirTransformer
 import org.jetbrains.kotlin.name.Name
@@ -54,6 +55,7 @@ class FirMemberFunctionImpl(
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
         valueParameters.transformInplace(transformer, data)
+        body = body?.transformSingle(transformer, data)
 
         return super<FirAbstractCallableMember>.transformChildren(transformer, data)
     }

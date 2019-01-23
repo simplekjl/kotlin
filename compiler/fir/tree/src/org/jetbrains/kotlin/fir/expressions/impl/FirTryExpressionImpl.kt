@@ -6,17 +6,24 @@
 package org.jetbrains.kotlin.fir.expressions.impl
 
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.fir.FirAbstractElement
-import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.expressions.FirBlock
 import org.jetbrains.kotlin.fir.expressions.FirCatch
 import org.jetbrains.kotlin.fir.expressions.FirTryExpression
+import org.jetbrains.kotlin.fir.visitors.FirTransformer
 
 class FirTryExpressionImpl(
     session: FirSession,
     psi: PsiElement?,
-    override val tryBlock: FirBlock,
-    override val finallyBlock: FirBlock?
+    override var tryBlock: FirBlock,
+    override var finallyBlock: FirBlock?
 ) : FirAbstractElement(session, psi), FirTryExpression {
     override val catches = mutableListOf<FirCatch>()
+
+    override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
+        tryBlock = tryBlock.transformSingle(transformer, data)
+        finallyBlock = finallyBlock?.transformSingle(transformer, data)
+        catches.transformInplace(transformer, data)
+        return this
+    }
 }

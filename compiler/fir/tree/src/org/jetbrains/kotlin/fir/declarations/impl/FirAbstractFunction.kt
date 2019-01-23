@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
 import org.jetbrains.kotlin.fir.expressions.FirBlock
 import org.jetbrains.kotlin.fir.transformInplace
+import org.jetbrains.kotlin.fir.transformSingle
 import org.jetbrains.kotlin.fir.visitors.FirTransformer
 
 abstract class FirAbstractFunction(
@@ -23,9 +24,9 @@ abstract class FirAbstractFunction(
     final override var body: FirBlock? = null
 
     override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
-        annotations.transformInplace(transformer, data)
         valueParameters.transformInplace(transformer, data)
+        body = body?.transformSingle(transformer, data)
 
-        return this
+        return super<FirAbstractAnnotatedDeclaration>.transformChildren(transformer, data)
     }
 }

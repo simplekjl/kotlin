@@ -6,18 +6,28 @@
 package org.jetbrains.kotlin.fir.expressions.impl
 
 import com.intellij.psi.PsiElement
-import org.jetbrains.kotlin.fir.FirAbstractElement
-import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.FirVariable
 import org.jetbrains.kotlin.fir.expressions.FirWhenBranch
 import org.jetbrains.kotlin.fir.expressions.FirWhenExpression
+import org.jetbrains.kotlin.fir.visitors.FirTransformer
 
 class FirWhenExpressionImpl(
     session: FirSession,
     psiElement: PsiElement?,
-    override val subject: FirExpression? = null,
-    override val subjectVariable: FirVariable? = null
+    override var subject: FirExpression? = null,
+    override var subjectVariable: FirVariable? = null
 ) : FirAbstractElement(session, psiElement), FirWhenExpression {
     override val branches = mutableListOf<FirWhenBranch>()
+
+    override fun <D> transformChildren(transformer: FirTransformer<D>, data: D): FirElement {
+        if (subjectVariable != null) {
+            subjectVariable = subjectVariable?.transformSingle(transformer, data)
+        } else {
+            subject = subject?.transformSingle(transformer, data)
+        }
+        branches.transformInplace(transformer, data)
+        return this
+    }
 }
