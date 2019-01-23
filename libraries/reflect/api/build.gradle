@@ -25,7 +25,6 @@ dependencies {
     compileOnly project(':core:deserialization')
     compileOnly project(':core:descriptors.runtime')
     compileOnly project(':core:util.runtime')
-    compileOnly "org.jetbrains:annotations:13.0"
 }
 
 if (!jpsBuild) {
