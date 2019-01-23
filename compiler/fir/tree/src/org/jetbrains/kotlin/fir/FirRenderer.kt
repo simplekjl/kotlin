@@ -556,7 +556,7 @@ class FirRenderer(builder: StringBuilder) : FirVisitorVoid() {
     }
 
     override fun visitDelegatedType(delegatedType: FirDelegatedType) {
-        delegatedType.accept(this)
+        delegatedType.type.accept(this)
         print(" by ")
         delegatedType.delegate?.accept(this)
     }
