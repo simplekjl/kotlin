@@ -1115,7 +1115,7 @@ object ArrayOps : TemplateGroupBase() {
 
     val f_binarySearch = fn("binarySearch(element: T, fromIndex: Int = 0, toIndex: Int = size)") {
         platforms(Platform.JVM)
-        include(ArraysOfObjects, ArraysOfPrimitives)
+        include(ArraysOfObjects, ArraysOfPrimitives, ArraysOfUnsigned)
         exclude(PrimitiveType.Boolean)
     } builder {
         doc {
@@ -1134,6 +1134,55 @@ object ArrayOps : TemplateGroupBase() {
         returns("Int")
         body {
             "return java.util.Arrays.binarySearch(this, fromIndex, toIndex, element)"
+        }
+
+        specialFor(ArraysOfUnsigned) {
+            val elementConversion: String
+            val midValConversion: String
+            val compareFunction: String
+            when (primitive!!) {
+                PrimitiveType.UByte, PrimitiveType.UShort -> {
+                    elementConversion = ".toInt()"
+                    midValConversion = ".toInt()"
+                    compareFunction = "uintCompare"
+                }
+                PrimitiveType.UInt -> {
+                    elementConversion = ".toInt()"
+                    midValConversion = ""
+                    compareFunction = "uintCompare"
+                }
+                PrimitiveType.ULong -> {
+                    elementConversion = ".toLong()"
+                    midValConversion = ""
+                    compareFunction = "ulongCompare"
+                }
+                else -> error(primitive!!)
+            }
+
+
+            body {
+                """
+                arrayRangeCheck(size, fromIndex, toIndex)
+
+                val signedElement = element$elementConversion
+                var low = fromIndex
+                var high = toIndex - 1
+
+                while (low <= high) {
+                    val mid = (low + high).ushr(1) // safe from overflows
+                    val midVal = storage.get(mid)
+                    val cmp = $compareFunction(midVal$midValConversion, signedElement)
+
+                    if (cmp < 0)
+                        low = mid + 1
+                    else if (cmp > 0)
+                        high = mid - 1
+                    else
+                        return mid // key found
+                }
+                return -(low + 1)  // key not found
+                """
+            }
         }
     }
 

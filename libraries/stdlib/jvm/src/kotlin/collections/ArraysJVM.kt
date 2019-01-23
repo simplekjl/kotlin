@@ -58,3 +58,17 @@ internal fun <T> Array<out T>.contentDeepHashCodeImpl(): Int =
 // hash code of an inline class, which an unsigned array is,
 // is calculated structurally as in a data class
     java.util.Arrays.deepHashCode(this)
+
+
+/**
+ * Checks that `from` and `to` are in
+ * the range of [0..size] and throws an appropriate exception, if they aren't.
+ */
+@PublishedApi
+internal fun arrayRangeCheck(size: Int, fromIndex: Int, toIndex: Int) {
+    when {
+        fromIndex > toIndex -> throw IllegalArgumentException("fromIndex($fromIndex) > toIndex($toIndex)")
+        fromIndex < 0 -> throw ArrayIndexOutOfBoundsException("Array index out of range: $fromIndex")
+        toIndex > size -> throw ArrayIndexOutOfBoundsException("Array index out of range: $toIndex")
+    }
+}
