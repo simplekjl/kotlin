@@ -9,7 +9,6 @@ package test
 
 import kotlin.test.assertEquals
 
-private const val testPackagePrefix = ""
 
 fun top() = 42
 
@@ -28,6 +27,6 @@ fun box(): String {
     assertToString("fun top(): kotlin.Int", ::top)
     assertToString("fun kotlin.String.ext(): kotlin.Int", String::ext)
     assertToString("fun kotlin.ranges.IntRange?.ext2(): kotlin.Array<kotlin.Int?>", IntRange::ext2)
-    assertToString("fun ${testPackagePrefix}test.A.mem(): kotlin.String", A::mem)
+    assertToString("fun test.A.mem(): kotlin.String", A::mem)
     return "OK"
 }

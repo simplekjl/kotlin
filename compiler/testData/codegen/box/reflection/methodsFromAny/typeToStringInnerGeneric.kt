@@ -5,9 +5,9 @@
 
 // WITH_REFLECT
 
-import kotlin.test.assertEquals
+package test
 
-private const val testPackagePrefix = ""
+import kotlin.test.assertEquals
 
 class A<T1> {
     inner class B<T2, T3> {
@@ -18,6 +18,6 @@ class A<T1> {
 fun foo(): A<Int>.B<Double, Float>.C<Long> = null!!
 
 fun box(): String {
-    assertEquals("${testPackagePrefix}A<kotlin.Int>.B<kotlin.Double, kotlin.Float>.C<kotlin.Long>", ::foo.returnType.toString())
+    assertEquals("test.A<kotlin.Int>.B<kotlin.Double, kotlin.Float>.C<kotlin.Long>", ::foo.returnType.toString())
     return "OK"
 }

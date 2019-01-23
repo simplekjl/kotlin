@@ -3,11 +3,11 @@
 
 // WITH_RUNTIME
 
+package test
+
 import kotlin.test.assertEquals
 
 open class A<T1, T2, T3>
-
-private const val testPackagePrefix = ""
 
 inline fun <reified T, reified R> foo(): Array<A<*,*,*>> {
     val x = object {
@@ -29,7 +29,7 @@ fun box(): String {
             Triple("java.lang.Integer", "java.lang.Double", "java.lang.Integer"),
             Triple("java.lang.Boolean", "java.lang.Double", "java.lang.Integer"),
             Triple("java.lang.Double", "java.lang.Boolean", "java.lang.Integer")
-    ).map { "${testPackagePrefix}A<${it.first}, ${it.second}, ${it.third}>" }
+    ).map { "test.A<${it.first}, ${it.second}, ${it.third}>" }
 
     for (i in expected.indices) {
         assertEquals(expected[i], result[i].javaClass.getGenericSuperclass()?.toString(), "$i-th element")

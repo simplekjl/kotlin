@@ -11,9 +11,9 @@ inline fun test(s: () -> Unit) {
 
 // FILE: 2.kt
 
-import test.*
+package test2
 
-private const val testPackagePrefix = ""
+import test.*
 
 fun box(): String {
     var encl1 = "fail";
@@ -30,8 +30,8 @@ fun box(): String {
         }()
     }
 
-    if (encl1 != "${testPackagePrefix}_2Kt\$box\$\$inlined\$test\$lambda$1") return "fail 1: $encl1"
-    if (encl2 != "${testPackagePrefix}_2Kt\$box\$\$inlined\$test\$lambda$1$2") return "fail 2: $encl2"
+    if (encl1 != "test2._2Kt\$box\$\$inlined\$test\$lambda$1") return "fail 1: $encl1"
+    if (encl2 != "test2._2Kt\$box\$\$inlined\$test\$lambda$1$2") return "fail 2: $encl2"
 
     return "OK"
 }

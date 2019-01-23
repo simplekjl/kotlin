@@ -2,6 +2,7 @@
 // TARGET_BACKEND: JVM
 // WITH_RUNTIME
 // FILE: Foo.kt
+package foo
 
 class A2 {
     fun doWork(job: () -> Unit) {
@@ -10,10 +11,11 @@ class A2 {
 }
 
 // FILE: kt17091.kt
+package test
+
+import foo.A2
 
 typealias Z = String
-
-private const val testPackagePrefix = ""
 
 class A {
     fun doWork(job: () -> Unit) {
@@ -25,9 +27,9 @@ fun box(): String {
     var result = "fail"
     A().doWork { result = "OK" }
 
-    if (java.lang.Class.forName("${testPackagePrefix}Kt17091Kt\$sam\$java_lang_Runnable$0") == null) return "fail: can't find sam wrapper"
+    if (java.lang.Class.forName("test.Kt17091Kt\$sam\$java_lang_Runnable$0") == null) return "fail: can't find sam wrapper"
 
-    if (java.lang.Class.forName("${testPackagePrefix}A2\$sam\$java_lang_Runnable$0") == null) return "fail 2: can't find sam wrapper"
+    if (java.lang.Class.forName("foo.A2\$sam\$java_lang_Runnable$0") == null) return "fail 2: can't find sam wrapper"
 
     return result
 }

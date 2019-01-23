@@ -3,9 +3,9 @@
 
 // FULL_JDK
 
-import java.util.*
+package test
 
-private const val testPackagePrefix = ""
+import java.util.*
 
 fun box(): String {
     val a = ArrayList<String>() as AbstractList<String>
@@ -19,7 +19,7 @@ fun box(): String {
             return "Fail: very small stack trace, should at least have current function and JUnit reflective calls: ${Arrays.toString(st)}"
         }
         val top = st[0]
-        if (!(top.getClassName() == "${testPackagePrefix}PlatformTypeAssertionStackTraceKt" && top.getMethodName() == "box")) {
+        if (!(top.getClassName() == "test.PlatformTypeAssertionStackTraceKt" && top.getMethodName() == "box")) {
             return "Fail: top stack trace element should be PlatformTypeAssertionStackTraceKt.box() from default package, but was $top"
         }
         return "OK"

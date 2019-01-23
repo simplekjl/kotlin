@@ -15,13 +15,12 @@ class A2 {
 
 // FILE: kt17091_3.kt
 
-private const val testPackagePrefix = ""
-
+package test2
 
 fun box(): String {
-    if (java.lang.Class.forName("${testPackagePrefix}Kt17091_3Kt\$sam\$java_util_concurrent_Callable$0") == null) return "fail: can't find sam wrapper"
+    if (java.lang.Class.forName("test2.Kt17091_3Kt\$sam\$java_util_concurrent_Callable$0") == null) return "fail: can't find sam wrapper"
 
-    if (java.lang.Class.forName("${testPackagePrefix}test.A2\$sam\$java_lang_Runnable$0") == null) return "fail 2: can't find sam wrapper"
+    if (java.lang.Class.forName("test.A2\$sam\$java_lang_Runnable$0") == null) return "fail 2: can't find sam wrapper"
 
     return A().foo().call()
 }

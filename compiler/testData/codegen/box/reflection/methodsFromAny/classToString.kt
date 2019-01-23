@@ -1,10 +1,9 @@
 // TARGET_BACKEND: JVM
 
 // WITH_REFLECT
+package test
 
 import kotlin.test.*
-
-private const val testPackagePrefix = ""
 
 class A {
     class Nested
@@ -13,9 +12,9 @@ class A {
 }
 
 fun box(): String {
-    assertEquals("class ${testPackagePrefix}A", "${A::class}")
-    assertEquals("class ${testPackagePrefix}A\$Nested", "${A.Nested::class}")
-    assertEquals("class ${testPackagePrefix}A\$Companion", "${A.Companion::class}")
+    assertEquals("class test.A", "${A::class}")
+    assertEquals("class test.A\$Nested", "${A.Nested::class}")
+    assertEquals("class test.A\$Companion", "${A.Companion::class}")
 
     assertEquals("class kotlin.Any", "${Any::class}")
     assertEquals("class kotlin.Int", "${Int::class}")

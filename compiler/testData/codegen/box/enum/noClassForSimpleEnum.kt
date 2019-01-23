@@ -2,7 +2,7 @@
 
 // WITH_RUNTIME
 
-private const val testPackagePrefix = ""
+package test
 
 enum class State {
     O,
@@ -12,7 +12,7 @@ enum class State {
 fun box(): String {
     val field = State::class.java.getField("O")
     val className = field.get(null).javaClass.name
-    if (className != "${testPackagePrefix}State") return "Fail: $className"
+    if (className != "test.State") return "Fail: $className"
 
     return "${State.O.name}${State.K.name}"
 }

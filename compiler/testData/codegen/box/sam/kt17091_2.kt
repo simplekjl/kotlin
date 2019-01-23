@@ -18,8 +18,6 @@ class A2 {
 @file:JvmName("testX")
 package test
 
-private const val testPackagePrefix = ""
-
 typealias Z = String
 
 class A {
@@ -32,9 +30,9 @@ fun box(): String {
     var result = "fail"
     A().doWork { result = "OK" }
 
-    if (java.lang.Class.forName("${testPackagePrefix}test.testX__Kt17091_2Kt\$sam\$java_lang_Runnable$0") == null) return "fail: can't find sam wrapper"
+    if (java.lang.Class.forName("test.testX__Kt17091_2Kt\$sam\$java_lang_Runnable$0") == null) return "fail: can't find sam wrapper"
 
-    if (java.lang.Class.forName("${testPackagePrefix}test.A2\$sam\$java_lang_Runnable$0") == null) return "fail 2: can't find sam wrapper"
+    if (java.lang.Class.forName("test.A2\$sam\$java_lang_Runnable$0") == null) return "fail 2: can't find sam wrapper"
 
     return result
 }

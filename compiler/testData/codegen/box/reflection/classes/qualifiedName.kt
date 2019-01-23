@@ -3,9 +3,9 @@
 
 // WITH_REFLECT
 
-import kotlin.test.assertEquals
+package test
 
-private const val testPackagePrefix = ""
+import kotlin.test.assertEquals
 
 class Klass {
     class Nested
@@ -13,9 +13,9 @@ class Klass {
 }
 
 fun box(): String {
-    assertEquals("${testPackagePrefix}Klass", Klass::class.qualifiedName)
-    assertEquals("${testPackagePrefix}Klass.Nested", Klass.Nested::class.qualifiedName)
-    assertEquals("${testPackagePrefix}Klass.Companion", Klass.Companion::class.qualifiedName)
+    assertEquals("test.Klass", Klass::class.qualifiedName)
+    assertEquals("test.Klass.Nested", Klass.Nested::class.qualifiedName)
+    assertEquals("test.Klass.Companion", Klass.Companion::class.qualifiedName)
 
     class Local
     assertEquals(null, Local::class.qualifiedName)

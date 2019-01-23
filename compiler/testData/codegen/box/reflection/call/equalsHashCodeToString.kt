@@ -5,7 +5,7 @@
 
 // WITH_REFLECT
 
-private const val testPackagePrefix = ""
+package test
 
 class A
 
@@ -16,12 +16,12 @@ fun box(): String {
     assert(A::equals.call(a, a))
     assert(!A::equals.call(a, 0))
     assert(A::hashCode.call(a) == A::hashCode.call(a))
-    assert(A::toString.call(a).startsWith("${testPackagePrefix}A@"))
+    assert(A::toString.call(a).startsWith("test.A@"))
 
     assert(D::equals.call(D("foo"), D("foo")))
     assert(!D::equals.call(D("foo"), D("bar")))
     assert(D::hashCode.call(D("foo")) == D::hashCode.call(D("foo")))
-    assert(D::toString.call(D("foo")) == "${testPackagePrefix}D(s=foo)")
+    assert(D::toString.call(D("foo")) == "D(s=foo)")
 
     assert(Int::equals.call(-1, -1))
     assert(Int::hashCode.call(0) != Int::hashCode.call(1))
